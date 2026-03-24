@@ -1,0 +1,72 @@
+{
+  "courseCode": "CMPE382",
+  "courseName": "Operating Systems",
+  "university": "TED University",
+  "semester": "Spring 2025-2026",
+  "chapters": [
+    {
+      "id": "ch1",
+      "title": "Giris",
+      "titleEn": "Introduction",
+      "subtitle": "Isletim Sistemlerine Giris",
+      "color": "#3B82F6",
+      "dataFile": "ch1-introduction"
+    },
+    {
+      "id": "ch2",
+      "title": "OS Yapisi ve Servisleri",
+      "titleEn": "OS Structures",
+      "subtitle": "Isletim Sistemi Servisleri ve Mimarisi",
+      "color": "#8B5CF6",
+      "dataFile": "ch2-os-structures"
+    },
+    {
+      "id": "ch3",
+      "title": "Surecler",
+      "titleEn": "Processes",
+      "subtitle": "Surec Yonetimi ve IPC",
+      "color": "#10B981",
+      "dataFile": "ch3-processes"
+    },
+    {
+      "id": "ch4",
+      "title": "Thread'ler",
+      "titleEn": "Threads & Concurrency",
+      "subtitle": "Cok Threadli Programlama",
+      "color": "#F59E0B",
+      "dataFile": "ch4-threads"
+    },
+    {
+      "id": "ch5",
+      "title": "CPU Zamanlama",
+      "titleEn": "CPU Scheduling",
+      "subtitle": "FCFS, SJF, RR, Priority Scheduling",
+      "color": "#06B6D4",
+      "dataFile": "ch5-scheduling"
+    },
+    {
+      "id": "ch6",
+      "title": "Senkronizasyon",
+      "titleEn": "Synchronization",
+      "subtitle": "Senkronizasyon Araclari",
+      "color": "#EC4899",
+      "dataFile": "ch6-synchronization"
+    },
+    {
+      "id": "ch7",
+      "title": "Kilitlenme",
+      "titleEn": "Deadlock",
+      "subtitle": "Deadlock Onleme ve Banker's Algorithm",
+      "color": "#EF4444",
+      "dataFile": "ch7-deadlock"
+    },
+    {
+      "id": "ch8",
+      "title": "Bellek Yonetimi",
+      "titleEn": "Memory Management",
+      "subtitle": "Paging, Fragmentation, EAT",
+      "color": "#14B8A6",
+      "dataFile": "ch8-memory"
+    }
+  ]
+}

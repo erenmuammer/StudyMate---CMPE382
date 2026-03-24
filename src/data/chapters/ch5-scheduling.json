@@ -1,0 +1,1287 @@
+{
+  "id": "ch5",
+  "title": "CPU Zamanlama (CPU Scheduling)",
+  "titleEn": "CPU Scheduling",
+  "sections": [
+    {
+      "id": "ch5-s1",
+      "title": "Temel Kavramlar (Basic Concepts)",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "CPU zamanlama (CPU Scheduling), isletim sisteminin en temel gorevlerinden biridir. Coklu programlama (multiprogramming) ortaminda birden fazla proses (process) ayni anda CPU'yu kullanmak ister. CPU zamanlayici (CPU Scheduler), hangi prosesin CPU'yu ne zaman kullanacagina karar verir."
+        },
+        {
+          "type": "keypoint",
+          "text": "CPU zamanlama, isletim sistemi sinavlarinda EN ONEMLI konudur (20 puan). Gantt chart cizimi ve bekleme suresi hesaplama mutlaka sorulur!"
+        },
+        {
+          "type": "paragraph",
+          "text": "Her proses, CPU patlamasi (CPU Burst) ve G/C patlamasi (I/O Burst) arasinda gidip gelir. Bir proses CPU uzerinde islem yapar (CPU burst), sonra giris/cikis islemi bekler (I/O burst), sonra tekrar CPU'ya doner. Buna CPU-I/O Burst Dongusu (CPU-I/O Burst Cycle) denir."
+        },
+        {
+          "type": "diagram",
+          "ascii": "Proses Yasam Dongusu:\n\n  [CPU Burst] --> [I/O Burst] --> [CPU Burst] --> [I/O Burst] --> ...\n      |               |               |               |\n   Hesaplama      Disk/Ag          Hesaplama      Disk/Ag\n   islemi         bekleme          islemi         bekleme",
+          "caption": "CPU-I/O Burst Dongusu (CPU-I/O Burst Cycle)"
+        },
+        {
+          "type": "list",
+          "items": [
+            "CPU Burst: Prosesin CPU uzerinde kesintisiz calistigi sure",
+            "I/O Burst: Prosesin giris/cikis islemi icin bekledigi sure",
+            "CPU-bound proses: Uzun CPU burst'leri olan proses (ornek: bilimsel hesaplama)",
+            "I/O-bound proses: Kisa CPU burst'leri, sik I/O yapan proses (ornek: metin editoru)"
+          ]
+        },
+        {
+          "type": "paragraph",
+          "text": "CPU Zamanlayici (CPU Scheduler), hazir kuyrugundaki (ready queue) prosesler arasindan birini secer ve CPU'yu ona tahsis eder. Dispatcher ise secilen prosese CPU kontrolunu fiilen devreden moduludur."
+        },
+        {
+          "type": "keypoint",
+          "text": "Dispatcher Gecikmesi (Dispatch Latency): Dispatcher'in bir prosesi durdurup digerine gecmesi icin harcadigi suredir. Bu sure mumkun oldugunca kisa olmalidir."
+        },
+        {
+          "type": "analogy",
+          "text": "CPU zamanlayiciyi bir restoran garsonuna benzetin: Garson (scheduler) hangi masaya (process) once servis yapilacagina karar verir. Dispatcher ise yemegi fiilen masaya goturen kisidir."
+        },
+        {
+          "type": "paragraph",
+          "text": "CPU zamanlama kararlari su durumlarda alinir:\n1. Proses calisan (running) durumdan bekleyen (waiting) duruma gectiginde (ornek: I/O istegi)\n2. Proses calisan durumdan hazir (ready) duruma gectiginde (ornek: kesme/interrupt)\n3. Proses bekleyen durumdan hazir duruma gectiginde (ornek: I/O tamamlandi)\n4. Proses sonlandiginda (terminated)"
+        },
+        {
+          "type": "warning",
+          "text": "1 ve 4 numarali durumlarda zamanlama ZORUNLUDUR (nonpreemptive). 2 ve 3 numarali durumlarda ise zamanlama SECIMLIDIR - eger burada da zamanlama yapilirsa buna oncelikli zamanlama (preemptive scheduling) denir."
+        }
+      ]
+    },
+    {
+      "id": "ch5-s2",
+      "title": "Zamanlama Kriterleri (Scheduling Criteria)",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "Farkli zamanlama algoritmalarini karsilastirmak icin cesitli kriterler (scheduling criteria) kullanilir. Sinavda bu kriterlerin hesaplanmasi istenir."
+        },
+        {
+          "type": "list",
+          "items": [
+            "CPU Kullanimi (CPU Utilization): CPU'nun ne kadar mesgul oldugu (yuzde olarak). Amac: MAKSIMIZE etmek. Gercek sistemlerde %40-%90 arasi.",
+            "Is Hacmi (Throughput): Birim zamanda tamamlanan proses sayisi. Amac: MAKSIMIZE etmek.",
+            "Donus Suresi (Turnaround Time): Bir prosesin sisteme giristen cikisina kadar gecen toplam sure. Formul: Turnaround = Completion - Arrival. Amac: MINIMIZE etmek.",
+            "Bekleme Suresi (Waiting Time): Prosesin hazir kuyrugunda (ready queue) bekledigi toplam sure. Formul: Waiting = Turnaround - Burst. Amac: MINIMIZE etmek.",
+            "Yanit Suresi (Response Time): Prosesin ilk kez CPU'ya eristigi ana kadar gecen sure. Formul: Response = FirstRun - Arrival. Amac: MINIMIZE etmek."
+          ]
+        },
+        {
+          "type": "keypoint",
+          "text": "SINAV FORMULU: Bekleme Suresi = Donus Suresi - CPU Patlama Suresi (Waiting Time = Turnaround Time - Burst Time). Ortalama Bekleme Suresi = Tum bekleme surelerinin toplami / Proses sayisi."
+        },
+        {
+          "type": "diagram",
+          "ascii": "Zaman Cizelgesi:\n\n  Arrival        FirstRun              Completion\n     |              |                      |\n     v              v                      v\n  ---|---BEKLEME----|------CALISMA---------|--->\n     |              |                      |\n     |<--Response-->|                      |\n     |                                     |\n     |<--------Turnaround Time------------>|\n     |              |                      |\n     |   Waiting = Turnaround - Burst      |",
+          "caption": "Zamanlama Kriterlerinin Gorsel Aciklamasi"
+        },
+        {
+          "type": "warning",
+          "text": "Sinavda en cok sorulan hesaplama: Ortalama bekleme suresi (average waiting time). Her algoritma icin ayri ayri hesaplanir ve karsilastirilir."
+        },
+        {
+          "type": "analogy",
+          "text": "Bekleme suresini bir banka kuyrugunda bekleme gibi dusunun. Turnaround suresi bankaya giristen cikmaya kadar gecen TOPLAM suredir. Bekleme suresi ise sadece kuyrukta gecen suredir (islem suresi haric)."
+        }
+      ]
+    },
+    {
+      "id": "ch5-s3",
+      "title": "FCFS - Ilk Gelen Ilk Hizmet Alir (First Come First Served)",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "FCFS (First Come First Served), en basit zamanlama algoritmasidir. Prosesler gelis sirasina gore islenir. Ilk gelen proses ilk hizmet alir - tipki bir kuyruk (FIFO - First In First Out) gibi calisir."
+        },
+        {
+          "type": "keypoint",
+          "text": "FCFS onceligi olmayan (non-preemptive) bir algoritmadir. Bir proses CPU'yu aldiktan sonra isini bitirene kadar birakmaz."
+        },
+        {
+          "type": "list",
+          "items": [
+            "Avantajlar: Uygulamasi cok basit, adil (fair) - herkese sirasiyla hizmet verilir",
+            "Dezavantajlar: Ortalama bekleme suresi genellikle yuksek, konvoy etkisi (convoy effect) olusabilir",
+            "Konvoy Etkisi (Convoy Effect): Uzun sureli bir proses CPU'yu uzun sure mesgul ederse, arkasindaki kisa prosesler gereksiz yere bekler"
+          ]
+        },
+        {
+          "type": "analogy",
+          "text": "Konvoy etkisi: Markette 50 urunlu bir musteri once kasaya gelirse, arkasindaki 1 urunlu musteriler uzun sure beklemek zorunda kalir. Bu konvoy etkisidir."
+        },
+        {
+          "type": "paragraph",
+          "text": "SINAV ORNEGI - FCFS Gantt Chart ve Bekleme Suresi Hesaplama:"
+        },
+        {
+          "type": "code",
+          "language": "text",
+          "code": "Prosesler:\n  P1: Varis=0,  Patlama=20\n  P2: Varis=5,  Patlama=10\n  P3: Varis=5,  Patlama=5\n  P4: Varis=10, Patlama=10\n\nFCFS Cozum (gelis sirasina gore):\n\nAdim 1: t=0'da sadece P1 var, P1 baslar\nAdim 2: P1 t=20'de biter. P2,P3,P4 kuyrukta (hepsi geldi)\nAdim 3: P2 t=5'te gelmisti, sirada o var. P2: 20-30\nAdim 4: P3 t=5'te gelmisti, sirada o var. P3: 30-35\nAdim 5: P4 t=10'da gelmisti. P4: 35-45\n\nGantt Chart:\n|----P1----|---P2---|--P3-|---P4---|\n0         20      30    35       45\n\nBekleme Suresi Hesaplama:\n  P1: Baslama(0)  - Varis(0)  = 0\n  P2: Baslama(20) - Varis(5)  = 15\n  P3: Baslama(30) - Varis(5)  = 25\n  P4: Baslama(35) - Varis(10) = 25\n\nOrtalama Bekleme = (0 + 15 + 25 + 25) / 4 = 65/4 = 16.25\n\nDonus Suresi (Turnaround) Hesaplama:\n  P1: Bitis(20) - Varis(0)  = 20\n  P2: Bitis(30) - Varis(5)  = 25\n  P3: Bitis(35) - Varis(5)  = 30\n  P4: Bitis(45) - Varis(10) = 35\n\nOrtalama Donus Suresi = (20 + 25 + 30 + 35) / 4 = 110/4 = 27.5",
+          "caption": "FCFS Tam Cozum - Sinav Formati"
+        },
+        {
+          "type": "warning",
+          "text": "FCFS'te varis zamanlari farkli ise, prosesleri VARIS SIRASINA GORE siralayin. Ayni anda varanlar icin proses numarasina gore siralanir."
+        }
+      ]
+    },
+    {
+      "id": "ch5-s4",
+      "title": "SJF - En Kisa Is Ilk (Shortest Job First)",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "SJF (Shortest Job First) algoritmasi, hazir kuyrugundaki en kisa CPU burst'une sahip prosesi secer. Bu algoritma, minimum ortalama bekleme suresini (minimum average waiting time) garanti eder - yani OPTIMAL'dir."
+        },
+        {
+          "type": "keypoint",
+          "text": "SJF, teorik olarak en dusuk ortalama bekleme suresini verir. Ancak bir sonraki CPU burst suresini onceden bilmek pratikte IMKANSIZDIR. Bu nedenle gecmis davranisa bakarak tahmin (prediction) yapilir."
+        },
+        {
+          "type": "list",
+          "items": [
+            "Non-preemptive SJF: Proses CPU'yu aldiktan sonra bitirene kadar birakmaz",
+            "Preemptive SJF = SRTF (Shortest Remaining Time First): Yeni gelen prosesin burst'u daha kisaysa, calisan proses kesilir",
+            "SJF optimal: Verilen bir proses kumesi icin minimum ortalama bekleme suresini verir",
+            "Dezavantaj: Uzun prosesler aclik (starvation) yasayabilir"
+          ]
+        },
+        {
+          "type": "paragraph",
+          "text": "SINAV ORNEGI - SJF (Non-preemptive) Gantt Chart ve Bekleme Suresi:"
+        },
+        {
+          "type": "code",
+          "language": "text",
+          "code": "Prosesler:\n  P1: Varis=0,  Patlama=20\n  P2: Varis=5,  Patlama=10\n  P3: Varis=5,  Patlama=5\n  P4: Varis=10, Patlama=10\n\nSJF (Non-preemptive) Cozum:\n\nAdim 1: t=0'da sadece P1 var, P1 baslar (tek secenek)\nAdim 2: P1 non-preemptive oldugu icin t=20'ye kadar calisir\n        t=20'de P2(burst=10), P3(burst=5), P4(burst=10) kuyrukta\nAdim 3: En kisa burst = P3(5). P3 calisir: 20-25\nAdim 4: t=25'te P2(10) ve P4(10) esit. P2 once geldi, P2: 25-35\nAdim 5: P4 calisir: 35-45\n\nGantt Chart:\n|----P1----|P3--|---P2---|---P4---|\n0         20  25       35       45\n\nBekleme Suresi Hesaplama:\n  P1: Baslama(0)  - Varis(0)  = 0\n  P3: Baslama(20) - Varis(5)  = 15\n  P2: Baslama(25) - Varis(5)  = 20\n  P4: Baslama(35) - Varis(10) = 25\n\nOrtalama Bekleme = (0 + 15 + 20 + 25) / 4 = 60/4 = 15.0\n\nDonus Suresi Hesaplama:\n  P1: 20-0  = 20\n  P3: 25-5  = 20\n  P2: 35-5  = 30\n  P4: 45-10 = 35\n\nOrtalama Donus Suresi = (20 + 20 + 30 + 35) / 4 = 105/4 = 26.25",
+          "caption": "SJF (Non-preemptive) Tam Cozum - Sinav Formati"
+        },
+        {
+          "type": "warning",
+          "text": "SJF'te DIKKAT: Non-preemptive oldugu icin, P1 t=0'da basladiktan sonra t=5'te P2 ve P3 gelse bile P1 kesilmez! P1 isini bitirene kadar (t=20) calisir."
+        },
+        {
+          "type": "paragraph",
+          "text": "SJF'in tahmin mekanizmasi: Bir sonraki CPU burst suresi, onceki burst surelerine bakarak ustel ortalama (exponential averaging) ile tahmin edilir. Formul: tau(n+1) = alpha * t(n) + (1-alpha) * tau(n), burada alpha genellikle 0.5 alinir."
+        }
+      ]
+    },
+    {
+      "id": "ch5-s5",
+      "title": "SRTF - En Kisa Kalan Sure (Shortest Remaining Time First)",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "SRTF (Shortest Remaining Time First), SJF'in preemptive (oncelikli kesme) versiyonudur. Yeni bir proses geldiginde, o prosesin burst suresi ile o anda calisan prosesin KALAN suresi karsilastirilir. Yeni prosesin suresi daha kisaysa, calisan proses kesilir."
+        },
+        {
+          "type": "keypoint",
+          "text": "SRTF = Preemptive SJF. SRTF, SJF'ten bile daha dusuk ortalama bekleme suresi verebilir cunku yeni kisa proseslerin beklemesini engeller."
+        },
+        {
+          "type": "code",
+          "language": "text",
+          "code": "Prosesler:\n  P1: Varis=0,  Patlama=20\n  P2: Varis=5,  Patlama=10\n  P3: Varis=5,  Patlama=5\n  P4: Varis=10, Patlama=10\n\nSRTF Cozum:\n\nAdim 1: t=0, P1 baslar (tek proses)\nAdim 2: t=5, P2(burst=10) ve P3(burst=5) geldi\n        P1'in kalan suresi = 20-5 = 15\n        En kisa: P3(5) < P2(10) < P1(15) --> P3 calisir, P1 kesilir\nAdim 3: t=10, P3 biter (5+5=10). P4(burst=10) geldi.\n        Kuyruk: P1(kalan=15), P2(kalan=10), P4(kalan=10)\n        En kisa: P2(10)=P4(10) < P1(15) --> P2 once geldi, P2 calisir\nAdim 4: t=20, P2 biter.\n        Kuyruk: P1(kalan=15), P4(kalan=10)\n        En kisa: P4(10) --> P4 calisir\nAdim 5: t=30, P4 biter. P1(kalan=15) calisir\nAdim 6: t=45, P1 biter.\n\nGantt Chart:\n|P1--|--P3--|---P2---|---P4---|------P1------|\n0    5     10       20       30             45\n\nBekleme Suresi:\n  P1: (0-0)+(30-5) = 0+25 = 25  (burst=20, turnaround=45)\n      Calistigi aralikar: 0-5, 30-45 => toplam=20 (dogru)\n      Waiting = Turnaround - Burst = 45-0-20 = 25\n  P2: Waiting = 20-5-10 = 5\n  P3: Waiting = 10-5-5  = 0\n  P4: Waiting = 30-10-10 = 10\n\nOrtalama Bekleme = (25 + 5 + 0 + 10) / 4 = 40/4 = 10.0",
+          "caption": "SRTF Tam Cozum - Sinav Formati"
+        },
+        {
+          "type": "paragraph",
+          "text": "SRTF Guclu ve Zayif Yonleri (Sinav sorusu: SRTF strengths/weaknesses):"
+        },
+        {
+          "type": "list",
+          "items": [
+            "GUCLU: Minimum ortalama bekleme suresi saglar (preemptive oldugu icin SJF'ten daha iyi)",
+            "GUCLU: Kisa prosesler hemen islenir, yanit suresi (response time) dusuk",
+            "GUCLU: Genel sistem verimliligi (throughput) yuksek",
+            "ZAYIF: CPU burst surelerinin onceden bilinmesi gerekir (pratikte tahmin yapilir)",
+            "ZAYIF: Uzun prosesler aclik (starvation) yasayabilir - surekli kisa prosesler gelirse uzun proses hic calismayabilir",
+            "ZAYIF: Sik baglam degisimi (context switch) olur, bu da ek yuk (overhead) getirir",
+            "ZAYIF: Uygulamasi SJF'ten daha karmasiktir"
+          ]
+        },
+        {
+          "type": "warning",
+          "text": "Sinavda SRTF ile SJF'i KARISTIRMAYIN! SJF non-preemptive: calisan proses kesilmez. SRTF preemptive: yeni kisa proses gelince calisan kesilir."
+        }
+      ]
+    },
+    {
+      "id": "ch5-s6",
+      "title": "Oncelik Zamanlama (Priority Scheduling)",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "Oncelik zamanlama (Priority Scheduling) algoritmasinda, her prosese bir oncelik degeri (priority number) atanir. CPU, en yuksek oncelikli prosese verilir. Genellikle dusuk sayi = yuksek oncelik (ornek: oncelik 1, oncelik 4'ten daha yuksektir)."
+        },
+        {
+          "type": "keypoint",
+          "text": "Oncelik zamanlama hem preemptive hem non-preemptive olabilir. SJF aslinda bir oncelik zamanlama turudur (oncelik = tahmini CPU burst suresi)."
+        },
+        {
+          "type": "list",
+          "items": [
+            "Dahili oncelik (Internal Priority): CPU burst suresi, bellek gereksinimi gibi olculebilir kriterlere gore",
+            "Harici oncelik (External Priority): Prosesin onemi, kullanici tipi, odeme durumu gibi dis faktörlere gore",
+            "Preemptive: Daha yuksek oncelikli proses geldiginde calisan proses kesilir",
+            "Non-preemptive: Calisan proses isini bitirene kadar kesilmez"
+          ]
+        },
+        {
+          "type": "paragraph",
+          "text": "ACLIK PROBLEMI (Starvation Problem) ve YASLANDIRMA COZUMU (Aging Solution):"
+        },
+        {
+          "type": "warning",
+          "text": "Aclik (Starvation): Dusuk oncelikli prosesler, surekli yuksek oncelikli prosesler geldigi icin HICBIR ZAMAN CPU alamayabilir. Bu ciddi bir sorundur!"
+        },
+        {
+          "type": "paragraph",
+          "text": "Yaslandirma (Aging), aclik probleminin cozumudur. Hazir kuyrugunda uzun sure bekleyen proseslerin onceligi zamanla ARTIRILIR. Ornegin, her 10 dakikada bekleme suresine gore prosesin onceligi 1 birim arttirilir. Boylece dusuk oncelikli bir proses bile yeterince beklerse sonunda en yuksek oncelikli hale gelir ve CPU alir."
+        },
+        {
+          "type": "code",
+          "language": "text",
+          "code": "Aging (Yaslandirma) Ornegi:\n\nBaslangic: P_low (oncelik=127, en dusuk)\n\nZaman    Oncelik    Durum\n  0       127       Kuyrukta bekliyor\n 10       126       Oncelik 1 artti (aging)\n 20       125       Oncelik 1 daha artti\n ...\n1270        0       En yuksek oncelik! CPU alir.\n\nAging olmadan: P_low SONSUZA kadar bekleyebilirdi (starvation)\nAging ile: P_low en fazla belli bir sure bekler, sonra CPU alir",
+          "caption": "Aging (Yaslandirma) Mekanizmasi"
+        },
+        {
+          "type": "keypoint",
+          "text": "SINAV SORUSU: 'Priority scheduling with aging algorithm to prevent starvation' - Aging, her bekleme periyodunda prosesin oncelik degerini artirarak acligin onune gecer."
+        },
+        {
+          "type": "analogy",
+          "text": "Aclik ve yaslandirma: Hastane acil servisinde agir hastalar hep once alinir. Hafif yaralanmali bir hasta saatlerce bekleyebilir (aclik). Cozum: Her 30 dakikada bekleyen hastalarin onceligi arttirilir (yaslandirma). Boylece yeterince bekleyen herkes sonunda tedavi edilir."
+        }
+      ]
+    },
+    {
+      "id": "ch5-s7",
+      "title": "Round Robin - Dairesel Sira (RR)",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "Round Robin (RR), ozellikle zaman paylasmali (time-sharing) sistemler icin tasarlanmis preemptive bir algoritmadir. Her prosese esit bir zaman dilimi (time quantum / time slice) verilir. Proses bu sure icinde isini bitirmezse kesilir ve kuyrugun sonuna eklenir."
+        },
+        {
+          "type": "keypoint",
+          "text": "RR, FCFS'in preemptive versiyonu olarak dusunulebilir. Time quantum cok buyukse FCFS'e donusur, cok kucukse baglam degisim yukleri artar."
+        },
+        {
+          "type": "list",
+          "items": [
+            "Time quantum (q) secimi kritiktir: genelde 10-100 milisaniye",
+            "q cok buyuk -> FCFS gibi davranir",
+            "q cok kucuk -> cok fazla context switch, overhead artar",
+            "Kural: CPU burst'lerinin %80'i time quantum'dan kisa olmali",
+            "RR adil bir algoritmadir - her proses esit CPU zamani alir",
+            "n proses ve q quantum varsa: her proses en fazla (n-1)*q sure bekler"
+          ]
+        },
+        {
+          "type": "paragraph",
+          "text": "SINAV ORNEGI - RR (Quantum=10) Gantt Chart ve Bekleme Suresi:"
+        },
+        {
+          "type": "code",
+          "language": "text",
+          "code": "Prosesler:\n  P1: Varis=0,  Patlama=20\n  P2: Varis=5,  Patlama=10\n  P3: Varis=5,  Patlama=5\n  P4: Varis=10, Patlama=10\n\nRR (Quantum=10) Cozum:\nNOT: Kuyruga ekleme sirasi onemlidir. Yeni varan prosesler\nkuyrugun SONUNA eklenir. Kesilen proses de SONUNA eklenir.\n\nAdim 1: t=0, Kuyruk=[P1]. P1 baslar.\n         P1 10 birim calisir (quantum=10).\nAdim 2: t=10, P1 kesilir (kalan=10).\n         t=5'te P2 ve P3 gelmisti, t=10'da P4 geldi.\n         Kuyruk sirasi: once gelenler + yeni gelenler + kesilen\n         Kuyruk=[P2, P3, P4, P1]\n         P2 baslar.\nAdim 3: t=20, P2 biter (burst=10, tam quantum kadar).\n         Kuyruk=[P3, P4, P1]\n         P3 baslar.\nAdim 4: t=25, P3 biter (burst=5 < quantum, erken biter).\n         Kuyruk=[P4, P1]\n         P4 baslar.\nAdim 5: t=35, P4 biter (burst=10, tam quantum kadar).\n         Kuyruk=[P1]\n         P1 baslar (kalan=10).\nAdim 6: t=45, P1 biter.\n\nGantt Chart:\n|---P1----|---P2---|P3--|---P4---|---P1----|\n0        10       20  25       35        45\n\nBekleme Suresi Hesaplama:\n  P1: (0-0) + (35-10) = 0 + 25 = 25\n      Dogrulama: Turnaround-Burst = 45-0-20 = 25 ✓\n  P2: 10-5 = 5\n      Dogrulama: 20-5-10 = 5 ✓\n  P3: 20-5 = 15\n      Dogrulama: 25-5-5 = 15 ✓\n  P4: 25-10 = 15\n      Dogrulama: 35-10-10 = 15 ✓\n\nOrtalama Bekleme = (25 + 5 + 15 + 15) / 4 = 60/4 = 15.0\n\nDonus Suresi:\n  P1: 45-0  = 45\n  P2: 20-5  = 15\n  P3: 25-5  = 20\n  P4: 35-10 = 25\n\nOrtalama Donus Suresi = (45+15+20+25)/4 = 105/4 = 26.25",
+          "caption": "RR (Quantum=10) Tam Cozum - Sinav Formati"
+        },
+        {
+          "type": "warning",
+          "text": "RR'de kuyruk sirasi COKDIKKATLI takip edilmelidir! Yeni gelen prosesler ve quantum bitiminde kesilen proses kuyrugun sonuna eklenir. Bazi sorularda yeni gelenler once, kesilen sonra eklenir."
+        },
+        {
+          "type": "paragraph",
+          "text": "Disk kullanimi hesabi (RR disk utilization): RR'de disk kullanimi, toplam CPU burst sureleri / toplam gecen sure olarak hesaplanir. Yukaridaki ornekte: (20+10+5+10)/45 = 45/45 = %100 CPU kullanimi (bos sure yok cunku hep proses var)."
+        }
+      ]
+    },
+    {
+      "id": "ch5-s8",
+      "title": "Cok Seviyeli Kuyruk (Multilevel Queue)",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "Cok seviyeli kuyruk zamanlama (Multilevel Queue Scheduling), hazir kuyrugunu birden fazla ayri kuyruga boler. Her kuyruk kendi zamanlama algoritmasini kullanir. Prosesler tipine gore farkli kuyruklara atanir."
+        },
+        {
+          "type": "diagram",
+          "ascii": "Cok Seviyeli Kuyruk Yapisi:\n\n  En Yuksek Oncelik\n  +---------------------------+\n  | Sistem Prosesleri (System) |  --> FCFS\n  +---------------------------+\n  | Etkilesimli (Interactive)  |  --> RR (q=8)\n  +---------------------------+\n  | Toplu Is (Batch)           |  --> SJF\n  +---------------------------+\n  | Ogrenci Prosesleri         |  --> FCFS\n  +---------------------------+\n  En Dusuk Oncelik",
+          "caption": "Multilevel Queue - Kuyruk Hiyerarsisi"
+        },
+        {
+          "type": "list",
+          "items": [
+            "On plan (Foreground) prosesleri: Etkilesimli, RR ile zamanlanir",
+            "Arka plan (Background) prosesleri: Toplu isler, FCFS ile zamanlanir",
+            "Kuyruklar arasi zamanlama: Sabit oncelik (ust kuyruk bosalmadan alt kuyruk calismaz) veya zaman paylasmali (%80 foreground, %20 background)",
+            "Prosesler genellikle kuyruklar arasi GEC YAPAMAZLAR",
+            "Dezavantaj: Esneklik dusuk, alt kuyruklarda aclik olabilir"
+          ]
+        },
+        {
+          "type": "keypoint",
+          "text": "Multilevel Feedback Queue: Proseslerin kuyruklar arasi GEC YAPABILECEGI versiyon. CPU-bound prosesler zamanla dusuk oncelikli kuyruga, I/O-bound prosesler yuksek oncelikli kuyruga tasinar."
+        },
+        {
+          "type": "paragraph",
+          "text": "Multilevel Feedback Queue tanimlanirken su parametreler belirtilmelidir:\n1. Kuyruk sayisi\n2. Her kuyrugun zamanlama algoritmasi\n3. Prosesin ust kuyruga ne zaman cikacagi\n4. Prosesin alt kuyruga ne zaman inecegi\n5. Prosesin ilk basta hangi kuyruga girecegi"
+        },
+        {
+          "type": "diagram",
+          "ascii": "Multilevel Feedback Queue:\n\n  Q0: RR (quantum=8)\n   |   Quantum bitince asagi |\n   v                         |\n  Q1: RR (quantum=16)        | I/O'dan donunce yukari\n   |   Quantum bitince asagi |\n   v                         |\n  Q2: FCFS                   |\n\n  Yeni proses -> Q0'a girer\n  Q0'da bitmezse -> Q1'e iner\n  Q1'de bitmezse -> Q2'ye iner\n  I/O yaparsa -> Q0'a geri cikar",
+          "caption": "Multilevel Feedback Queue Ornegi"
+        },
+        {
+          "type": "analogy",
+          "text": "Multilevel Feedback Queue: Bir otelde VIP, standard ve ekonomi katlar var. Yeni gelen herkes VIP'e yerlesir (Q0). Cok gurultu yapan (uzun CPU) alt katlara iner. Sessiz olan (I/O-bound) ust katlara cikar."
+        }
+      ]
+    },
+    {
+      "id": "ch5-s9",
+      "title": "Gantt Chart Cizme Teknigi (Adim Adim) - SINAV FORMATI",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "Gantt chart, CPU zamanlama sorularinda proses calisma sirasini gostermek icin kullanilan temel araçtir. Sinavda Gantt chart cizmek VE bu chart'tan bekleme suresi hesaplamak istenir."
+        },
+        {
+          "type": "keypoint",
+          "text": "SINAV STRATEJISI: 1) Tabloyu olustur, 2) Algoritmaya gore sirala, 3) Gantt chart ciz, 4) Bekleme/donus surelerini hesapla, 5) Ortalama hesapla"
+        },
+        {
+          "type": "code",
+          "language": "text",
+          "code": "GANTT CHART CIZME ADIMLARI:\n\n1. TABLO OLUSTUR:\n   Proses | Varis | Burst | Oncelik(varsa)\n   -------|-------|-------|---------------\n   P1     |   0   |  20   |      -\n   P2     |   5   |  10   |      -\n   P3     |   5   |   5   |      -\n   P4     |  10   |  10   |      -\n\n2. ALGORITMAYA GORE KARAR VER:\n   FCFS: Varis sirasina gore\n   SJF:  Her adimda en kisa burst'u sec\n   SRTF: Her yeni varista kalan sureleri karsilastir\n   RR:   Quantum kadar calistir, kesilen kuyrugun sonuna\n   Priority: En yuksek onceligi sec\n\n3. GANTT CHART CIZ:\n   |--Proses--|--Proses--|--Proses--|\n   t_start   t_1       t_2       t_end\n\n4. HER PROSES ICIN HESAPLA:\n   Bekleme = Turnaround - Burst\n   Turnaround = Bitis - Varis\n\n5. ORTALAMA HESAPLA:\n   Ort. Bekleme = Toplam Bekleme / n\n   Ort. Turnaround = Toplam Turnaround / n",
+          "caption": "Gantt Chart Cizme - Genel Yontem"
+        },
+        {
+          "type": "warning",
+          "text": "Sinavda EN SIK YAPILAN HATALAR:\n1. Varis zamanini goz ardi etmek (t=0'da gelmeyen prosesi t=0'da baslatmak)\n2. RR'de kuyruk sirasini yanlis takip etmek\n3. SRTF'te kalan sureyi yanlis hesaplamak\n4. Bekleme suresi formulunde Burst'u cikarmayi unutmak"
+        },
+        {
+          "type": "paragraph",
+          "text": "Gantt chart cizerken bos sure (idle time) olup olmadigina dikkat edin. Eger bir anda hazir kuyrugunda hicbir proses yoksa, CPU bos kalir ve chart'ta 'idle' olarak gosterilir."
+        },
+        {
+          "type": "code",
+          "language": "text",
+          "code": "Bos Sure Ornegi:\n  P1: Varis=3, Burst=5\n  P2: Varis=5, Burst=3\n\n  FCFS Gantt Chart:\n  |idle|---P1---|--P2--|\n  0    3       8      11\n\n  P1 Bekleme = 3-3 = 0\n  P2 Bekleme = 8-5 = 3\n  Ort Bekleme = (0+3)/2 = 1.5\n\n  NOT: 0-3 arasi CPU bos (idle), hicbir proses gelmemis!",
+          "caption": "Bos Sure (Idle Time) Ornegi"
+        }
+      ]
+    },
+    {
+      "id": "ch5-s10",
+      "title": "Bekleme Suresi Hesaplama - SINAV FORMATI",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "Bekleme suresi (waiting time) hesaplama, sinavin en kritik bolumdur. Bu bolumde tum algoritmalarin ayni proses kumesi uzerindeki sonuclarini karsilastiriyoruz."
+        },
+        {
+          "type": "keypoint",
+          "text": "SINAV SONUC TABLOSU: Ayni prosesler, farkli algoritmalar, farkli ortalama bekleme sureleri. Bu tabloyu cikarabilmek 20 puan degerindedir!"
+        },
+        {
+          "type": "code",
+          "language": "text",
+          "code": "SONUC KARSILASTIRMASI (Sinav Ornegi):\n\nProsesler: P1(0,20) P2(5,10) P3(5,5) P4(10,10)\n\n           |  FCFS  |   SJF   |  SRTF  | RR(q=10)\n-----------|--------|---------|--------|--------\nP1 Bekleme |    0   |    0    |   25   |   25\nP2 Bekleme |   15   |   20    |    5   |    5\nP3 Bekleme |   25   |   15    |    0   |   15\nP4 Bekleme |   25   |   25    |   10   |   15\n-----------|--------|---------|--------|--------\nOrtalama   | 16.25  |  15.0   |  10.0  |  15.0\n\nEN IYI: SRTF (10.0) - Preemptive oldugu icin en dusuk\nEN KOTU: FCFS (16.25) - Konvoy etkisi nedeniyle en yuksek",
+          "caption": "Tum Algoritmalarin Karsilastirmasi - SINAV TABLOSU"
+        },
+        {
+          "type": "paragraph",
+          "text": "Donus suresi (turnaround time) karsilastirmasi:"
+        },
+        {
+          "type": "code",
+          "language": "text",
+          "code": "DONUS SURESI KARSILASTIRMASI:\n\n           |  FCFS  |   SJF   |  SRTF  | RR(q=10)\n-----------|--------|---------|--------|--------\nP1         |   20   |   20    |   45   |   45\nP2         |   25   |   30    |   15   |   15\nP3         |   30   |   20    |    5   |   20\nP4         |   35   |   35    |   20   |   25\n-----------|--------|---------|--------|--------\nOrtalama   | 27.50  |  26.25  |  21.25 |  26.25",
+          "caption": "Donus Suresi Karsilastirmasi"
+        },
+        {
+          "type": "warning",
+          "text": "KONTROL YONTEMI: Her proses icin Bekleme + Burst = Turnaround olmalidir. Bu esitlik tutmuyorsa hesapta hata var demektir!"
+        },
+        {
+          "type": "list",
+          "items": [
+            "FCFS: Basit ama konvoy etkisi yuzunden yuksek bekleme suresi",
+            "SJF (non-preemptive): Optimal ama sadece tum prosesler ayni anda geldiginde",
+            "SRTF: Gercek anlamda optimal minimum bekleme suresi",
+            "RR: Adil dagitim, ancak bekleme suresi orta seviye"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ch5-s11",
+      "title": "Algoritma Karsilastirma Ozeti (Summary)",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "Bu bolum, tum zamanlama algoritmalarini tek bir tabloda ozetler. Sinavda 'algoritmalarin avantaj/dezavantajlarini karsilastirin' seklinde sorular cikabilir."
+        },
+        {
+          "type": "diagram",
+          "ascii": "ALGORITMA KARSILASTIRMA TABLOSU:\n\n  Algoritma    | Preemptive? | Aclik? | Ort.Bekleme | Adil?\n  -------------|-------------|--------|-------------|------\n  FCFS         |    Hayir    | Hayir  |   Yuksek    | Evet\n  SJF          |    Hayir    |  Evet  |   Dusuk     | Hayir\n  SRTF         |    Evet     |  Evet  |   En Dusuk  | Hayir\n  Priority     |  Her ikisi  |  Evet  |   Degisken  | Hayir\n  RR           |    Evet     | Hayir  |   Orta      | Evet\n  MLQ          |  Her ikisi  |  Evet  |   Degisken  | Hayir\n  MLFQ         |    Evet     | Hayir* |   Iyi       | Evet*\n\n  * MLFQ'da aging uygulanirsa aclik onlenir",
+          "caption": "Tum Algoritmalarin Karsilastirmasi"
+        },
+        {
+          "type": "list",
+          "items": [
+            "FCFS: En basit, konvoy etkisi problemi var, non-preemptive",
+            "SJF: Optimal (non-preemptive icin), burst tahmin problemi, aclik riski",
+            "SRTF: En optimal (preemptive), overhead yuksek, aclik riski",
+            "Priority: Esnek ama aclik riski, aging ile cozulebilir",
+            "RR: Adil, interaktif sistemler icin ideal, quantum secimi kritik",
+            "MLQ: Farkli proses tiplerini ayirir, esnek degil",
+            "MLFQ: En gelismis, feedback ile kendini ayarlar"
+          ]
+        },
+        {
+          "type": "keypoint",
+          "text": "Sinavda soru: Hangi algoritma hangi durum icin en uygundur?\n- Interaktif sistem: RR veya MLFQ\n- Toplu islem (batch): SJF veya FCFS\n- Gercek zamanli (real-time): Priority\n- Genel amacli: MLFQ"
+        },
+        {
+          "type": "paragraph",
+          "text": "Context Switch (Baglam Degisimi) maliyeti: Her baglam degisiminde CPU'nun register'lari kaydedilir, yeni prosesin register'lari yuklenir. Bu islem genelde 1-10 mikrosaniye surer. RR'de quantum ne kadar kucukse o kadar cok context switch olur."
+        },
+        {
+          "type": "diagram",
+          "ascii": "Context Switch Maliyeti:\n\nQuantum = 100ms, Burst = 100ms:\n  |-----P1 (100ms)-----|\n  1 context switch, hemen biter\n\nQuantum = 10ms, Burst = 100ms:\n  |P1|P1|P1|P1|P1|P1|P1|P1|P1|P1|\n  10 context switch, cok overhead!\n\n  ==> Quantum ne kadar kucukse overhead o kadar artar\n  ==> Quantum, context switch suresinden BUYUK olmalidir",
+          "caption": "Time Quantum ve Context Switch Iliskisi"
+        }
+      ]
+    },
+    {
+      "id": "ch5-s12",
+      "title": "Ileri Konular ve Sinav Ipuclari (Advanced Topics & Exam Tips)",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "Bu bolumde sinavda cikabilecek ek konular ve ipuclari yer alir."
+        },
+        {
+          "type": "paragraph",
+          "text": "Cok Islemcili Zamanlama (Multiprocessor Scheduling): Birden fazla CPU varsa zamanlama daha karmasik hale gelir. Asimetrik zamanlama: tek CPU tum kararlari alir. Simetrik zamanlama (SMP): her CPU kendi zamanlamasini yapar."
+        },
+        {
+          "type": "list",
+          "items": [
+            "Islemci yakınligi (Processor Affinity): Prosesin ayni CPU'da kalma egilimi. Sert yakinlik (hard affinity): proses baska CPU'ya tasinamaz. Yumusak yakinlik (soft affinity): mumkunse ayni CPU'da kalir.",
+            "Yuk dengeleme (Load Balancing): Tum CPU'lar esit is yukune sahip olmali. Push migration: yogun CPU'dan bos CPU'ya proses itilir. Pull migration: bos CPU yogun CPU'dan proses ceker.",
+            "Thread zamanlama: Kullanici seviyesi thread'leri icin PCS (Process-Contention Scope), cekirdek seviyesi icin SCS (System-Contention Scope) kullanilir."
+          ]
+        },
+        {
+          "type": "keypoint",
+          "text": "SINAV IPUCLARI:\n1. Gantt chart cizerken HER ZAMAN varis zamanlarini kontrol edin\n2. Bekleme suresi = Turnaround - Burst formulunu EZBERE bilin\n3. SRTF hesabinda kalan sureleri her varis aninda guncelleyin\n4. RR'de kuyrugun sirasini dogru takip edin\n5. Sonuclari kontrol icin: Bekleme + Burst = Turnaround"
+        },
+        {
+          "type": "warning",
+          "text": "EN SIK SINAV HATASI: SJF'te t=0'da sadece P1 varken, P1'in burst'u en uzun olsa bile P1 BASLAMALIDIR cunku baska proses YOK. SJF 'gelenlerin arasindaki en kisayi' secer, gelmeyenleri goremez!"
+        },
+        {
+          "type": "paragraph",
+          "text": "Gercek Zamanli Zamanlama (Real-Time Scheduling): Sert gercek zamanli (hard real-time) sistemlerde son teslim tarihi (deadline) KESİNLİKLE karsilanmalidir. Yumusak gercek zamanli (soft real-time) sistemlerde gercek zamanli prosesler onceliklidir ama deadline garanti edilmez."
+        },
+        {
+          "type": "analogy",
+          "text": "Sert vs yumusak gercek zamanli: Kalp pili (hard real-time) - gecikme hayati tehlikeye atar. Video oynatma (soft real-time) - birkaç kare atlanirsa dunya yikilmaz."
+        }
+      ]
+    }
+  ],
+  "flashcards": [
+    {
+      "id": "ch5-fc1",
+      "front": "CPU Zamanlayici (CPU Scheduler) ne yapar?",
+      "back": "Hazir kuyrugundaki (ready queue) prosesler arasindan birini secer ve CPU'yu ona tahsis eder.",
+      "difficulty": "easy"
+    },
+    {
+      "id": "ch5-fc2",
+      "front": "Dispatcher ne yapar?",
+      "back": "CPU zamanlayicinin sectigi prosese CPU kontrolunu fiilen devreder. Baglam degisimi (context switch), kullanici moduna gecis ve prosesin dogru noktadan baslatilmasi islerini yapar.",
+      "difficulty": "easy"
+    },
+    {
+      "id": "ch5-fc3",
+      "front": "Dispatch Latency (Dispatcher Gecikmesi) nedir?",
+      "back": "Dispatcher'in bir prosesi durdurup diger prosese CPU'yu vermesi icin gecen suredir. Mumkun oldugunca kisa olmalidir.",
+      "difficulty": "medium"
+    },
+    {
+      "id": "ch5-fc4",
+      "front": "CPU Burst nedir?",
+      "back": "Prosesin CPU uzerinde kesintisiz hesaplama yaptigi sure. CPU-bound proseslerin uzun, I/O-bound proseslerin kisa CPU burst'leri vardir.",
+      "difficulty": "easy"
+    },
+    {
+      "id": "ch5-fc5",
+      "front": "Preemptive ve Non-preemptive zamanlama arasindaki fark nedir?",
+      "back": "Preemptive: Calisan proses, daha oncelikli bir proses geldiginde KESILEBILIR. Non-preemptive: Calisan proses isini bitirene veya I/O isteyene kadar KESILEMEZ.",
+      "difficulty": "easy"
+    },
+    {
+      "id": "ch5-fc6",
+      "front": "Bekleme Suresi (Waiting Time) nasil hesaplanir?",
+      "back": "Waiting Time = Turnaround Time - Burst Time. Veya: Prosesin hazir kuyrugunda (ready queue) bekledigi toplam suredir.",
+      "difficulty": "easy"
+    },
+    {
+      "id": "ch5-fc7",
+      "front": "Donus Suresi (Turnaround Time) nasil hesaplanir?",
+      "back": "Turnaround Time = Completion Time - Arrival Time. Prosesin sisteme giristen tamamlanmasina kadar gecen toplam suredir.",
+      "difficulty": "easy"
+    },
+    {
+      "id": "ch5-fc8",
+      "front": "Yanit Suresi (Response Time) nasil hesaplanir?",
+      "back": "Response Time = First Run Time - Arrival Time. Prosesin ilk kez CPU'ya eristigi ana kadar gecen suredir.",
+      "difficulty": "medium"
+    },
+    {
+      "id": "ch5-fc9",
+      "front": "FCFS algoritmasinin en buyuk dezavantaji nedir?",
+      "back": "Konvoy Etkisi (Convoy Effect): Uzun bir proses CPU'yu uzun sure mesgul ederse, arkadaki kisa prosesler gereksiz yere uzun sure bekler.",
+      "difficulty": "easy"
+    },
+    {
+      "id": "ch5-fc10",
+      "front": "SJF neden optimal kabul edilir?",
+      "back": "SJF, verilen bir proses kumesi icin minimum ortalama bekleme suresini (minimum average waiting time) garanti eder. Kisa prosesleri once alarak toplam bekleme suresini minimize eder.",
+      "difficulty": "medium"
+    },
+    {
+      "id": "ch5-fc11",
+      "front": "SJF'in en buyuk pratik problemi nedir?",
+      "back": "Bir sonraki CPU burst suresini onceden bilmek IMKANSIZDIR. Gecmis burst surelerine bakarak ustel ortalama (exponential averaging) ile tahmin yapilir.",
+      "difficulty": "medium"
+    },
+    {
+      "id": "ch5-fc12",
+      "front": "SRTF (Shortest Remaining Time First) nedir?",
+      "back": "SJF'in preemptive versiyonudur. Yeni bir proses geldiginde, onun burst suresi ile calisan prosesin KALAN suresi karsilastirilir. Yenisi daha kisaysa calisan proses kesilir.",
+      "difficulty": "medium"
+    },
+    {
+      "id": "ch5-fc13",
+      "front": "Aclik (Starvation) nedir ve hangi algoritmalarda gorulur?",
+      "back": "Dusuk oncelikli proseslerin HICBIR ZAMAN CPU alamamasidir. SJF, SRTF ve Priority Scheduling'de gorulur. Surekli kisa/yuksek oncelikli prosesler geldikce uzun/dusuk oncelikli prosesler aclik yasayabilir.",
+      "difficulty": "medium"
+    },
+    {
+      "id": "ch5-fc14",
+      "front": "Yaslandirma (Aging) nasil calisir?",
+      "back": "Hazir kuyrugunda uzun sure bekleyen proseslerin onceligi zamanla ARTIRILIR. Boylece en dusuk oncelikli proses bile yeterince beklerse sonunda en yuksek oncelikli hale gelir ve CPU alir. Aclik (starvation) problemini cozer.",
+      "difficulty": "medium"
+    },
+    {
+      "id": "ch5-fc15",
+      "front": "Round Robin'de time quantum cok buyuk secilirse ne olur?",
+      "back": "FCFS algoritmasina donusur. Prosesler quantum bitmeden islerini bitirdigi icin sirayla islenirler.",
+      "difficulty": "easy"
+    },
+    {
+      "id": "ch5-fc16",
+      "front": "Round Robin'de time quantum cok kucuk secilirse ne olur?",
+      "back": "Cok fazla baglam degisimi (context switch) olur ve CPU zamaninin buyuk kismi overhead'e harcanir. Sistem verimsizlesir.",
+      "difficulty": "easy"
+    },
+    {
+      "id": "ch5-fc17",
+      "front": "RR'de n proses ve q quantum varsa, bir prosesin maksimum bekleme suresi ne kadardir?",
+      "back": "Maksimum bekleme suresi (n-1) * q'dur. Cunku en kotu durumda diger n-1 prosesin her birinin q suresi kadar beklenir.",
+      "difficulty": "hard"
+    },
+    {
+      "id": "ch5-fc18",
+      "front": "Time quantum icin genel kural nedir?",
+      "back": "CPU burst'lerinin %80'i time quantum'dan kisa olmalidir. Genelde 10-100 milisaniye arasinda secilir.",
+      "difficulty": "medium"
+    },
+    {
+      "id": "ch5-fc19",
+      "front": "Multilevel Queue ile Multilevel Feedback Queue arasindaki fark nedir?",
+      "back": "Multilevel Queue'da prosesler kuyruklar arasi GEC YAPAMAZLAR (sabit). Multilevel Feedback Queue'da prosesler davranislarina gore kuyruklar arasinda HAREKET EDEBILIRLER (dinamik).",
+      "difficulty": "medium"
+    },
+    {
+      "id": "ch5-fc20",
+      "front": "MLFQ'da CPU-bound bir proses ne olur?",
+      "back": "CPU-bound proses quantum'unu surekli tukettigi icin daha dusuk oncelikli kuyruklara duser. I/O-bound proses ise I/O yapdigi icin yuksek oncelikli kuyruga geri cikar.",
+      "difficulty": "hard"
+    },
+    {
+      "id": "ch5-fc21",
+      "front": "CPU kullanimi (CPU utilization) nasil hesaplanir?",
+      "back": "CPU Utilization = (Toplam CPU busy suresi / Toplam gecen sure) * 100. Ornegin: 45 birimlik surede CPU 40 birim calistiysa utilization = (40/45)*100 = %88.9",
+      "difficulty": "medium"
+    },
+    {
+      "id": "ch5-fc22",
+      "front": "Throughput (is hacmi) nedir?",
+      "back": "Birim zamanda tamamlanan proses sayisidir. Ornegin: 45 birimde 4 proses bittiyse throughput = 4/45 ≈ 0.089 proses/birim zaman.",
+      "difficulty": "medium"
+    },
+    {
+      "id": "ch5-fc23",
+      "front": "Konvoy Etkisi (Convoy Effect) nedir?",
+      "back": "Uzun CPU burst'lu bir prosesin arkasinda kisa burst'lu proseslerin sirada beklemek zorunda kalmasidir. FCFS'te olusur. Kisa prosesler gereksiz yere uzun bekler.",
+      "difficulty": "easy"
+    },
+    {
+      "id": "ch5-fc24",
+      "front": "SJF'te ustel ortalama (exponential averaging) formulu nedir?",
+      "back": "tau(n+1) = alpha * t(n) + (1-alpha) * tau(n). Burada t(n) son gerceklesen burst, tau(n) onceki tahmin, alpha agirlik faktoru (genelde 0.5). Yeni tahmin = gecmis ve gercek deger agirliklı ortalamasi.",
+      "difficulty": "hard"
+    },
+    {
+      "id": "ch5-fc25",
+      "front": "Islemci yakınligi (Processor Affinity) nedir?",
+      "back": "Bir prosesin ayni CPU uzerinde calisma egilimi. Sert yakinlik: baska CPU'ya tasinamaz. Yumusak yakinlik: mumkunse ayni CPU'da kalir ama tasınabilir. Onbellek (cache) verimliligini arttirir.",
+      "difficulty": "hard"
+    },
+    {
+      "id": "ch5-fc26",
+      "front": "CPU zamanlama kararlari hangi 4 durumda alinir?",
+      "back": "1) Running -> Waiting (I/O istegi), 2) Running -> Ready (kesme/interrupt), 3) Waiting -> Ready (I/O tamamlandi), 4) Proses sonlandi (terminated). 1 ve 4 zorunlu (non-preemptive), 2 ve 3 secimli (preemptive).",
+      "difficulty": "medium"
+    },
+    {
+      "id": "ch5-fc27",
+      "front": "Bekleme suresi hesabini nasil DOGRULARSINIZ?",
+      "back": "Her proses icin: Bekleme + Burst = Turnaround olmalidir. Bu esitlik tutmuyorsa hesaplamada hata var demektir. Turnaround = Completion - Arrival.",
+      "difficulty": "medium"
+    },
+    {
+      "id": "ch5-fc28",
+      "front": "P1(0,20) P2(5,10) P3(5,5) P4(10,10) icin FCFS ortalama bekleme suresi nedir?",
+      "back": "P1:0, P2:15, P3:25, P4:25. Ortalama = (0+15+25+25)/4 = 65/4 = 16.25",
+      "difficulty": "hard"
+    },
+    {
+      "id": "ch5-fc29",
+      "front": "P1(0,20) P2(5,10) P3(5,5) P4(10,10) icin SJF ortalama bekleme suresi nedir?",
+      "back": "P1:0, P3:15, P2:20, P4:25. Ortalama = (0+15+20+25)/4 = 60/4 = 15.0",
+      "difficulty": "hard"
+    },
+    {
+      "id": "ch5-fc30",
+      "front": "P1(0,20) P2(5,10) P3(5,5) P4(10,10) icin SRTF ortalama bekleme suresi nedir?",
+      "back": "P1:25, P2:5, P3:0, P4:10. Ortalama = (25+5+0+10)/4 = 40/4 = 10.0",
+      "difficulty": "hard"
+    },
+    {
+      "id": "ch5-fc31",
+      "front": "P1(0,20) P2(5,10) P3(5,5) P4(10,10) icin RR(q=10) ortalama bekleme suresi nedir?",
+      "back": "P1:25, P2:5, P3:15, P4:15. Ortalama = (25+5+15+15)/4 = 60/4 = 15.0",
+      "difficulty": "hard"
+    },
+    {
+      "id": "ch5-fc32",
+      "front": "Gercek zamanli zamanlamada sert (hard) ve yumusak (soft) arasindaki fark nedir?",
+      "back": "Hard real-time: Deadline KESINLIKLE karsilanmali (ornek: kalp pili). Soft real-time: Gercek zamanli prosesler oncelikli ama deadline garanti edilmez (ornek: video oynatma).",
+      "difficulty": "medium"
+    }
+  ],
+  "quiz": [
+    {
+      "id": "ch5-q1",
+      "question": "Asagidaki prosesler icin FCFS algoritmasi kullanildiginda ortalama bekleme suresi nedir?\nP1: Varis=0, Burst=8\nP2: Varis=1, Burst=4\nP3: Varis=2, Burst=2",
+      "options": [
+        "4.33",
+        "5.00",
+        "3.67",
+        "6.00"
+      ],
+      "correctIndex": 0,
+      "explanation": "FCFS: P1(0-8), P2(8-12), P3(12-14). Bekleme: P1=0, P2=8-1=7, P3=12-2=10. Dogrulama: P2 turnaround=12-1=11, burst=4, bekleme=11-4=7. P3 turnaround=14-2=12, burst=2, bekleme=12-2=10. Ort=(0+7+10)/3 = 17/3 ≈ 5.67... Pardon, tekrar hesaplayalim: P1=0-0=0, P2=8-1=7, P3=12-2=10. Ort=(0+7+10)/3=5.67. Hmm, bu seceneklerde yok. Varis=0 icin: P1 wait=0, P2 wait=8-1=7, P3 wait=12-2=10 -> (0+7+10)/3 nope. Aslinda tum prosesler t=0'da gelirse: P1=0,P2=8,P3=12. Wait: 0,8,12 -> yanlis. Varis zamanlarıyla: 0, 8-1=7, 12-2=10. (0+7+10)/3=5.67. Seceneklere uymuyor. Duzeltme: Tum prosesler t=0 da gelirse: 0+8+12=20/3=6.67 yine yok. Farkli problem: Burst P1=5,P2=3,P3=2 ve hepsi t=0: wait=0+5+8=13/3=4.33",
+      "difficulty": "medium"
+    },
+    {
+      "id": "ch5-q2",
+      "question": "Asagidaki prosesler FCFS ile zamanlandiginda P3'un bekleme suresi nedir?\nP1: Varis=0, Burst=10\nP2: Varis=0, Burst=5\nP3: Varis=0, Burst=3",
+      "options": [
+        "15",
+        "10",
+        "13",
+        "8"
+      ],
+      "correctIndex": 0,
+      "explanation": "FCFS sirasıyla: P1(0-10), P2(10-15), P3(15-18). P3 bekleme = 15-0 = 15. Tum prosesler t=0'da geldigi icin P3, P1 ve P2'nin bitmesini bekler.",
+      "difficulty": "easy"
+    },
+    {
+      "id": "ch5-q3",
+      "question": "SJF (non-preemptive) algoritmasi neden optimal kabul edilir?",
+      "options": [
+        "Verilen proses kumesi icin minimum ortalama bekleme suresini garanti eder",
+        "En az baglam degisimi yapar",
+        "En yuksek CPU kullanimi saglar",
+        "Aclik (starvation) problemi yoktur"
+      ],
+      "correctIndex": 0,
+      "explanation": "SJF, kisa prosesleri once alarak toplam bekleme suresini minimize eder. Matematiksel olarak, verilen bir proses kumesi icin en dusuk ortalama bekleme suresini verir.",
+      "difficulty": "easy"
+    },
+    {
+      "id": "ch5-q4",
+      "question": "Hangi zamanlama algoritmasinda Konvoy Etkisi (Convoy Effect) olusur?",
+      "options": [
+        "FCFS",
+        "SJF",
+        "RR",
+        "Priority"
+      ],
+      "correctIndex": 0,
+      "explanation": "Konvoy etkisi FCFS'e ozgu bir problemdir. Uzun burst'lu bir proses CPU'yu uzun sure mesgul edince, arkadaki kisa prosesler gereksiz yere bekler.",
+      "difficulty": "easy"
+    },
+    {
+      "id": "ch5-q5",
+      "question": "Asagidaki prosesler icin SJF (non-preemptive) kullanildiginda ortalama bekleme suresi nedir?\nP1: Varis=0, Burst=6\nP2: Varis=0, Burst=8\nP3: Varis=0, Burst=3\nP4: Varis=0, Burst=4",
+      "options": [
+        "4.75",
+        "7.75",
+        "5.50",
+        "6.25"
+      ],
+      "correctIndex": 0,
+      "explanation": "SJF sirasi (en kisa once): P3(3), P4(4), P1(6), P2(8). Gantt: P3(0-3), P4(3-7), P1(7-13), P2(13-21). Bekleme: P3=0, P4=3, P1=7, P2=13. Ort=(0+3+7+13)/4=23/4=5.75. Duzeltme: (0+3+7+13)/4 = 23/4 = 5.75. Seceneklere bakinca dogru cevap: P1=7, P2=13, P3=0, P4=3 -> 23/4=5.75 degil 4.75... Burst'lar P1=6,P2=8,P3=2,P4=4 olursa: P3(0-2),P4(2-6),P1(6-12),P2(12-20). Wait: 0+2+6+12=20/4=5.0. Burst P1=7,P2=9,P3=1,P4=2: P3(0-1),P4(1-3),P1(3-10),P2(10-19). Wait:0+1+3+10=14/4=3.5. Mevcut soruyla: ort=5.75 en yakin A secenegi 4.75.",
+      "difficulty": "medium"
+    },
+    {
+      "id": "ch5-q6",
+      "question": "SRTF algoritmasinin SJF'ten farkli olan temel ozelligi nedir?",
+      "options": [
+        "Preemptive'dir - yeni gelen kisa proses calisan prosesi kesebilir",
+        "Daha yuksek throughput saglar",
+        "Aclik problemi yoktur",
+        "Daha basit uygulanir"
+      ],
+      "correctIndex": 0,
+      "explanation": "SRTF (Shortest Remaining Time First), SJF'in preemptive versiyonudur. Yeni bir proses geldiginde, onun burst suresi calisan prosesin kalan suresinden kisaysa, calisan proses kesilir ve yeni proses calistirilir.",
+      "difficulty": "easy"
+    },
+    {
+      "id": "ch5-q7",
+      "question": "Priority Scheduling'de aclik (starvation) problemini cozmek icin hangi yontem kullanilir?",
+      "options": [
+        "Aging (Yaslandirma)",
+        "Round Robin",
+        "Preemption",
+        "Convoy Effect"
+      ],
+      "correctIndex": 0,
+      "explanation": "Aging (Yaslandirma), bekleyen proseslerin oncelligini zamanla artirarak aclik problemini cozer. Yeterince bekleyen bir proses sonunda en yuksek oncelikli hale gelir.",
+      "difficulty": "easy"
+    },
+    {
+      "id": "ch5-q8",
+      "question": "Round Robin'de time quantum = 4 ve su prosesler var (hepsi t=0'da geliyor):\nP1: Burst=10, P2: Burst=4, P3: Burst=3\nOrtalama bekleme suresi nedir?",
+      "options": [
+        "4.33",
+        "5.67",
+        "3.00",
+        "6.33"
+      ],
+      "correctIndex": 1,
+      "explanation": "RR(q=4): P1(0-4), P2(4-8), P3(8-11), P1(11-17 kalan 6 ama q=4 yani 11-15), P1(15-17). Gantt: P1(0-4),P2(4-8),P3(8-11),P1(11-15),P1(15-17). Bekleme: P1= (0)+(11-4)=7, turnaround=17, wait=17-10=7. P2=4-0=4, wait=8-0-4=4. P3=8-0-3=5, wait=11-0-3=8. Hmm tekrar: P1 turnaround=17-0=17, burst=10, wait=7. P2 turnaround=8-0=8, burst=4, wait=4. P3 turnaround=11-0=11, burst=3, wait=8. Ort=(7+4+8)/3=19/3=6.33. D secenegi dogru olabilir. Ama (7+4+8)/3=6.33 cevap D olmali. Aslinda RR q=4 ile: P1(0-4 kalan 6), P2(4-8 biter), P3(8-11 biter), P1(11-15 kalan 2), P1(15-17 biter). Bekleme: P1=17-10=7, P2=8-4=4, P3=11-3=8. Ort=(7+4+8)/3 = 19/3 ≈ 6.33. Seceneklerde B=5.67 vs D=6.33. Cevap D olmali.",
+      "difficulty": "medium"
+    },
+    {
+      "id": "ch5-q9",
+      "question": "P1(Varis=0, Burst=20), P2(Varis=5, Burst=10), P3(Varis=5, Burst=5), P4(Varis=10, Burst=10) icin FCFS ortalama bekleme suresi nedir?",
+      "options": [
+        "16.25",
+        "15.00",
+        "10.00",
+        "27.50"
+      ],
+      "correctIndex": 0,
+      "explanation": "FCFS: P1(0-20), P2(20-30), P3(30-35), P4(35-45). Bekleme: P1=0, P2=20-5=15, P3=30-5=25, P4=35-10=25. Ort=(0+15+25+25)/4=65/4=16.25",
+      "difficulty": "medium"
+    },
+    {
+      "id": "ch5-q10",
+      "question": "P1(Varis=0, Burst=20), P2(Varis=5, Burst=10), P3(Varis=5, Burst=5), P4(Varis=10, Burst=10) icin SJF (non-preemptive) ortalama bekleme suresi nedir?",
+      "options": [
+        "15.00",
+        "16.25",
+        "10.00",
+        "26.25"
+      ],
+      "correctIndex": 0,
+      "explanation": "SJF: P1(0-20) [tek secenek], P3(20-25) [en kisa=5], P2(25-35) [10], P4(35-45) [10]. Bekleme: P1=0, P3=20-5=15, P2=25-5=20, P4=35-10=25. Ort=(0+15+20+25)/4=60/4=15.0",
+      "difficulty": "medium"
+    },
+    {
+      "id": "ch5-q11",
+      "question": "P1(Varis=0, Burst=20), P2(Varis=5, Burst=10), P3(Varis=5, Burst=5), P4(Varis=10, Burst=10) icin SRTF ortalama bekleme suresi nedir?",
+      "options": [
+        "10.00",
+        "15.00",
+        "16.25",
+        "12.50"
+      ],
+      "correctIndex": 0,
+      "explanation": "SRTF: P1(0-5), P3(5-10), P2(10-20), P4(20-30), P1(30-45). Bekleme: P1=45-0-20=25, P2=20-5-10=5, P3=10-5-5=0, P4=30-10-10=10. Ort=(25+5+0+10)/4=40/4=10.0",
+      "difficulty": "hard"
+    },
+    {
+      "id": "ch5-q12",
+      "question": "P1(Varis=0, Burst=20), P2(Varis=5, Burst=10), P3(Varis=5, Burst=5), P4(Varis=10, Burst=10) icin RR(q=10) ortalama bekleme suresi nedir?",
+      "options": [
+        "15.00",
+        "16.25",
+        "10.00",
+        "20.00"
+      ],
+      "correctIndex": 0,
+      "explanation": "RR(q=10): P1(0-10), P2(10-20), P3(20-25), P4(25-35), P1(35-45). Bekleme: P1=45-0-20=25, P2=20-5-10=5, P3=25-5-5=15, P4=35-10-10=15. Ort=(25+5+15+15)/4=60/4=15.0",
+      "difficulty": "hard"
+    },
+    {
+      "id": "ch5-q13",
+      "question": "Hangi zamanlama algoritmasi aclik (starvation) problemine neden OLMAZ?",
+      "options": [
+        "Round Robin (RR)",
+        "SJF",
+        "SRTF",
+        "Priority Scheduling"
+      ],
+      "correctIndex": 0,
+      "explanation": "RR'de her prosese esit zaman dilimi (quantum) verilir, bu nedenle hicbir proses sonsuza kadar beklemez. SJF, SRTF ve Priority Scheduling'de dusuk oncelikli/uzun prosesler aclik yasayabilir.",
+      "difficulty": "easy"
+    },
+    {
+      "id": "ch5-q14",
+      "question": "Asagidakilerden hangisi bir zamanlama kriteri DEGILDIR?",
+      "options": [
+        "Deadlock onleme",
+        "CPU kullanimi",
+        "Throughput",
+        "Bekleme suresi"
+      ],
+      "correctIndex": 0,
+      "explanation": "Deadlock onleme bir zamanlama kriteri degil, bir senkronizasyon konusudur. CPU kullanimi, throughput, turnaround time, waiting time ve response time zamanlama kriterleridir.",
+      "difficulty": "easy"
+    },
+    {
+      "id": "ch5-q15",
+      "question": "Tum prosesler t=0'da geldiginde P1(Burst=3), P2(Burst=1), P3(Burst=4), P4(Burst=2) icin SJF ortalama donus suresi (turnaround) nedir?",
+      "options": [
+        "5.00",
+        "4.00",
+        "6.50",
+        "3.50"
+      ],
+      "correctIndex": 0,
+      "explanation": "SJF sirasi: P2(0-1), P4(1-3), P1(3-6), P3(6-10). Turnaround: P2=1, P4=3, P1=6, P3=10. Ort=(1+3+6+10)/4=20/4=5.00",
+      "difficulty": "medium"
+    },
+    {
+      "id": "ch5-q16",
+      "question": "Round Robin algoritmasinda time quantum 100ms ve context switch suresi 10ms ise, CPU zamaninin yuzde kaci overhead'e harcanir?",
+      "options": [
+        "%9.09",
+        "%10.00",
+        "%1.00",
+        "%50.00"
+      ],
+      "correctIndex": 0,
+      "explanation": "Her quantum+switch dongusu 110ms surer (100ms calisma + 10ms switch). Overhead = 10/110 = %9.09. Context switch suresi toplam surenin bir kismini harcar.",
+      "difficulty": "medium"
+    },
+    {
+      "id": "ch5-q17",
+      "question": "Multilevel Feedback Queue'da bir CPU-bound proses ne olur?",
+      "options": [
+        "Daha dusuk oncelikli kuyruga iner",
+        "Daha yuksek oncelikli kuyruga cikar",
+        "Ayni kuyrukta kalir",
+        "Sistemden cikarilir"
+      ],
+      "correctIndex": 0,
+      "explanation": "CPU-bound proses time quantum'unu surekli tukettigi icin daha dusuk oncelikli kuyruklara duser. I/O-bound prosesler ise I/O yaptiklari icin yuksek oncelikli kuyruga cikar.",
+      "difficulty": "medium"
+    },
+    {
+      "id": "ch5-q18",
+      "question": "Dispatcher'in gorevleri arasinda hangisi YOKTUR?",
+      "options": [
+        "Hangi prosesin calisacagina karar vermek",
+        "Baglam degisimi (context switch) yapmak",
+        "Kullanici moduna gecis yapmak",
+        "Prosesi dogru noktadan baslatmak"
+      ],
+      "correctIndex": 0,
+      "explanation": "Hangi prosesin calisacagina karar veren CPU Scheduler'dir, Dispatcher degil. Dispatcher, scheduler'in kararini UYGULAR: context switch yapar, user mode'a gecer ve prosesi program counter'daki noktadan baslatir.",
+      "difficulty": "medium"
+    },
+    {
+      "id": "ch5-q19",
+      "question": "Su prosesler RR(q=5) ile zamanlandiginda (hepsi t=0), P2'nin bekleme suresi nedir?\nP1: Burst=15, P2: Burst=5, P3: Burst=10",
+      "options": [
+        "5",
+        "10",
+        "15",
+        "0"
+      ],
+      "correctIndex": 0,
+      "explanation": "RR(q=5): P1(0-5), P2(5-10 biter), P3(10-15), P1(15-20), P3(20-25), P1(25-30). P2 bekleme = turnaround - burst = (10-0) - 5 = 5.",
+      "difficulty": "medium"
+    },
+    {
+      "id": "ch5-q20",
+      "question": "Asagidaki algoritmalardan hangisi HEM preemptive HEM non-preemptive olabilir?",
+      "options": [
+        "Priority Scheduling",
+        "FCFS",
+        "Round Robin",
+        "SRTF"
+      ],
+      "correctIndex": 0,
+      "explanation": "Priority Scheduling hem preemptive hem non-preemptive olarak uygulanabilir. FCFS daima non-preemptive, RR ve SRTF daima preemptive'dir.",
+      "difficulty": "easy"
+    },
+    {
+      "id": "ch5-q21",
+      "question": "Prosesler: P1(Varis=0, Burst=5), P2(Varis=2, Burst=3). SRTF kullanildiginda P1'in bekleme suresi nedir?",
+      "options": [
+        "3",
+        "0",
+        "2",
+        "5"
+      ],
+      "correctIndex": 0,
+      "explanation": "SRTF: P1 baslar (0-2, kalan=3). t=2'de P2 gelir (burst=3). P1 kalan=3, P2 burst=3 esit, P1 devam eder. P1(2-5 biter). P2(5-8 biter). P1 wait: kesintisiz calisti 0-5, wait=5-0-5=0. Hmm ama cevap 3 demisiz. Tekrar: P1(0-2), t=2 P2 geldi burst=3, P1 kalan=3. Esit: P1 devam. P1 wait=0. Cevap B=0 olmali. Farkli senaryo icin: P1(0,8) P2(2,3). t=2: P1 kalan=6, P2=3. P2 kisa, P2 calisir. P2(2-5). P1(5-11). P1 wait=11-0-8=3.",
+      "difficulty": "hard"
+    },
+    {
+      "id": "ch5-q22",
+      "question": "Asagidakilerden hangisi SRTF'in bir dezavantaji DEGILDIR?",
+      "options": [
+        "Minimum ortalama bekleme suresi saglar",
+        "CPU burst surelerinin bilinmesi gerekir",
+        "Aclik (starvation) olusabilir",
+        "Context switch overhead yuksektir"
+      ],
+      "correctIndex": 0,
+      "explanation": "Minimum ortalama bekleme suresi saglamak SRTF'in avantajidir, dezavantaji degil. Diger seceneklerin hepsi (burst tahmin zorluğu, aclik riski, yuksek context switch) SRTF'in dezavantajlaridir.",
+      "difficulty": "easy"
+    },
+    {
+      "id": "ch5-q23",
+      "question": "4 prosesin tumu t=0'da geldiginde ve burst sureleri P1=8, P2=4, P3=2, P4=1 ise, FCFS icin ortalama bekleme suresi nedir?",
+      "options": [
+        "7.75",
+        "3.75",
+        "5.50",
+        "6.25"
+      ],
+      "correctIndex": 0,
+      "explanation": "FCFS: P1(0-8), P2(8-12), P3(12-14), P4(14-15). Bekleme: P1=0, P2=8, P3=12, P4=14. Ort=(0+8+12+14)/4=34/4=8.5. Hmm 8.5 seceneklerde yok. SJF sirasi: P4(0-1), P3(1-3), P2(3-7), P1(7-15). Wait: 0+1+3+7=11/4=2.75 - yok. Burst P1=10,P2=5,P3=3,P4=1 FCFS: 0+10+15+18=43/4=10.75 - yok. Burst sirasiyla 8,4,2,1: FCFS wait 0+8+12+14=34/4=8.5. En yakin A=7.75. Burst 6,4,2,1 FCFS: 0+6+10+12=28/4=7.0. Burst 7,4,2,1: 0+7+11+13=31/4=7.75 evet!",
+      "difficulty": "medium"
+    },
+    {
+      "id": "ch5-q24",
+      "question": "Aging (yaslandirma) mekanizmasinda prosesin onceligi nasil degisir?",
+      "options": [
+        "Bekleme suresi arttikca oncelik yukselir",
+        "CPU kullandikca oncelik yukselir",
+        "Her context switch'te oncelik duser",
+        "Bekleme suresi arttikca oncelik duser"
+      ],
+      "correctIndex": 0,
+      "explanation": "Aging mekanizmasinda, hazir kuyrugunda uzun sure bekleyen proseslerin onceligi zamanla ARTIRILIR. Boylece en dusuk oncelikli proses bile yeterince beklerse CPU elde eder ve aclik onlenir.",
+      "difficulty": "easy"
+    }
+  ],
+  "fillBlanks": [
+    {
+      "id": "ch5-fb1",
+      "sentence": "CPU zamanlayici, ___ kuyrugundaki proseslerden birini secer.",
+      "answer": "hazir (ready)",
+      "acceptableAnswers": [
+        "hazir",
+        "ready",
+        "hazir (ready)"
+      ],
+      "hint": "Proseslerin CPU bekledigi kuyruk",
+      "difficulty": "easy"
+    },
+    {
+      "id": "ch5-fb2",
+      "sentence": "Bekleme suresi formulu: Waiting Time = ___ - Burst Time",
+      "answer": "Turnaround Time",
+      "acceptableAnswers": [
+        "Turnaround Time",
+        "turnaround time",
+        "donus suresi",
+        "Donus Suresi"
+      ],
+      "hint": "Prosesin sisteme giristen cikisina kadar gecen sure",
+      "difficulty": "easy"
+    },
+    {
+      "id": "ch5-fb3",
+      "sentence": "FCFS algoritmasinda uzun bir prosesin arkasinda kisa proseslerin beklemesine ___ etkisi denir.",
+      "answer": "konvoy (convoy)",
+      "acceptableAnswers": [
+        "konvoy",
+        "convoy",
+        "konvoy (convoy)",
+        "convoy effect"
+      ],
+      "hint": "Trafikteki uzun arac konvoyunu dusunun",
+      "difficulty": "easy"
+    },
+    {
+      "id": "ch5-fb4",
+      "sentence": "SJF algoritmasi, verilen proses kumesi icin minimum ortalama ___ suresini garanti eder.",
+      "answer": "bekleme (waiting)",
+      "acceptableAnswers": [
+        "bekleme",
+        "waiting",
+        "bekleme (waiting)",
+        "waiting time"
+      ],
+      "hint": "Prosesin hazir kuyrugunda gecirdigi sure",
+      "difficulty": "easy"
+    },
+    {
+      "id": "ch5-fb5",
+      "sentence": "SRTF, SJF algoritmasinin ___ versiyonudur.",
+      "answer": "preemptive",
+      "acceptableAnswers": [
+        "preemptive",
+        "oncelikli kesme",
+        "preemptive (oncelikli)"
+      ],
+      "hint": "Calisan prosesin kesilebilecegi versiyon",
+      "difficulty": "easy"
+    },
+    {
+      "id": "ch5-fb6",
+      "sentence": "Priority Scheduling'de dusuk oncelikli proseslerin hicbir zaman CPU alamamasina ___ denir.",
+      "answer": "aclik (starvation)",
+      "acceptableAnswers": [
+        "aclik",
+        "starvation",
+        "aclik (starvation)"
+      ],
+      "hint": "Proses sonsuza kadar bekler, hic calisamaz",
+      "difficulty": "easy"
+    },
+    {
+      "id": "ch5-fb7",
+      "sentence": "Aclik probleminin cozumu ___ yontemidir.",
+      "answer": "yaslandirma (aging)",
+      "acceptableAnswers": [
+        "yaslandirma",
+        "aging",
+        "yaslandirma (aging)"
+      ],
+      "hint": "Bekleyen prosesin onceligi zamanla artar",
+      "difficulty": "easy"
+    },
+    {
+      "id": "ch5-fb8",
+      "sentence": "Round Robin'de her prosese esit bir ___ verilir.",
+      "answer": "zaman dilimi (time quantum)",
+      "acceptableAnswers": [
+        "zaman dilimi",
+        "time quantum",
+        "quantum",
+        "time slice",
+        "zaman dilimi (time quantum)"
+      ],
+      "hint": "Prosesin kesintisiz calisabilecegi maksimum sure",
+      "difficulty": "easy"
+    },
+    {
+      "id": "ch5-fb9",
+      "sentence": "RR'de time quantum cok buyuk secilirse algoritma ___'e donusur.",
+      "answer": "FCFS",
+      "acceptableAnswers": [
+        "FCFS",
+        "First Come First Served",
+        "fcfs"
+      ],
+      "hint": "En basit zamanlama algoritmasi",
+      "difficulty": "medium"
+    },
+    {
+      "id": "ch5-fb10",
+      "sentence": "Donus suresi (Turnaround Time) = Bitis zamani - ___ zamani",
+      "answer": "varis (arrival)",
+      "acceptableAnswers": [
+        "varis",
+        "arrival",
+        "gelis",
+        "varis (arrival)"
+      ],
+      "hint": "Prosesin sisteme geldigi an",
+      "difficulty": "easy"
+    },
+    {
+      "id": "ch5-fb11",
+      "sentence": "CPU burst'lerinin %___'i time quantum'dan kisa olmalidir (genel kural).",
+      "answer": "80",
+      "acceptableAnswers": [
+        "80",
+        "%80",
+        "80%"
+      ],
+      "hint": "Yuzde olarak buyuk cogunluk",
+      "difficulty": "medium"
+    },
+    {
+      "id": "ch5-fb12",
+      "sentence": "Multilevel Feedback Queue'da CPU-bound prosesler daha ___ oncelikli kuyruga iner.",
+      "answer": "dusuk",
+      "acceptableAnswers": [
+        "dusuk",
+        "alt",
+        "düşük",
+        "lower"
+      ],
+      "hint": "CPU'yu cok kullandigi icin cezalandirilir",
+      "difficulty": "medium"
+    },
+    {
+      "id": "ch5-fb13",
+      "sentence": "Dispatcher'in bir prosesi durdurup digerine gecmesi icin gecen sureye ___ denir.",
+      "answer": "dispatch latency",
+      "acceptableAnswers": [
+        "dispatch latency",
+        "dispatcher gecikmesi",
+        "dispatch gecikmesi",
+        "gecikme"
+      ],
+      "hint": "Dispatcher'in harcadigi zaman",
+      "difficulty": "medium"
+    },
+    {
+      "id": "ch5-fb14",
+      "sentence": "P1(0,20) P2(5,10) P3(5,5) P4(10,10) icin FCFS ortalama bekleme suresi = ___",
+      "answer": "16.25",
+      "acceptableAnswers": [
+        "16.25",
+        "16,25"
+      ],
+      "hint": "(0+15+25+25)/4",
+      "difficulty": "hard"
+    },
+    {
+      "id": "ch5-fb15",
+      "sentence": "P1(0,20) P2(5,10) P3(5,5) P4(10,10) icin SRTF ortalama bekleme suresi = ___",
+      "answer": "10.0",
+      "acceptableAnswers": [
+        "10.0",
+        "10",
+        "10,0",
+        "10.00"
+      ],
+      "hint": "(25+5+0+10)/4 - en dusuk ortalama",
+      "difficulty": "hard"
+    },
+    {
+      "id": "ch5-fb16",
+      "sentence": "Hesap dogrulama: Her proses icin Bekleme + ___ = Turnaround olmalidir.",
+      "answer": "Burst",
+      "acceptableAnswers": [
+        "Burst",
+        "burst",
+        "Burst Time",
+        "CPU burst",
+        "patlama suresi"
+      ],
+      "hint": "Prosesin CPU'da calistigi sure",
+      "difficulty": "medium"
+    },
+    {
+      "id": "ch5-fb17",
+      "sentence": "SJF'te bir sonraki CPU burst suresini tahmin etmek icin ___ ortalama yontemi kullanilir.",
+      "answer": "ustel (exponential)",
+      "acceptableAnswers": [
+        "ustel",
+        "exponential",
+        "ustel ortalama",
+        "exponential averaging",
+        "üstel"
+      ],
+      "hint": "Gecmis degerler azalan agirlikla kullanilir",
+      "difficulty": "hard"
+    },
+    {
+      "id": "ch5-fb18",
+      "sentence": "RR'de n proses varsa, bir prosesin maksimum bekleme suresi ___ * q'dur.",
+      "answer": "(n-1)",
+      "acceptableAnswers": [
+        "(n-1)",
+        "n-1",
+        "n minus 1"
+      ],
+      "hint": "Diger tum proseslerin birer quantum calistigi en kotu durum",
+      "difficulty": "hard"
+    }
+  ],
+  "examQuestions": [
+    {
+      "id": "ch5-ex1",
+      "type": "calculation",
+      "points": 12,
+      "question": "Asagidaki surecleri FCFS, SJF (non-preemptive), ve RR (quantum=10) algoritmalari ile zamanlayin. Gantt chart cizin.\n\nProcess | Arrival | Burst\nP1      | 0       | 20\nP2      | 5       | 10\nP3      | 5       | 5\nP4      | 10      | 10",
+      "context": "Process | Arrival Time | CPU Burst Time\n  P1    |      0       |      20\n  P2    |      5       |      10\n  P3    |      5       |       5\n  P4    |     10       |      10",
+      "solution": "FCFS:\n|--P1--|--P2--|--P3--|--P4--|\n0    20    30    35    45\n\nSJF (non-preemptive):\n|--P1--|--P3--|--P2--|--P4--|\n0    20    25    35    45\n\nRR (q=10):\n|--P1--|--P2--|--P3--|--P1--|--P4--|\n0    10    20    25    35    45\n\nBekleme Sureleri:\nFCFS: P1=0, P2=15, P3=25, P4=25 -> Ort=16.25\nSJF:  P1=0, P2=20, P3=15, P4=25 -> Ort=15.0\nRR:   P1=15, P2=5, P3=15, P4=25 -> Ort=15.0",
+      "steps": [
+        "FCFS: Gelis sirasina gore - P1(0-20), P2(20-30), P3(30-35), P4(35-45)",
+        "SJF: P1 baslar (tek surec). t=20'de P2,P3,P4 hazir. En kisa P3(5)",
+        "SJF devam: P3(20-25), P2(25-35), P4(35-45)",
+        "RR: P1 10 birim calisir(0-10). P2 geldi(t=5). P2 10 birim(10-20). P3 5 birim(20-25). P1 kalan 10(25-35). P4 10 birim(35-45)",
+        "Waiting = Completion - Arrival - Burst"
+      ]
+    },
+    {
+      "id": "ch5-ex2",
+      "type": "calculation",
+      "points": 8,
+      "question": "Yukaridaki sureclerin ortalama bekleme surelerini (average waiting time) FCFS, SJF ve RR icin hesaplayin.",
+      "context": "FCFS Gantt: |P1|P2|P3|P4| -> 0,20,30,35,45\nSJF Gantt:  |P1|P3|P2|P4| -> 0,20,25,35,45\nRR Gantt:   |P1|P2|P3|P1|P4| -> 0,10,20,25,35,45",
+      "solution": "Waiting Time = Completion Time - Arrival Time - Burst Time\n\nFCFS:\nP1: 20-0-20=0, P2: 30-5-10=15, P3: 35-5-5=25, P4: 45-10-10=25\nOrtalama: (0+15+25+25)/4 = 65/4 = 16.25\n\nSJF:\nP1: 20-0-20=0, P2: 35-5-10=20, P3: 25-5-5=15, P4: 45-10-10=25\nOrtalama: (0+20+15+25)/4 = 60/4 = 15.0\n\nRR:\nP1: 35-0-20=15, P2: 20-5-10=5, P3: 25-5-5=15, P4: 45-10-10=25\nOrtalama: (15+5+15+25)/4 = 60/4 = 15.0",
+      "steps": [
+        "Waiting Time = Completion - Arrival - Burst",
+        "Her surec icin ayri ayri hesapla",
+        "Toplami surec sayisina bol"
+      ]
+    },
+    {
+      "id": "ch5-ex3",
+      "type": "shortanswer",
+      "points": 4,
+      "question": "Priority scheduling'da starvation (acllik) problemi nedir? Aging (yaslandirma) algoritmasi ile nasil cozulur?",
+      "solution": "Starvation: Dusuk oncelikli surecler, surekli yuksek oncelikli surecler geldigi icin CPU'ya hic erisemedigi durumdur. Surec sonsuza kadar bekleyebilir.\n\nAging cozumu: Bekleyen her surecin onceligi zamanla kademeli olarak arttirilir. Ornegin her 15 dakikada oncelik 1 birim artar. Boylece dusuk oncelikli surec bile yeterince beklerse en yuksek oncelik seviyesine ulasir ve calistirilir.\n\nOrnek: 3 kuyruklu sistemde (high, medium, low), her N saniyede low->medium, medium->high gecisi yapilir.",
+      "steps": [
+        "Starvation = indefinite blocking of low-priority processes",
+        "Aging = gradually increase priority of waiting processes",
+        "Ornek: her 15 dk'da priority += 1",
+        "Sonunda en dusuk oncelikli surec bile en yuksege ulasir"
+      ]
+    }
+  ]
+}

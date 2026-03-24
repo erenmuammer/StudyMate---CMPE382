@@ -1,0 +1,1089 @@
+{
+  "id": "ch1",
+  "title": "Giris (Introduction)",
+  "titleEn": "Introduction",
+  "sections": [
+    {
+      "id": "ch1-s1",
+      "title": "Isletim Sistemi Nedir? (What Operating Systems Do)",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "Isletim sistemi (Operating System - OS), bilgisayar donanimini yoneten ve uygulama programlari icin temel hizmetler saglayan bir yazilimdir. Kullanici ile donanim arasinda bir arayuz gorevi gorur."
+        },
+        {
+          "type": "keypoint",
+          "text": "Bilgisayar sistemi dort temel bilesenden olusur: Donanim (Hardware), Isletim Sistemi (Operating System), Uygulama Programlari (Application Programs) ve Kullanicilar (Users)."
+        },
+        {
+          "type": "analogy",
+          "text": "Isletim sistemini bir sehrin belediyesi gibi dusunebilirsiniz. Belediye, su, elektrik, yol gibi altyapi hizmetlerini yonetir ve vatandaslarin (kullanicilarin) bu kaynaklari duzenli kullanmasini saglar. Ayni sekilde OS de CPU, bellek, disk gibi kaynaklari yonetir."
+        },
+        {
+          "type": "diagram",
+          "ascii": "  +---------------------------+\n  |      Kullanicilar          |\n  |   (Users)                  |\n  +---------------------------+\n  | Uygulama Programlari       |\n  | (Application Programs)     |\n  +---------------------------+\n  |    Isletim Sistemi         |\n  |   (Operating System)       |\n  +---------------------------+\n  |      Donanim               |\n  |     (Hardware)             |\n  +---------------------------+",
+          "caption": "Bilgisayar Sistemi Katmanlari (Computer System Layers)"
+        },
+        {
+          "type": "list",
+          "items": [
+            "Donanim (Hardware): CPU, bellek (memory), I/O cihazlari gibi temel hesaplama kaynaklarini saglar",
+            "Isletim Sistemi (OS): Donanimi yonetir, uygulamalar arasinda kaynak dagitimini koordine eder",
+            "Uygulama Programlari (Application Programs): Kullanicilarin hesaplama problemlerini cozmek icin kullandiklari programlar (word islemciler, web tarayicilar, derleyiciler vb.)",
+            "Kullanicilar (Users): Insanlar, makineler veya diger bilgisayarlar"
+          ]
+        },
+        {
+          "type": "warning",
+          "text": "Isletim sistemi icin evrensel olarak kabul edilen tek bir tanim yoktur. Genel olarak, bilgisayarda her zaman calisan programa kernel (cekirdek) denir."
+        }
+      ]
+    },
+    {
+      "id": "ch1-s2",
+      "title": "Bilgisayar Sistemi Organizasyonu (Computer-System Organization)",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "Modern bir genel amacli bilgisayar sistemi, ortak bir veri yolu (bus) araciliyla bagli bir veya daha fazla CPU ve bir dizi aygit denetleyicisinden (device controllers) olusur. Her aygit denetleyicisi belirli bir cihaz turunden sorumludur."
+        },
+        {
+          "type": "keypoint",
+          "text": "Bootstrap programi (onyukleme programi), bilgisayar acildiginda calisan ilk programdir. ROM veya EEPROM'da (firmware) saklanir ve isletim sistemi cekirdegini (kernel) bellige yukler."
+        },
+        {
+          "type": "paragraph",
+          "text": "Kesme (Interrupt) mekanizmasi, donanim veya yazilim tarafindan tetiklenebilir. Donanim kesmesi, CPU'ya system bus uzerinden sinyal gondererek olusur. Yazilim kesmesine trap veya exception denir ve bir hata (error) veya sistem cagrisi (system call) ile tetiklenir."
+        },
+        {
+          "type": "diagram",
+          "ascii": "  CPU <--system bus--> Memory\n   |                      |\n   +--- disk controller --+\n   |                      |\n   +--- USB controller ---+\n   |                      |\n   +--- graphics adapter--+",
+          "caption": "Bilgisayar Sistem Organizasyonu - Ortak Bus Yapisi"
+        },
+        {
+          "type": "list",
+          "items": [
+            "Interrupt Vector: Kesme hizmet rutinlerinin (interrupt service routines) adreslerini icerir",
+            "Trap/Exception: Yazilim kaynakli kesme, hata veya system call ile tetiklenir",
+            "Interrupt-driven: Modern isletim sistemleri kesme tabanli calisir"
+          ]
+        },
+        {
+          "type": "analogy",
+          "text": "Kesme mekanizmasini bir siniftaki ogrencinin parmak kaldirmasi gibi dusunun. Ogretmen (CPU) ders anlatirken, bir ogrenci (cihaz) parmak kaldirir (interrupt sinyali gonderir). Ogretmen mevcut isini birakir, ogrencinin sorusunu yanitlar (interrupt service routine), sonra kaldigi yerden devam eder."
+        }
+      ]
+    },
+    {
+      "id": "ch1-s3",
+      "title": "G/C Yapisi ve DMA (I/O Structure & Direct Memory Access)",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "Isletim sistemi, I/O (Giris/Cikis) islemlerini iki sekilde yonetir: Senkron (Synchronous) I/O'da CPU, I/O islemi tamamlanana kadar bekler. Asenkron (Asynchronous) I/O'da ise CPU, I/O islemi devam ederken baska isler yapmaya devam eder."
+        },
+        {
+          "type": "keypoint",
+          "text": "DMA (Direct Memory Access), yuksek hizli I/O cihazlari icin kullanilir. Aygit denetleyicisi (device controller), CPU mudahalesi olmadan verileri dogrudan ana bellege (main memory) aktarir. Her byte basina degil, her blok basina bir kesme (interrupt) uretilir."
+        },
+        {
+          "type": "analogy",
+          "text": "DMA'yi bir kargo sirketine benzetebilirsiniz. Normalde her paketi (byte) siz kendiniz (CPU) teslim alirsiniz. DMA ile kargo sirketi (DMA controller) paketleri dogrudan deponuza (memory) birakir ve sadece tum teslimat bittiginde sizi bilgilendirir (tek interrupt)."
+        },
+        {
+          "type": "diagram",
+          "ascii": "  +-------+    instruction    +----------+\n  |  CPU  |<-- execution  -->| Memory   |\n  |       |    cycle          | (instruct|\n  | cache |                   |  & data) |\n  +---+---+                   +----+-----+\n      |   \\                       /\n  I/O |    \\        DMA          /\n  req |     +-------------------+\n      v\n  +--------+\n  | Device |\n  +--------+",
+          "caption": "Von Neumann Mimarisi ve DMA Akisi"
+        },
+        {
+          "type": "warning",
+          "text": "DMA olmadan, buyuk veri transferlerinde CPU surekli mesgul olur (her byte icin interrupt) ve sistem performansi ciddi sekilde duser. Sinav sorusu: DMA'nin temel avantaji CPU'yu serbest birakmaktir."
+        }
+      ]
+    },
+    {
+      "id": "ch1-s4",
+      "title": "Depolama Yapisi ve Hiyerarsisi (Storage Structure & Hierarchy)",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "Ana bellek (Main Memory), CPU'nun dogrudan erisebilecegi tek buyuk depolama ortamidir. Rastgele erisimli (Random Access) ve tipik olarak ucucu (volatile) yapidadir. Genellikle DRAM (Dynamic Random-Access Memory) teknolojisi kullanilir."
+        },
+        {
+          "type": "paragraph",
+          "text": "Ikincil depolama (Secondary Storage), ana bellegin bir uzantisidir ve buyuk miktarda kalici (nonvolatile) depolama kapasitesi saglar. HDD (Hard Disk Drives) manyetik kayit malzemesiyle kapli sert metal plakalardan olusur. NVM (Non-volatile Memory) cihazlari HDD'lerden daha hizlidir."
+        },
+        {
+          "type": "keypoint",
+          "text": "Depolama hiyerarsisi (Storage Hierarchy) uc kritere gore sirlanir: Hiz (Speed), Maliyet (Cost) ve Ucuculuk (Volatility). Yukari ciktikca hiz artar, kapasite azalir ve maliyet artar."
+        },
+        {
+          "type": "diagram",
+          "ascii": "         Hizli & Kucuk & Pahali\n              /\\\n             /  \\\n            / Reg\\\n           /------\\\n          / Cache  \\\n         /----------\\\n        / Ana Bellek  \\    <-- Ucucu (Volatile)\n       /--------------\\   .........................\n      /   NVM (SSD)     \\  <-- Kalici (Nonvolatile)\n     /------------------\\\n    /    Hard Disk        \\\n   /----------------------\\\n  /    Optik Disk           \\\n /---------------------------\\\n/      Manyetik Bant          \\\n         Yavas & Buyuk & Ucuz",
+          "caption": "Depolama Aygiti Hiyerarsisi (Storage-Device Hierarchy)"
+        },
+        {
+          "type": "list",
+          "items": [
+            "Register: < 1 KB, erisim suresi 0.25-0.5 ns, compiler tarafindan yonetilir",
+            "Cache: < 16 MB, erisim suresi 0.5-25 ns, donanim tarafindan yonetilir",
+            "Ana Bellek (Main Memory): < 64 GB, erisim suresi 80-250 ns, OS tarafindan yonetilir",
+            "SSD (Solid-State Disk): < 1 TB, erisim suresi 25,000-50,000 ns, OS tarafindan yonetilir",
+            "HDD (Magnetic Disk): < 10 TB, erisim suresi 5,000,000 ns, OS tarafindan yonetilir"
+          ]
+        },
+        {
+          "type": "keypoint",
+          "text": "Caching (Onbellekleme): Bilgiyi daha hizli depolama sistemine kopyalama islemidir. Ana bellek, ikincil depolama icin bir cache olarak gorulebilir."
+        },
+        {
+          "type": "paragraph",
+          "text": "Temel depolama birimi bit'tir (0 veya 1). 1 byte = 8 bit. 1 KB = 1024 byte, 1 MB = 1024^2 byte, 1 GB = 1024^3 byte, 1 TB = 1024^4 byte, 1 PB = 1024^5 byte. Word, bilgisayar mimarisinin dogal veri birimidir (ornegin 64-bit sistemlerde 8 byte)."
+        },
+        {
+          "type": "analogy",
+          "text": "Depolama hiyerarsisini bir ogrencinin calisma ortami gibi dusunun: Beyniniz (register) en hizli ama en az bilgi tutar. Masanizdaki not kagitlari (cache) hizli erisilebilir. Kitaplariniz (RAM) dolaptadir. Kutuphane (HDD) cok bilgi icerir ama gitmesi zaman alir. Arsiv (tape) en yavas ama en cok bilgi saklar."
+        },
+        {
+          "type": "warning",
+          "text": "Sinav icin onemli: Cache coherency (onbellek tutarliligi) problemi - cok islemcili (multiprocessor) ortamlarda tum CPU'larin cache'lerinde en guncel degerin bulunmasi gerekir."
+        }
+      ]
+    },
+    {
+      "id": "ch1-s5",
+      "title": "Isletim Sistemi Islemleri (Operating-System Operations)",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "Bilgisayar basladiginda bootstrap programi calisir, sistemi baslatir ve kernel'i yukler. Kernel yuklendikten sonra sistem daemon'lari (kernel disinda saglanan hizmetler) baslatilir. Kernel kesme tabanli (interrupt driven) calisir."
+        },
+        {
+          "type": "keypoint",
+          "text": "Coklu programlama (Multiprogramming / Batch System): Tek bir kullanici CPU ve I/O cihazlarini her zaman mesgul tutamaz. Multiprogramming, isleri (jobs) organize ederek CPU'nun her zaman calistirilacak bir isi olmasi saglar. Is zamanlama (Job Scheduling) ile bir is secilir ve calistirilir."
+        },
+        {
+          "type": "paragraph",
+          "text": "Coklu gorev (Multitasking / Timesharing), batch sistemlerin mantiksal bir uzantisidir. CPU isler arasinda o kadar hizli gecis yapar ki kullanicilar her isle etkilesimli (interactive) calisabilir. Yanit suresi (Response Time) 1 saniyeden az olmalidir."
+        },
+        {
+          "type": "list",
+          "items": [
+            "Process (Surec): Bellekte calisan bir program; her kullanicinin en az bir sureci vardir",
+            "CPU Scheduling (CPU Zamanlama): Birden fazla is ayni anda hazirsa, hangisinin calisacagina karar verir",
+            "Swapping (Takas): Surecler bellege sigmiyorsa, bellege alinip cikarilir",
+            "Virtual Memory (Sanal Bellek): Tamamen bellekte olmayan sureclerin calistirilmasina olanak tanir"
+          ]
+        },
+        {
+          "type": "diagram",
+          "ascii": "  max +--------------------+\n      | Isletim Sistemi    |\n      | (Operating System) |\n      +--------------------+\n      |    Surec 1         |\n      |   (Process 1)      |\n      +--------------------+\n      |    Surec 2         |\n      |   (Process 2)      |\n      +--------------------+\n      |    Surec 3         |\n      |   (Process 3)      |\n      +--------------------+\n      |    Surec 4         |\n    0 |   (Process 4)      |\n      +--------------------+",
+          "caption": "Coklu Programlamali Sistem Bellek Yerlesimi (Memory Layout)"
+        },
+        {
+          "type": "analogy",
+          "text": "Multiprogramming'i bir restorandaki asci gibi dusunun: Asci (CPU) bir yemegin pisirme sureci beklerken (I/O wait), baska bir yemegi hazilamaya baslar. Boylece asci hic bos kalmaz. Multitasking ise asci'nin tum yemeklere cok kisa surelerle sirayla bakmasidir."
+        }
+      ]
+    },
+    {
+      "id": "ch1-s6",
+      "title": "Cift-Mod Islem ve Zamanlayici (Dual-Mode Operation & Timer)",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "Cift-mod (Dual-mode) islem, isletim sisteminin kendisini ve diger sistem bilesenlerini korumasini saglar. Iki mod vardir: Kullanici modu (User Mode) ve Cekirdek modu (Kernel Mode)."
+        },
+        {
+          "type": "keypoint",
+          "text": "Mode bit donanim tarafindan saglanir. Kullanici kodu calisiyorsa mode bit = 1 (user mode), kernel kodu calisiyorsa mode bit = 0 (kernel mode). Bazi komutlar (instructions) ayricali (privileged) olarak belirlenmistir ve sadece kernel modunda calistirilabilir."
+        },
+        {
+          "type": "diagram",
+          "ascii": "  Kullanici Sureci (User Process)\n  +----------------+     +--------------+     +------------------+\n  | user process   |---->| system call  |---->| return from      |\n  | executing      |     | cagrisi      |     | system call      |\n  +----------------+     +------+-------+     +------------------+\n                                |   ^                ^\n  user mode (mode bit = 1)      |   |                |\n  ==============================|===|================|=========\n  kernel mode (mode bit = 0)    v   |                |\n                         +------+---+----+     +-----+------+\n                         |   trap         |     |   return   |\n                         | mode bit = 0   |---->| mode bit=1 |\n                         | execute syscall|     |            |\n                         +----------------+     +------------+",
+          "caption": "Kullanici Modundan Kernel Moduna Gecis (User to Kernel Mode Transition)"
+        },
+        {
+          "type": "paragraph",
+          "text": "System call (sistem cagrisi) yapildiginda mod, kernel moduna degisir. Cagri dondugunde tekrar user moduna donulur. Kullanici, mode bit'i dogrudan 'kernel' olarak ayarlayamaz - bunu sadece system call mekanizmasi yapar."
+        },
+        {
+          "type": "keypoint",
+          "text": "Timer (Zamanlayici), sonsuz dongu (infinite loop) veya kaynaklari asiri kullanan surecleri onlemek icin kullanilir. Fiziksel saat (physical clock) tarafindan azaltilan bir sayac tutar. Sayac sifira ulastiginda kesme (interrupt) uretilir. Timer'i ayarlamak ayricalikli (privileged) bir komuttur."
+        },
+        {
+          "type": "warning",
+          "text": "Sinav sorusu: Mode bit mekanizmasi olmadan, kullanici programi cekirdek komutlarini calistirarak tum sistemi bozabilir. Dual-mode islem OS guvenliginin temelidir."
+        },
+        {
+          "type": "analogy",
+          "text": "Dual-mode'u bir hastanedeki yetkili erisim gibi dusunun. Hastalar (user mode) sadece belirli alanlara girebilir. Doktorlar (kernel mode) ameliyathane ve ilac deposu dahil her yere erisebilir. Bir hastayi doktor olmadan ameliyathaneye sokamazsiniz (privileged instruction)."
+        }
+      ]
+    },
+    {
+      "id": "ch1-s7",
+      "title": "Kaynak Yonetimi (Resource Management)",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "Isletim sistemi bir kaynak yoneticisidir (resource manager). Surec yonetimi (Process Management), bellek yonetimi (Memory Management), dosya sistemi yonetimi (File-System Management), kutle depolama yonetimi (Mass-Storage Management) ve I/O alt sistemi yonetimini kapsar."
+        },
+        {
+          "type": "keypoint",
+          "text": "Surec (Process), yurutulmekte olan bir programdir. Program pasif bir varlik (passive entity), surec ise aktif bir varliktir (active entity). Tek is parcacikli (single-threaded) surecin bir program sayaci (program counter), cok is parcacikli (multi-threaded) surecin her thread icin bir program sayaci vardir."
+        },
+        {
+          "type": "list",
+          "items": [
+            "Surec Yonetimi: Surec olusturma/silme, askiya alma/devam ettirme, senkronizasyon, iletisim, deadlock yonetimi",
+            "Bellek Yonetimi: Hangi bellek bolumleri kimler tarafindan kullaniliyor takibi, bellek alani tahsisi/serbest birakma",
+            "Dosya Sistemi: Dosya/dizin olusturma-silme, erisim kontrolu, dosyalari ikincil depolamaya esleme, yedekleme",
+            "Kutle Depolama: Mount/unmount, bos alan yonetimi, depolama tahsisi, disk zamanlama, bolumleme, koruma",
+            "I/O Alt Sistemi: Buffering (gecici depolama), Caching (hiz icin depolama), Spooling (is ciktilarini cakistirma)"
+          ]
+        },
+        {
+          "type": "analogy",
+          "text": "Surec yonetimini bir havaalaninin ucus kontrol kulesine benzetebilirsiniz. Her ucak (process) bir piste (CPU) ihtiyac duyar. Kule (OS), ucaklari siralayip (scheduling) hangi ucagin ne zaman inip kalkacagina karar verir, carpismalari onler (synchronization) ve baglanti ucuslarini koordine eder (communication)."
+        },
+        {
+          "type": "warning",
+          "text": "Onemli: Dosya sistemi yonetiminde OS, fiziksel ozellikleri soyutlayarak mantiksal depolama birimi olan dosyayi (file) sunar. Erisim hizi, kapasite ve erisim yontemi (sirali/rastgele) cihaza gore degisir."
+        }
+      ]
+    },
+    {
+      "id": "ch1-s8",
+      "title": "Guvenlik ve Koruma (Security & Protection)",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "Koruma (Protection), isletim sistemi tarafindan tanimlanan kaynaklara sureclerin veya kullanicilarin erisimini kontrol eden herhangi bir mekanizmadir. Guvenlik (Security) ise sistemin ic ve dis saldirilara karsi savunmasidir."
+        },
+        {
+          "type": "keypoint",
+          "text": "Sistem kullanicilari ayirt etmek icin kullanici kimlikleri (User IDs) kullanir. Her kullanicinin benzersiz bir adi ve numarasi vardir. Kullanici kimlligi, o kullanicinin tum dosyalari ve surecleriyle iliskilendirilir ve erisim kontrolu icin kullanilir."
+        },
+        {
+          "type": "list",
+          "items": [
+            "User ID: Her kullaniciya atanan benzersiz kimlik numarasi",
+            "Group ID: Kullanici gruplari tanimlama ve grup bazli erisim kontrolu",
+            "Privilege Escalation: Kullanicinin daha fazla yetkiye sahip etkili bir kimlige gecis yapmasi",
+            "Guvenlik tehditleri: DoS (Denial-of-Service), solucanlar (worms), virusler, kimlik hirsizligi"
+          ]
+        },
+        {
+          "type": "analogy",
+          "text": "Protection ve Security arasindaki farki bir bina ornegi ile aciklayabiliriz: Protection, binanin icinde hangi odaya kimin girebilecegini belirleyen kapi kartlari sistemidir. Security ise binanin disaridaki hirsiz, yangin veya sel gibi tehditlere karsi korunmasidir."
+        },
+        {
+          "type": "warning",
+          "text": "Sinav icin: Protection ic tehditlerle (sureclerin birbirinin alanina erisimi), Security ise dis tehditlerle (virus, hacker) ilgilenir. Ikisi farkli kavramlardir!"
+        }
+      ]
+    },
+    {
+      "id": "ch1-s9",
+      "title": "Sanallastirma (Virtualization)",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "Sanallastirma (Virtualization), isletim sistemlerinin baska isletim sistemleri icinde uygulama calistirmasina olanak tanir. Emuasyon (Emulation), kaynak CPU tipi hedef CPU tipinden farkli oldugunda kullanilir (ornegin PowerPC'den Intel x86'ya). Genellikle en yavas yontemdir."
+        },
+        {
+          "type": "keypoint",
+          "text": "Virtualization'da OS, CPU icin yerel olarak (natively) derlenmistir ve konuk (guest) isletim sistemleri de yerel olarak derlenmis sekilde calisir. VMM (Virtual Machine Manager / Sanal Makine Yoneticisi), sanallastirma hizmetlerini saglar."
+        },
+        {
+          "type": "list",
+          "items": [
+            "Host OS: Ana isletim sistemi (ornegin Mac OS X)",
+            "Guest OS: Konuk isletim sistemi (ornegin Windows)",
+            "VMM: Sanal makine yoneticisi (VMware, VirtualBox, Citrix XenServer)",
+            "Type 1 VMM: Dogrudan donanim uzerinde calisir (VMware ESX, Citrix XenServer) - genel amacli host OS yoktur",
+            "Type 2 VMM: Host OS uzerinde calisir (VMware Workstation, VirtualBox)"
+          ]
+        },
+        {
+          "type": "diagram",
+          "ascii": "  (a) Normal Sistem        (b) Sanal Makine Sistemi\n  +-----------+           +-----+ +-----+ +-----+\n  | Surecler  |           |Proc | |Proc | |Proc |\n  +-----------+           +--+--+ +--+--+ +--+--+\n  |  Kernel   |           |Kern| |Kern | |Kern |\n  +-----------+           | VM1| | VM2 | | VM3 |\n  | Donanim   |           +----+-+-----+-+-----+\n  +-----------+           |  Virtual Machine    |\n                          |     Manager (VMM)   |\n                          +---------------------+\n                          |      Donanim        |\n                          +---------------------+",
+          "caption": "Normal Sistem vs Sanal Makine Yapisi"
+        },
+        {
+          "type": "analogy",
+          "text": "Sanallastirmayi bir apartman binasi gibi dusunun. Bina (donanim) birdir ama icinde birden fazla daire (VM) vardir. Her dairenin kendi mutfagi, banyosu (OS kaynaklari) vardir. Bina yoneticisi (VMM) tum dairelerin kaynaklari paylasmasini yonetir."
+        }
+      ]
+    },
+    {
+      "id": "ch1-s10",
+      "title": "Dagitik Sistemler ve Bilisim Ortamlari (Distributed Systems & Computing Environments)",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "Dagitik Sistemler (Distributed Systems), birbirine ag (network) ile bagli, muhtemelen heterojen olan ayri bilgisayar sistemlerinin bir koleksiyonudur. En yaygin iletisim protokolu TCP/IP'dir."
+        },
+        {
+          "type": "keypoint",
+          "text": "Ag turleri: LAN (Local Area Network - Yerel Alan Agi), WAN (Wide Area Network - Genis Alan Agi), MAN (Metropolitan Area Network - Sehir Alan Agi), PAN (Personal Area Network - Kisisel Alan Agi)."
+        },
+        {
+          "type": "paragraph",
+          "text": "Ag Isletim Sistemi (Network Operating System), ag uzerindeki sistemler arasinda ozellikler saglar. Iletisim semasi sistemlerin mesaj alisverisnde bulunmasina izin verir ve tek bir sistem illzyonu yaratir."
+        },
+        {
+          "type": "list",
+          "items": [
+            "LAN: Bir bina veya kampus icindeki ag (ornegin Ethernet, Wi-Fi)",
+            "WAN: Sehirler veya ulkeler arasi ag (ornegin Internet)",
+            "MAN: Bir sehir genelindeki ag",
+            "PAN: Kisisel cihazlar arasi ag (ornegin Bluetooth)",
+            "Cloud Computing: SaaS, PaaS, IaaS modellerini icerir",
+            "Client-Server: Istemci-sunucu modeli, dagitik sistemlerin temelidir"
+          ]
+        },
+        {
+          "type": "analogy",
+          "text": "Dagitik sistemi bir zincir restoran gibi dusunun. Her sube (node) kendi mutfagi (CPU) ve deposu (memory) olan bagimsiz bir birimdir ama hepsi merkezi bir yonetim sistemiyle (network) bagli olarak calisir ve musterilere tek bir marka (tek sistem illuzyonu) olarak gorunur."
+        },
+        {
+          "type": "warning",
+          "text": "Sinav icin: Dagitik sistemlerde cache coherency problemi daha da karmasiktir cunku ayni verinin birden fazla kopyasi farkli dugumlerde bulunabilir."
+        }
+      ]
+    }
+  ],
+  "flashcards": [
+    {
+      "id": "ch1-fc1",
+      "front": "Isletim sistemi (Operating System) nedir?",
+      "back": "Bilgisayar donanimi ile kullanici arasinda arayuz gorevli yapan, kaynaklari yoneten ve uygulama programlarina hizmet saglayan yazilimdir. Bilgisayarda surekli calisan programa kernel (cekirdek) denir.",
+      "difficulty": "easy"
+    },
+    {
+      "id": "ch1-fc2",
+      "front": "Bilgisayar sisteminin dort temel bileseni nelerdir?",
+      "back": "1) Donanim (Hardware) - CPU, bellek, I/O cihazlari\n2) Isletim Sistemi (Operating System)\n3) Uygulama Programlari (Application Programs)\n4) Kullanicilar (Users)",
+      "difficulty": "easy"
+    },
+    {
+      "id": "ch1-fc3",
+      "front": "Bootstrap programi (onyukleme) nedir ve nerede saklanir?",
+      "back": "Bilgisayar acildiginda calisan ilk programdir. ROM veya EEPROM'da (firmware) saklanir. Gorevi sistemi baslatmak ve isletim sistemi cekirdegini (kernel) bellege yuklemektir.",
+      "difficulty": "easy"
+    },
+    {
+      "id": "ch1-fc4",
+      "front": "Interrupt (Kesme) nedir ve kac cesidi vardir?",
+      "back": "CPU'ya bir olay gerceklestigini bildiren sinyal mekanizmasidir. Iki cesidi vardir:\n1) Hardware Interrupt: Cihazlar tarafindan system bus uzerinden tetiklenir\n2) Software Interrupt (Trap/Exception): Yazilim hatasi veya system call ile tetiklenir",
+      "difficulty": "medium"
+    },
+    {
+      "id": "ch1-fc5",
+      "front": "DMA (Direct Memory Access) nedir ve temel avantaji nedir?",
+      "back": "Yuksek hizli I/O cihazlari icin kullanilan bir veri transfer yontemidir. Aygit denetleyicisi, CPU mudahalesi olmadan verileri dogrudan ana bellege aktarir. Her byte yerine her blok basina tek bir interrupt uretilir. Temel avantaji: CPU'yu serbest birakir.",
+      "difficulty": "medium"
+    },
+    {
+      "id": "ch1-fc6",
+      "front": "Ana bellek (Main Memory) ozellikleri nelerdir?",
+      "back": "CPU'nun dogrudan erisebilecegi tek buyuk depolama ortamidir. Rastgele erisimli (Random Access), ucucu (volatile) yapidadir. Genellikle DRAM (Dynamic Random-Access Memory) teknolojisi kullanilir.",
+      "difficulty": "easy"
+    },
+    {
+      "id": "ch1-fc7",
+      "front": "Depolama hiyerarsisini (Storage Hierarchy) yukasridan asagiya sirala.",
+      "back": "1) Registers (en hizli, en kucuk)\n2) Cache\n3) Main Memory (ana bellek)\n--- ucucu/kalici siniri ---\n4) NVM / SSD\n5) Hard Disk (HDD)\n6) Optical Disk\n7) Magnetic Tape (en yavas, en buyuk)",
+      "difficulty": "medium"
+    },
+    {
+      "id": "ch1-fc8",
+      "front": "Caching (Onbellekleme) nedir?",
+      "back": "Kullanilan bilgiyi daha yavas bir depolama ortamindan daha hizli bir depolama ortamina kopyalama islemidir. Cache, onbelleklenen depolamadan daha kucuktur. Cache boyutu ve degistirme politikasi (replacement policy) onemli tasarim problemleridir.",
+      "difficulty": "medium"
+    },
+    {
+      "id": "ch1-fc9",
+      "front": "Cache Coherency (Onbellek Tutarliligi) problemi nedir?",
+      "back": "Cok islemcili (multiprocessor) ortamlarda, ayni verinin birden fazla CPU'nun cache'inde farkli versiyonlarinin bulunabilmesi problemidir. Tum CPU'larin cache'lerinde en guncel degerin bulunmasi saglanmalidir.",
+      "difficulty": "hard"
+    },
+    {
+      "id": "ch1-fc10",
+      "front": "Multiprogramming (Coklu Programlama) ne ise yarar?",
+      "back": "Isleri (jobs) organize ederek CPU'nun her zaman calistirilacak bir isi olmasini saglar. Bir is I/O beklerken OS baska bir ise gecer. Boylece CPU ve I/O cihazlari surekli mesgul tutulur. Job scheduling ile is secimi yapilir.",
+      "difficulty": "medium"
+    },
+    {
+      "id": "ch1-fc11",
+      "front": "Multitasking (Timesharing) ile Multiprogramming arasindaki fark nedir?",
+      "back": "Multiprogramming'de is degisimi sadece I/O beklediginde olur. Multitasking'de CPU isler arasinda cok hizli gecis yaparak etkilesimli (interactive) bilgi islem saglar. Yanit suresi (response time) < 1 saniye olmalidir. Multitasking, Multiprogramming'in mantiksal uzantisidir.",
+      "difficulty": "hard"
+    },
+    {
+      "id": "ch1-fc12",
+      "front": "Dual-mode operation (Cift-Mod Islem) nedir?",
+      "back": "OS'nin kendisini korumasini saglayan mekanizmadir. User mode (mode bit = 1) ve Kernel mode (mode bit = 0) olmak uzere iki mod vardir. System call yapildiginda kernel moduna gecilir, donus yapildiginda user moduna donulur.",
+      "difficulty": "medium"
+    },
+    {
+      "id": "ch1-fc13",
+      "front": "Privileged instruction (Ayricalikli Komut) nedir?",
+      "back": "Sadece kernel modunda (mode bit = 0) calistirilabilen ozel komutlardir. Kullanici modunda calistirilmaya calisilirsa donanim bunu onler. Ornekler: I/O islemleri, timer ayarlama, interrupt yonetimi.",
+      "difficulty": "medium"
+    },
+    {
+      "id": "ch1-fc14",
+      "front": "Timer (Zamanlayici) ne icin kullanilir?",
+      "back": "Sonsuz dongu (infinite loop) veya kaynaklari asiri kullanan surecleri onlemek icin kullanilir. Fiziksel saat tarafindan azaltilan bir sayac tutar. Sayac sifira ulastiginda interrupt uretilir. Timer ayarlamak privileged bir komuttur.",
+      "difficulty": "medium"
+    },
+    {
+      "id": "ch1-fc15",
+      "front": "Process (Surec) ile Program arasindaki fark nedir?",
+      "back": "Program, diskte saklanan pasif bir varliktir (passive entity). Process, bellekte yurutulen aktif bir varliktir (active entity). Bir program calistirildiginda surec olur. Surec CPU, bellek, I/O, dosya gibi kaynaklara ihtiyac duyar.",
+      "difficulty": "easy"
+    },
+    {
+      "id": "ch1-fc16",
+      "front": "Program Counter (Program Sayaci) nedir?",
+      "back": "Yuruyulecek bir sonraki komutun (instruction) konumunu belirten bir kayittir (register). Single-threaded (tek is parcacikli) surecte bir tane, multi-threaded (cok is parcacikli) surecte her thread icin bir tane bulunur.",
+      "difficulty": "medium"
+    },
+    {
+      "id": "ch1-fc17",
+      "front": "Surec yonetiminin (Process Management) bes temel aktivitesi nelerdir?",
+      "back": "1) Kullanici ve sistem surecleri olusturma ve silme\n2) Surecleri askiya alma (suspending) ve devam ettirme (resuming)\n3) Surec senkronizasyonu (synchronization) mekanizmalari saglama\n4) Surec iletisimi (communication) mekanizmalari saglama\n5) Deadlock (kilitlenme) islem mekanizmalari saglama",
+      "difficulty": "hard"
+    },
+    {
+      "id": "ch1-fc18",
+      "front": "Bellek yonetiminin (Memory Management) uc temel aktivitesi nelerdir?",
+      "back": "1) Bellegin hangi bolulerinin kim tarafindan kullanildigini takip etme\n2) Hangi sureclerin ve verilerin bellege alinip cikarilacagina karar verme\n3) Ihtiyaca gore bellek alani tahsis etme (allocating) ve serbest birakma (deallocating)",
+      "difficulty": "hard"
+    },
+    {
+      "id": "ch1-fc19",
+      "front": "Virtual Memory (Sanal Bellek) nedir?",
+      "back": "Tamamen fiziksel bellekte olmayan sureclerin calistirilmasina olanak taniyan bir tekniktir. Program kodunun sadece ihtiyac duyulan kismi bellege yuklenir, geri kalani diskte tutulur. Boylece fiziksel bellekten daha buyuk programlar calistirilabilir.",
+      "difficulty": "medium"
+    },
+    {
+      "id": "ch1-fc20",
+      "front": "HDD (Hard Disk Drive) yapisi nasildir?",
+      "back": "Manyetik kayit malzemesiyle kapli sert metal veya cam plakalardan (platters) olusur. Disk yuzeyi mantiksal olarak izlere (tracks) bolunur ve izler sektorlere (sectors) alt bolunur. Disk denetleyicisi (disk controller) cihaz ile bilgisayar arasindaki mantiksal etkilesimi belirler.",
+      "difficulty": "medium"
+    },
+    {
+      "id": "ch1-fc21",
+      "front": "NVM (Non-Volatile Memory) cihazlari nedir?",
+      "back": "HDD'lerden daha hizli olan kalici (nonvolatile) depolama cihazlaridir (ornegin SSD). Cesitli teknolojiler kullanir. Kapasite ve performans arttikca, fiyat dustukce daha yaygin hale gelmektedir.",
+      "difficulty": "easy"
+    },
+    {
+      "id": "ch1-fc22",
+      "front": "Protection ve Security arasindaki fark nedir?",
+      "back": "Protection: OS tarafindan tanimlanan kaynaklara sureclerin/kullanicilarin erisimini kontrol eden mekanizmadir (ic tehditler).\nSecurity: Sistemin ic ve dis saldirilara (virus, worm, DoS, kimlik hirsizligi) karsi savunmasidir (dis tehditler).",
+      "difficulty": "medium"
+    },
+    {
+      "id": "ch1-fc23",
+      "front": "User ID ve Group ID ne ise yarar?",
+      "back": "User ID: Her kullaniciya atanan benzersiz numara, erisim kontrolu icin kullanilir. Tum dosya ve sureclerle iliskilendirilir.\nGroup ID: Kullanici gruplari tanimlayarak grup bazli erisim kontrolu saglar. Her surec ve dosya ile iliskilendirilir.",
+      "difficulty": "medium"
+    },
+    {
+      "id": "ch1-fc24",
+      "front": "Privilege Escalation nedir?",
+      "back": "Kullanicinin, daha fazla yetkiye sahip etkili bir kimlige (effective ID) gecis yapmasina olanak taniyan mekanizmadir. Ornegin, normal kullanicinin gecici olarak root yetkisi kazanmasi.",
+      "difficulty": "hard"
+    },
+    {
+      "id": "ch1-fc25",
+      "front": "Emulation (Emulasyon) ile Virtualization (Sanallastirma) arasindaki fark nedir?",
+      "back": "Emulation: Kaynak CPU tipi hedef CPU tipinden farkli oldugunda kullanilir (ornegin PowerPC kodunu x86'da calistirma). En yavas yontemdir.\nVirtualization: OS yerel olarak (natively) derlenmistir ve guest OS'ler de yerel olarak calisir. Cok daha hizlidir.",
+      "difficulty": "hard"
+    },
+    {
+      "id": "ch1-fc26",
+      "front": "VMM (Virtual Machine Manager) nedir ve turleri nelerdir?",
+      "back": "Sanallastirma hizmetlerini saglayan yazilimdir.\nType 1 (Bare-metal): Dogrudan donanim uzerinde calisir (VMware ESX, Citrix XenServer). Genel amacli host OS yoktur.\nType 2 (Hosted): Host OS uzerinde calisir (VMware Workstation, VirtualBox).",
+      "difficulty": "hard"
+    },
+    {
+      "id": "ch1-fc27",
+      "front": "Senkron (Synchronous) ve Asenkron (Asynchronous) I/O arasindaki fark nedir?",
+      "back": "Synchronous I/O: CPU, I/O islemi tamamlanana kadar bekler. I/O bitene kadar baska is yapamaz.\nAsynchronous I/O: CPU, I/O islemi devam ederken baska isler yapmaya devam eder. I/O tamamlandiginda interrupt ile bilgilendirilir.",
+      "difficulty": "medium"
+    },
+    {
+      "id": "ch1-fc28",
+      "front": "Interrupt Vector nedir?",
+      "back": "Kesme hizmet rutinlerinin (Interrupt Service Routines - ISR) adreslerini iceren bir tablodur. Her kesme turune karsilik gelen ISR'nin baslangic adresi bu tabloda saklanir.",
+      "difficulty": "medium"
+    },
+    {
+      "id": "ch1-fc29",
+      "front": "I/O alt sisteminin (I/O Subsystem) uc temel isleyisi nedir?",
+      "back": "1) Buffering: Veri transfer edilirken gecici depolama\n2) Caching: Performans icin verilerin daha hizli depolamada saklanmasi\n3) Spooling: Bir isin ciktisinin baska islerin girdisiyle cakistirilmasi (ornegin yazici kuyrugu)",
+      "difficulty": "hard"
+    },
+    {
+      "id": "ch1-fc30",
+      "front": "System Daemon nedir?",
+      "back": "Kernel disinda, sistem basladiginda yuklenen ve surekli calisan hizmet programlaridir. Arka planda calisarak cesitli sistem hizmetlerini saglarlar (ornegin ag hizmetleri, log kaydi tutma).",
+      "difficulty": "medium"
+    },
+    {
+      "id": "ch1-fc31",
+      "front": "Device Driver (Aygit Surucusu) ne ise yarar?",
+      "back": "Her aygit denetleyicisi (device controller) icin I/O islemlerini yoneten yazilimdir. Controller ile kernel arasinda standart (uniform) bir arayuz saglar. Donanim farklilikalarini soyutlayarak OS'ye tek tip erisim sunar.",
+      "difficulty": "medium"
+    },
+    {
+      "id": "ch1-fc32",
+      "front": "CPU Scheduling (CPU Zamanlama) nedir?",
+      "back": "Birden fazla surec (process) ayni anda calismaya hazir oldugunda, CPU'nun hangi surece tahsis edilecegine karar veren mekanizmadir. Multitasking sistemlerde zorunludur.",
+      "difficulty": "easy"
+    }
+  ],
+  "quiz": [
+    {
+      "id": "ch1-q1",
+      "question": "Asagidakilerden hangisi bilgisayar sisteminin dort temel bileseninden biri degildir?",
+      "options": [
+        "Donanim (Hardware)",
+        "Derleyici (Compiler)",
+        "Isletim Sistemi (Operating System)",
+        "Kullanicilar (Users)"
+      ],
+      "correctIndex": 1,
+      "explanation": "Bilgisayar sistemi dort bilesendir: Hardware, Operating System, Application Programs ve Users. Compiler (Derleyici), bir uygulama programidir, temel bilesen degildir.",
+      "difficulty": "easy"
+    },
+    {
+      "id": "ch1-q2",
+      "question": "DMA (Direct Memory Access) mekanizmasinin temel avantaji nedir?",
+      "options": [
+        "Veriyi daha guvenli transfer eder",
+        "CPU mudahalesi olmadan veriyi dogrudan bellege aktarir, CPU'yu serbest birakir",
+        "Veri transferini sifreler",
+        "Sadece kucuk veri bloklari icin calisir"
+      ],
+      "correctIndex": 1,
+      "explanation": "DMA'nin temel avantaji, aygit denetleyicisinin (device controller) CPU mudahalesi olmadan verileri buffer'dan dogrudan ana bellege (main memory) aktarmasidir. Her byte basina degil, her blok basina bir interrupt uretilir, bu da CPU'yu baska isler icin serbest birakir.",
+      "difficulty": "medium"
+    },
+    {
+      "id": "ch1-q3",
+      "question": "Depolama hiyerarsisinde asagidakilerden hangisi en hizli erisim suresine sahiptir?",
+      "options": [
+        "Cache",
+        "Main Memory (Ana Bellek)",
+        "Registers",
+        "SSD"
+      ],
+      "correctIndex": 2,
+      "explanation": "Registers (Yazmaçlar) depolama hiyerarsisinin en ustunde yer alir ve 0.25-0.5 ns erisim suresine sahiptir. Cache 0.5-25 ns, Main Memory 80-250 ns, SSD 25,000-50,000 ns erisim suresine sahiptir. Hiyerarside yukari ciktikca hiz artar, kapasite azalir.",
+      "difficulty": "easy"
+    },
+    {
+      "id": "ch1-q4",
+      "question": "Dual-mode operasyonda, mode bit = 0 oldugunda sistem hangi moddadir?",
+      "options": [
+        "User mode",
+        "Kernel mode",
+        "Safe mode",
+        "Debug mode"
+      ],
+      "correctIndex": 1,
+      "explanation": "Mode bit = 0 kernel modunu (kernel mode), mode bit = 1 ise kullanici modunu (user mode) temsil eder. System call yapildiginda mode bit 0'a (kernel mode) ayarlanir, cagri dondugunde 1'e (user mode) doner.",
+      "difficulty": "medium"
+    },
+    {
+      "id": "ch1-q5",
+      "question": "Asagidakilerden hangisi multiprogramming'in temel amacini en iyi aciklar?",
+      "options": [
+        "Birden fazla kullanicinin ayni anda sistemi kullanmasi",
+        "CPU'nun surekli mesgul kalmasini saglayarak verimlilik artirmak",
+        "Birden fazla monitorde calisma",
+        "Programlarin daha hizli derlenmesi"
+      ],
+      "correctIndex": 1,
+      "explanation": "Multiprogramming'in temel amaci CPU'nun her zaman calistirilacak bir isi olmasi ve bos kalmamasidir. Bir is I/O beklerken (wait), OS job scheduling ile baska bir ise gecer. Boylece CPU ve I/O cihazlari surekli mesgul tutulur.",
+      "difficulty": "medium"
+    },
+    {
+      "id": "ch1-q6",
+      "question": "Trap (yazilim kesmesi) asagidaki durumlardan hangisinde olusMAZ?",
+      "options": [
+        "Sifira bolme hatasi (division by zero)",
+        "System call cagrisi",
+        "Bir USB cihaz takilmasi",
+        "Sonsuz dongu tespiti"
+      ],
+      "correctIndex": 2,
+      "explanation": "USB cihaz takilmasi bir donanim kesmesidir (hardware interrupt), trap degil. Trap (software interrupt), yazilim hatasi (error, ornegin sifira bolme), system call veya exception durumlarinda olusur. Donanim kesmesi ise cihazlar tarafindan system bus uzerinden sinyal gonderilerek tetiklenir.",
+      "difficulty": "hard"
+    },
+    {
+      "id": "ch1-q7",
+      "question": "Asagidakilerden hangisi privileged (ayricalikli) bir komuttur?",
+      "options": [
+        "Iki sayiyi toplama",
+        "Bir degiskene deger atama",
+        "Timer degerini ayarlama",
+        "Bir dizinin elemanina erisim"
+      ],
+      "correctIndex": 2,
+      "explanation": "Timer degerini ayarlamak privileged (ayricalikli) bir komuttur ve sadece kernel modunda (mode bit = 0) calistirilabilir. Toplama, atama ve dizi erisimi normal kullanici modu komutlaridir. Privileged komutlar OS'nin kendisini ve diger surecleri korumasini saglar.",
+      "difficulty": "medium"
+    },
+    {
+      "id": "ch1-q8",
+      "question": "Process (surec) ve Program arasindaki temel fark nedir?",
+      "options": [
+        "Program bellekte calisir, process diskte saklanir",
+        "Program aktif bir varliktir, process pasiftir",
+        "Program pasif bir varliktir (passive entity), process aktif bir varliktir (active entity)",
+        "Aralarinda fark yoktur, ayni seydir"
+      ],
+      "correctIndex": 2,
+      "explanation": "Program, diskte saklanan talimatlar butunu olarak pasif bir varliktir (passive entity). Process ise bellekte yurutulen aktif bir varliktir (active entity). Bir program calistirildiginda surec (process) haline gelir ve CPU, bellek, I/O gibi kaynaklara ihtiyac duyar.",
+      "difficulty": "easy"
+    },
+    {
+      "id": "ch1-q9",
+      "question": "Cache coherency problemi en cok hangi ortamda onem kazanir?",
+      "options": [
+        "Tek islemcili (single processor) sistemlerde",
+        "Cok islemcili (multiprocessor) ortamlarda",
+        "Gomulu (embedded) sistemlerde",
+        "Batch islem sistemlerinde"
+      ],
+      "correctIndex": 1,
+      "explanation": "Cache coherency (onbellek tutarliligi) problemi, cok islemcili (multiprocessor) ortamlarda en onemlidir. Birden fazla CPU ayni verinin kopyalarini kendi cache'lerinde tutabilir. Bir CPU veriyi degistirdiginde, diger CPU'larin cache'lerindeki eski kopya guncel olmaz. Donanim seviyesinde tutarlilik saglanmalidir.",
+      "difficulty": "hard"
+    },
+    {
+      "id": "ch1-q10",
+      "question": "Asagidakilerden hangisi bellek yonetimi (Memory Management) aktivitesi degildir?",
+      "options": [
+        "Bellek alaninin hangi surecler tarafindan kullanildigini takip etme",
+        "Bellek alani tahsis etme ve serbest birakma",
+        "Disk zamanlama (Disk Scheduling)",
+        "Hangi sureclerin bellege alinip cikarilacagina karar verme"
+      ],
+      "correctIndex": 2,
+      "explanation": "Disk zamanlama (Disk Scheduling), bellek yonetimi degil kutle depolama yonetimi (Mass-Storage Management) aktivitesidir. Bellek yonetimi: kullanim takibi, surec/veri tasima karari ve alan tahsisi/serbest birakma islemlerini kapsar.",
+      "difficulty": "medium"
+    },
+    {
+      "id": "ch1-q11",
+      "question": "Multitasking (timesharing) sistemlerde yanit suresi (response time) ne olmalidir?",
+      "options": [
+        "5 saniyeden az",
+        "10 saniyeden az",
+        "1 saniyeden az",
+        "0.001 saniyeden az"
+      ],
+      "correctIndex": 2,
+      "explanation": "Multitasking (timesharing) sistemlerde, kullanicinin etkilesimli (interactive) calisabilmesi icin yanit suresi (response time) 1 saniyeden az olmalidir. CPU isler arasinda cok hizli gecis yaparak bu hedefi saglar.",
+      "difficulty": "medium"
+    },
+    {
+      "id": "ch1-q12",
+      "question": "Asagidakilerden hangisi VMM (Virtual Machine Manager) icin dogrudur?",
+      "options": [
+        "Sadece Type 2 olarak calisabilir",
+        "Emulation ile ayni seydir",
+        "Type 1 VMM dogrudan donanim uzerinde calisir, genel amacli host OS yoktur",
+        "VMM sadece Linux sistemlerde calisir"
+      ],
+      "correctIndex": 2,
+      "explanation": "Type 1 VMM (bare-metal hypervisor) dogrudan donanim uzerinde calisir ve genel amacli bir host OS gerektirmez (ornegin VMware ESX, Citrix XenServer). Type 2 VMM ise host OS uzerinde calisir (ornegin VMware Workstation, VirtualBox). Emulation farkli bir kavramdir - farkli CPU mimarileri arasinda cevirme yapar.",
+      "difficulty": "hard"
+    },
+    {
+      "id": "ch1-q13",
+      "question": "Swapping (Takas) nedir?",
+      "options": [
+        "Iki CPU arasinda veri degisimi",
+        "Sureclerin bellekten diske ve diskten bellege tasinmasi",
+        "Iki surec arasinda mesaj gonderme",
+        "Cache ile register arasinda veri aktarimi"
+      ],
+      "correctIndex": 1,
+      "explanation": "Swapping (Takas), sureclerin fiziksel bellege sigmadigi durumlarda, sureclerin (veya bolumlerinin) bellekten diske cikarilip tekrar bellege alinmasi islemidir. Multitasking sistemlerde bellek yetersiz kaldiginda kullanilir.",
+      "difficulty": "medium"
+    },
+    {
+      "id": "ch1-q14",
+      "question": "Depolama hiyerarsisinde register'lar hangi bilesen tarafindan yonetilir?",
+      "options": [
+        "Isletim sistemi (Operating System)",
+        "Derleyici (Compiler)",
+        "Kullanici (User)",
+        "Donanim (Hardware)"
+      ],
+      "correctIndex": 1,
+      "explanation": "Register'lar compiler (derleyici) tarafindan yonetilir. Cache donanim (hardware) tarafindan, main memory, SSD ve HDD ise isletim sistemi (operating system) tarafindan yonetilir. Bu fark, sinavlarda sikllikla sorulan onemli bir detaydir.",
+      "difficulty": "hard"
+    },
+    {
+      "id": "ch1-q15",
+      "question": "Protection ve Security arasindaki temel fark nedir?",
+      "options": [
+        "Aralarinda fark yoktur, ayni kavramdir",
+        "Protection dis tehditlere, Security ic tehditlere karsi koruma saglar",
+        "Protection OS kaynaklarina erisim kontrolu, Security ic ve dis saldirilara karsi savunmadir",
+        "Protection sadece dosyalarla, Security sadece agla ilgilidir"
+      ],
+      "correctIndex": 2,
+      "explanation": "Protection, OS tarafindan tanimlanan kaynaklara sureclerin/kullanicilarin erisimini kontrol eden mekanizmadir (ornegin dosya izinleri). Security ise sistemin ic ve dis saldirilara (virus, worm, DoS, kimlik hirsizligi) karsi savunmasidir. Ikisi birbirini tamamlayan farkli kavramlardir.",
+      "difficulty": "medium"
+    },
+    {
+      "id": "ch1-q16",
+      "question": "Asagidaki ag turlerinden hangisi en genis kapsama alanina sahiptir?",
+      "options": [
+        "PAN (Personal Area Network)",
+        "LAN (Local Area Network)",
+        "MAN (Metropolitan Area Network)",
+        "WAN (Wide Area Network)"
+      ],
+      "correctIndex": 3,
+      "explanation": "WAN (Wide Area Network - Genis Alan Agi) en genis kapsama alanina sahiptir ve sehirler veya ulkeler arasi aglari kapsar (ornegin Internet). Kapsam sirasi: PAN < LAN < MAN < WAN.",
+      "difficulty": "easy"
+    },
+    {
+      "id": "ch1-q17",
+      "question": "Bir kullanici programi kernel moduna nasil gecer?",
+      "options": [
+        "Mode bit'i dogrudan 0 yaparak",
+        "System call (sistem cagrisi) yaparak",
+        "Bilgisayari yeniden baslayatarak",
+        "Admin sifresini girerek"
+      ],
+      "correctIndex": 1,
+      "explanation": "Kullanici programi kernel moduna gecmek icin system call (sistem cagrisi) yapar. System call bir trap (yazilim kesmesi) olusturur ve mode bit otomatik olarak 0'a (kernel mode) ayarlanir. Kullanici, mode bit'i dogrudan degistiremez - bu, donanim seviyesinde kontrol edilir.",
+      "difficulty": "medium"
+    },
+    {
+      "id": "ch1-q18",
+      "question": "Asagidakilerden hangisi I/O alt sistemi (I/O Subsystem) gorevlerinden biri degildir?",
+      "options": [
+        "Buffering (gecici depolama)",
+        "Caching (hiz icin depolama)",
+        "CPU zamanlama (CPU Scheduling)",
+        "Spooling (is cakistirma)"
+      ],
+      "correctIndex": 2,
+      "explanation": "CPU Scheduling (CPU Zamanlama), I/O alt sistemi degil surec yonetimi (Process Management) ile ilgili bir kavramdir. I/O alt sistemi: buffering (transfer sirasinda gecici depolama), caching (performans icin hizli depolamada saklama) ve spooling (bir isin ciktisinin baska islerin girdisiyle cakistirilmasi) islemlerini kapsar.",
+      "difficulty": "hard"
+    },
+    {
+      "id": "ch1-q19",
+      "question": "Emulation (Emulasyon) ne zaman kullanilir?",
+      "options": [
+        "Ayni mimarideki islemciler arasinda",
+        "Kaynak CPU tipi hedef CPU tipinden farkli oldugunda",
+        "Sadece oyun konsollarinda",
+        "Sadece mobil cihazlarda"
+      ],
+      "correctIndex": 1,
+      "explanation": "Emulation, kaynak CPU mimarisi hedef CPU mimarisinden farkli oldugunda kullanilir (ornegin PowerPC icin yazilmis kodu Intel x86 uzerinde calistirmak). Genellikle en yavas calisma yontemidir cunku her komutu cevirmesi gerekir. Dil native code'a derlenmediginde buna interpretation (yorumlama) denir.",
+      "difficulty": "medium"
+    },
+    {
+      "id": "ch1-q20",
+      "question": "Asagidakilerden hangisi surec yonetimi (Process Management) aktivitesi degildir?",
+      "options": [
+        "Surec senkronizasyonu (Process Synchronization)",
+        "Surec iletisimi (Process Communication)",
+        "Dosya olusturma ve silme (File Creation/Deletion)",
+        "Deadlock (kilitlenme) islem mekanizmalari"
+      ],
+      "correctIndex": 2,
+      "explanation": "Dosya olusturma ve silme, dosya sistemi yonetiminin (File-System Management) bir aktivitesidir, surec yonetimi degil. Surec yonetimi: surec olusturma/silme, askiya alma/devam ettirme, senkronizasyon, iletisim ve deadlock islem mekanizmalarini kapsar.",
+      "difficulty": "medium"
+    },
+    {
+      "id": "ch1-q21",
+      "question": "Hangi depolama birimi compiler tarafindan yonetilirken, hangisi donanim tarafindan yonetilir?",
+      "options": [
+        "Register - compiler, Cache - donanim",
+        "Cache - compiler, Register - donanim",
+        "Main Memory - compiler, Register - donanim",
+        "Register - donanim, Cache - compiler"
+      ],
+      "correctIndex": 0,
+      "explanation": "Register'lar compiler (derleyici) tarafindan yonetilir - derleyici hangi degiskenlerin register'da tutulacagina karar verir. Cache ise donanim (hardware) tarafindan yonetilir - donanim otomatik olarak hangi verilerin cache'lenecegine karar verir. Main Memory ve disk ise OS tarafindan yonetilir.",
+      "difficulty": "hard"
+    },
+    {
+      "id": "ch1-q22",
+      "question": "Timer interrupt'i olusturmak icin sayac hangi deger oldugundan interrupt uretilir?",
+      "options": [
+        "Sayac maksimum degere ulastiginda",
+        "Sayac sifira ulastiginda",
+        "Sayac negatif oldugunda",
+        "Sayac her azaldiginda"
+      ],
+      "correctIndex": 1,
+      "explanation": "Timer mekanizmasinda fiziksel saat (physical clock) tarafindan azaltilan bir sayac tutulur. Bu sayac sifira (zero) ulastiginda bir interrupt uretilir. OS boylece kontrolu geri alir veya zaman asimi olan programi sonlandirir. Timer degerini ayarlamak privileged (ayricalikli) bir komuttur.",
+      "difficulty": "medium"
+    }
+  ],
+  "fillBlanks": [
+    {
+      "id": "ch1-fb1",
+      "sentence": "Bilgisayarda her zaman calisan programa ___ denir.",
+      "answer": "kernel",
+      "acceptableAnswers": [
+        "kernel",
+        "cekirdek",
+        "Kernel"
+      ],
+      "hint": "Isletim sisteminin cekirdek bileseni",
+      "difficulty": "easy"
+    },
+    {
+      "id": "ch1-fb2",
+      "sentence": "DMA (Direct Memory Access) ile her byte basina degil, her ___ basina bir interrupt uretilir.",
+      "answer": "blok",
+      "acceptableAnswers": [
+        "blok",
+        "block",
+        "veri bloku"
+      ],
+      "hint": "Birden fazla byte'tan olusan veri birimi",
+      "difficulty": "medium"
+    },
+    {
+      "id": "ch1-fb3",
+      "sentence": "Dual-mode islemde, kernel modu calisirken mode bit degeri ___ olur.",
+      "answer": "0",
+      "acceptableAnswers": [
+        "0",
+        "sifir"
+      ],
+      "hint": "User mode'da bu deger 1'dir",
+      "difficulty": "medium"
+    },
+    {
+      "id": "ch1-fb4",
+      "sentence": "Ana bellek (Main Memory) genellikle ___ teknolojisi kullanir ve ucucu (volatile) yapidadir.",
+      "answer": "DRAM",
+      "acceptableAnswers": [
+        "DRAM",
+        "Dynamic Random-Access Memory",
+        "Dynamic RAM"
+      ],
+      "hint": "Dynamic Random-Access Memory kisaltmasi",
+      "difficulty": "medium"
+    },
+    {
+      "id": "ch1-fb5",
+      "sentence": "Depolama hiyerarsisinde register'lar ___ tarafindan yonetilir.",
+      "answer": "compiler",
+      "acceptableAnswers": [
+        "compiler",
+        "derleyici",
+        "Compiler"
+      ],
+      "hint": "Kaynak kodu makine koduna ceviren yazilim",
+      "difficulty": "hard"
+    },
+    {
+      "id": "ch1-fb6",
+      "sentence": "Multitasking (Timesharing) sistemlerde yanit suresi (response time) ___ saniyeden az olmalidir.",
+      "answer": "1",
+      "acceptableAnswers": [
+        "1",
+        "bir",
+        "< 1"
+      ],
+      "hint": "Tek haneli bir sayi",
+      "difficulty": "medium"
+    },
+    {
+      "id": "ch1-fb7",
+      "sentence": "Sadece kernel modunda calistirilabilen komutlara ___ komutlar denir.",
+      "answer": "privileged",
+      "acceptableAnswers": [
+        "privileged",
+        "ayricalikli",
+        "Privileged"
+      ],
+      "hint": "Ingilizce'de 'ayricalikli' anlamina gelir",
+      "difficulty": "medium"
+    },
+    {
+      "id": "ch1-fb8",
+      "sentence": "Program pasif bir varliktir (passive entity), ___ ise aktif bir varliktir (active entity).",
+      "answer": "process",
+      "acceptableAnswers": [
+        "process",
+        "surec",
+        "Process",
+        "proses"
+      ],
+      "hint": "Bellekte calisan program",
+      "difficulty": "easy"
+    },
+    {
+      "id": "ch1-fb9",
+      "sentence": "Cok islemcili ortamlarda tum CPU'larin cache'lerinde en guncel degerin bulunmasi gereksinimine ___ denir.",
+      "answer": "cache coherency",
+      "acceptableAnswers": [
+        "cache coherency",
+        "onbellek tutarliligi",
+        "cache coherence"
+      ],
+      "hint": "Onbellek tutarliligi",
+      "difficulty": "hard"
+    },
+    {
+      "id": "ch1-fb10",
+      "sentence": "Sanal makine yoneticisine ___ denir ve sanallastirma hizmetlerini saglar.",
+      "answer": "VMM",
+      "acceptableAnswers": [
+        "VMM",
+        "Virtual Machine Manager",
+        "Hypervisor"
+      ],
+      "hint": "Virtual Machine Manager kisaltmasi",
+      "difficulty": "medium"
+    },
+    {
+      "id": "ch1-fb11",
+      "sentence": "Bilgisayar acildiginda calisan ve kernel'i bellege yukleyen ilk programa ___ denir.",
+      "answer": "bootstrap",
+      "acceptableAnswers": [
+        "bootstrap",
+        "bootstrap program",
+        "onyukleme programi",
+        "Bootstrap"
+      ],
+      "hint": "Onyukleme islemiyle ilgili, ROM/EEPROM'da saklanir",
+      "difficulty": "easy"
+    },
+    {
+      "id": "ch1-fb12",
+      "sentence": "I/O alt sisteminde, bir isin ciktisinin baska islerin girdisiyle cakistirilmasina ___ denir.",
+      "answer": "spooling",
+      "acceptableAnswers": [
+        "spooling",
+        "Spooling"
+      ],
+      "hint": "Yazici kuyrugu bu mekanizmanin en bilinen ornegidir",
+      "difficulty": "hard"
+    },
+    {
+      "id": "ch1-fb13",
+      "sentence": "Dagitik sistemlerde en yaygin kullanilan iletisim protokolu ___ dir.",
+      "answer": "TCP/IP",
+      "acceptableAnswers": [
+        "TCP/IP",
+        "tcp/ip",
+        "TCP IP"
+      ],
+      "hint": "Internet'in temel protokolu",
+      "difficulty": "easy"
+    },
+    {
+      "id": "ch1-fb14",
+      "sentence": "Kullanicinin daha fazla yetkiye sahip etkili bir kimlige gecis yapmasina ___ denir.",
+      "answer": "privilege escalation",
+      "acceptableAnswers": [
+        "privilege escalation",
+        "Privilege Escalation",
+        "yetki yukseltme"
+      ],
+      "hint": "Yetki yukseltme anlamina gelir",
+      "difficulty": "hard"
+    },
+    {
+      "id": "ch1-fb15",
+      "sentence": "HDD'de disk yuzeyi mantiksal olarak izlere (tracks) bolunur ve izler ___'lere alt bolunur.",
+      "answer": "sector",
+      "acceptableAnswers": [
+        "sector",
+        "sektor",
+        "sectors",
+        "sektorler"
+      ],
+      "hint": "Diskin en kucuk adreslenebilir birimi",
+      "difficulty": "medium"
+    }
+  ],
+  "examQuestions": [
+    {
+      "id": "ch1-ex1",
+      "type": "shortanswer",
+      "points": 4,
+      "question": "Isletim sisteminin (Operating System) kullaniciya sundugu temel servisleri (basic services) listeleyin. En az 5 tane yazin.",
+      "solution": "1. Kullanici Arayuzu (User Interface) - CLI, GUI, touchscreen\n2. Program Calistirma (Program Execution) - bellige yukle, calistir, sonlandir\n3. G/C Islemleri (I/O Operations) - dosya veya cihaz uzerinden giris/cikis\n4. Dosya Sistemi Yonetimi (File-System Manipulation) - okuma, yazma, olusturma, silme\n5. Iletisim (Communications) - surecler arasi bilgi alisverisi (shared memory, message passing)\n6. Hata Tespiti (Error Detection) - CPU, bellek, I/O hatalari\n7. Kaynak Atama (Resource Allocation)\n8. Koruma ve Guvenlik (Protection & Security)",
+      "steps": [
+        "Kullaniciya yonelik servisler: UI, program execution, I/O, file system, communications, error detection",
+        "Sisteme yonelik servisler: resource allocation, logging/accounting, protection & security"
+      ]
+    },
+    {
+      "id": "ch1-ex2",
+      "type": "shortanswer",
+      "points": 4,
+      "question": "Dual-mode operation (cift modlu islem) nedir? User mode ile kernel mode arasindaki gecis nasil gerceklesir? Neden gereklidir?",
+      "solution": "Dual-mode, CPU'nun iki farkli modda calismasidir:\n- User Mode (mode bit=1): Kullanici programlari calisir, sinirli erisim\n- Kernel Mode (mode bit=0): OS calisir, tam erisim\n\nGecis: System call (trap) ile user->kernel, return ile kernel->user\n\nGerekliligi: OS'u ve diger surecleri hatalinkullanici programlarindan korumak icin. Privileged instructions sadece kernel mode'da calisabilir.",
+      "steps": [
+        "Mode bit 0=kernel, 1=user",
+        "User mode -> system call/trap -> kernel mode",
+        "Kernel mode -> return from call -> user mode",
+        "Timer interrupt de user moddan kernel moda gecer"
+      ]
+    },
+    {
+      "id": "ch1-ex3",
+      "type": "shortanswer",
+      "points": 2,
+      "question": "Interrupt vector nedir? Ne ise yarar?",
+      "solution": "Interrupt vector, tum interrupt service routine (ISR) adreslerini iceren bir tablodur. Her interrupt turune bir numara atanir ve bu numara ile tablodaki ilgili ISR adresi bulunur. CPU interrupt aldiginda, interrupt vector uzerinden uygun handler'a yonlendirilir.",
+      "steps": [
+        "Interrupt gelir -> interrupt numarasi belirlenir",
+        "Interrupt vector tablosunda ilgili ISR adresi bulunur",
+        "CPU o adrese dallanir ve ISR calistirilir"
+      ]
+    },
+    {
+      "id": "ch1-ex4",
+      "type": "calculation",
+      "points": 4,
+      "question": "Base register = 5000, Limit register = 2000 olan bir sistemde: a) Logical address 1500 icin physical address nedir? b) Logical address 2500 icin ne olur?",
+      "solution": "a) 1500 < 2000 (limit) -> gecerli. Physical = Base + Logical = 5000 + 1500 = 6500\nb) 2500 >= 2000 (limit) -> GECERSIZ! Addressing error trap olusur.",
+      "steps": [
+        "Logical address ile limit karsilastirilir",
+        "Eger logical < limit ise: physical = base + logical",
+        "Eger logical >= limit ise: trap (addressing error)",
+        "a) 1500 < 2000 -> OK -> 5000 + 1500 = 6500",
+        "b) 2500 >= 2000 -> TRAP!"
+      ]
+    },
+    {
+      "id": "ch1-ex5",
+      "type": "truefalse",
+      "points": 2,
+      "question": "Timer interrupt olmadan isletim sistemi CPU kontrolunu her zaman geri alabilir.",
+      "solution": "YANLIS (False). Timer interrupt olmadan, bir kullanici programi sonsuz donguye girerse CPU kontrolu OS'a geri donmez. Timer interrupt, belirli araliklarla CPU kontrolunun OS'a donmesini garanti eder. Bu nedenle timer privileged bir talimattir."
+    },
+    {
+      "id": "ch1-ex6",
+      "type": "truefalse",
+      "points": 2,
+      "question": "Kernel, bilgisayarda surekli calisan tek programdir (the one program running at all times).",
+      "solution": "DOGRU (True). Kernel, isletim sisteminin cekirdegi olup bilgisayar acik oldugu surece bellekte kalir ve calisir. Diger programlar (system programs ve application programs) ihtiyac duyuldugunda yuklenip kaldirilir."
+    }
+  ]
+}

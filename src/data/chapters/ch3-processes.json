@@ -1,0 +1,1165 @@
+{
+  "id": "ch3",
+  "title": "Surecler (Processes)",
+  "titleEn": "Processes",
+  "sections": [
+    {
+      "id": "ch3-s1",
+      "title": "Surec Kavrami (Process Concept)",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "Isletim sistemi cesitli programlari surec (process) olarak calistirir. Surec (Process), yurutulme asamasindaki bir programdir. Surec yurutulmesi sirali (sequential) sekilde ilerlemelidir; tek bir surecin komutlari paralel olarak calistirilamaz."
+        },
+        {
+          "type": "keypoint",
+          "text": "Program pasif (passive) bir varlik olup diskte saklanir (calistirilabilir dosya - executable file). Surec ise aktif (active) bir varliktir. Program, calistirilabilir dosya belege yuklendiginde surec haline gelir."
+        },
+        {
+          "type": "list",
+          "items": [
+            "Metin bolumu (Text section): Program kodu",
+            "Program sayaci (Program counter): Siradaki komutu gosteren sayac ve islemci yazmaclari (processor registers)",
+            "Yigin (Stack): Gecici veriler - fonksiyon parametreleri, donus adresleri, yerel degiskenler",
+            "Veri bolumu (Data section): Global degiskenler",
+            "Yigin bellegi (Heap): Calisma zamaninda dinamik olarak ayrilan bellek"
+          ]
+        },
+        {
+          "type": "diagram",
+          "ascii": "     max\n    +------------------+\n    |      stack       |  <-- Gecici veriler (fonksiyon parametreleri)\n    |        |         |\n    |        v         |\n    |                  |\n    |        ^         |\n    |        |         |\n    |      heap        |  <-- Dinamik bellek (malloc)\n    +------------------+\n    |      data        |  <-- Global degiskenler\n    +------------------+\n    |      text        |  <-- Program kodu\n    +------------------+\n      0",
+          "caption": "Bellekteki Surec Yerlesimi (Process in Memory) - Stack yukari dogru, Heap asagi dogru buyur"
+        },
+        {
+          "type": "analogy",
+          "text": "Bir sureci bir mutfakta yemek yapan bir asci gibi dusunebilirsiniz: Tarif (recipe) = program kodu (text), malzemeler = veri (data), asigin o anki adimi = program sayaci (program counter), tezgah uzerindeki gecici malzemeler = yigin (stack), buzdolabindan alinan ekstra malzemeler = heap."
+        },
+        {
+          "type": "warning",
+          "text": "Bir program birden fazla surec olabilir! Ayni programi birden fazla kullanici calistirdiginda, her biri ayri bir surec olusturur. Ornegin, ayni anda 5 kullanici Chrome actiginda 5 ayri surec olusur."
+        },
+        {
+          "type": "code",
+          "language": "c",
+          "code": "#include <stdio.h>\n#include <stdlib.h>\n\nint x;          // data section (baslangic degeri olmayan)\nint y = 15;     // data section (baslangic degerli)\n\nint main(int argc, char *argv[])\n{\n    int *values;  // stack\n    int i;        // stack\n\n    values = (int *)malloc(sizeof(int)*5);  // heap\n\n    for(i = 0; i < 5; i++)\n        values[i] = i;\n\n    return 0;\n}",
+          "caption": "C Programinda Bellek Yerlesimi - Her degisken farkli bolumde saklanir"
+        }
+      ]
+    },
+    {
+      "id": "ch3-s2",
+      "title": "Surec Durumu (Process State)",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "Bir surec calisirken durumunu (state) degistirir. Her surec asagidaki durumlardan birinde bulunur:"
+        },
+        {
+          "type": "list",
+          "items": [
+            "Yeni (New): Surec olusturuluyor",
+            "Calisan (Running): Komutlar yurutuluyor",
+            "Bekleyen (Waiting): Surec bir olayin gerceklesmesini bekliyor (ornegin G/C - I/O)",
+            "Hazir (Ready): Surec islemciye atanmayi bekliyor",
+            "Sonlanmis (Terminated): Surec yurutmeyi tamamladi"
+          ]
+        },
+        {
+          "type": "diagram",
+          "ascii": "                  admitted           interrupt            exit\n  (new) ---------> (ready) <--------> (running) ---------> (terminated)\n                     ^    scheduler     |  |\n                     |    dispatch      |  |\n                     |                  |  |\n                     |   I/O or event   v  |\n                     +-- completion -- (waiting)\n                                        ^\n                                        |\n                                   I/O or event wait",
+          "caption": "Surec Durum Diyagrami (Process State Diagram) - 5 temel durum arasi gecisler"
+        },
+        {
+          "type": "keypoint",
+          "text": "Herhangi bir anda tek bir islemci cekirdeginde (CPU core) yalnizca BIR surec 'Running' durumunda olabilir. Ancak birden fazla surec 'Ready' veya 'Waiting' durumunda olabilir."
+        },
+        {
+          "type": "analogy",
+          "text": "Surec durumlarini bir restoran sirasina benzetebilirsiniz: New = restorana yeni gelen musteri, Ready = sirada bekleyen musteri, Running = siparis veren musteri (kasada), Waiting = yemeginin hazirlanmasini bekleyen musteri, Terminated = yemegini yiyip giden musteri."
+        }
+      ]
+    },
+    {
+      "id": "ch3-s3",
+      "title": "Surec Kontrol Blogu ve Is Parcaciklari (PCB and Threads)",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "Her surecle iliskili bilgiler Surec Kontrol Blogunda (Process Control Block - PCB) saklanir. PCB, gorev kontrol blogu (task control block) olarak da adlandirilir."
+        },
+        {
+          "type": "list",
+          "items": [
+            "Surec durumu (Process state): Running, waiting vb.",
+            "Program sayaci (Program counter): Calistirilacak sonraki komutun adresi",
+            "CPU yazmaclari (CPU registers): Surece ait tum yazmac icerikleri",
+            "CPU zamanlama bilgisi (CPU scheduling info): Oncelikler, zamanlama kuyrugu isaretcileri",
+            "Bellek yonetim bilgisi (Memory-management info): Surece ayrilan bellek",
+            "Muhasebe bilgisi (Accounting info): Kullanilan CPU suresi, baslangictan gecen sure",
+            "G/C durum bilgisi (I/O status info): Surece ayrilan G/C aygitlari, acik dosya listesi"
+          ]
+        },
+        {
+          "type": "diagram",
+          "ascii": "    +--------------------+\n    |   process state    |\n    +--------------------+\n    |   process number   |\n    +--------------------+\n    |  program counter   |\n    +--------------------+\n    |     registers      |\n    +--------------------+\n    |   memory limits    |\n    +--------------------+\n    | list of open files |\n    +--------------------+\n    |       ...          |\n    +--------------------+",
+          "caption": "Surec Kontrol Blogu (PCB) Yapisi"
+        },
+        {
+          "type": "paragraph",
+          "text": "Is Parcaciklari (Threads): Simdiye kadar surecin tek bir yurutme is parcacigi (thread of execution) vardi. Ancak bir surec birden fazla program sayacina sahip olabilir, bu da birden fazla konumun ayni anda calistirilabilecegi anlamina gelir. Bunlara is parcaciklari (threads) denir. Detaylar Bolum 4'te ele alinacaktir."
+        },
+        {
+          "type": "code",
+          "language": "c",
+          "code": "// Linux'ta surec temsili - task_struct yapisi\npid_t pid;                     /* surec tanimlayicisi */\nlong state;                    /* surecin durumu */\nunsigned int time_slice;       /* zamanlama bilgisi */\nstruct task_struct *parent;    /* bu surecin ebeveyni */\nstruct list_head children;     /* bu surecin cocuklari */\nstruct files_struct *files;    /* acik dosya listesi */\nstruct mm_struct *mm;          /* adres alani */",
+          "caption": "Linux'ta task_struct Yapisi - PCB'nin C Temsili"
+        },
+        {
+          "type": "keypoint",
+          "text": "Linux'ta tum surecler cift bagli bir liste (doubly linked list) olarak saklanir. 'current' isaretcisi o an calisan sureci gosterir."
+        }
+      ]
+    },
+    {
+      "id": "ch3-s4",
+      "title": "Surec Zamanlama (Process Scheduling)",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "Surec zamanlayici (Process scheduler), CPU cekirdeginde siradaki yurutme icin mevcut surecler arasinda secim yapar. Amac, CPU kullanimini en ust duzeye cikarmak ve surecleri hizla degistirmektir."
+        },
+        {
+          "type": "list",
+          "items": [
+            "Hazir kuyrugu (Ready queue): Ana bellekte bulunan ve calismayi bekleyen tum sureclerin kumesi",
+            "Bekleme kuyrugu (Wait queue): Bir olayi (ornegin G/C) bekleyen sureclerin kumesi",
+            "Surecler cesitli kuyruklar arasinda goc eder (migrate)"
+          ]
+        },
+        {
+          "type": "diagram",
+          "ascii": "  ready queue  -->  [PCB7] --> [PCB2] --> null\n    head/tail\n\n  wait queue   -->  [PCB3] --> [PCB14] --> [PCB6] --> null\n    head/tail",
+          "caption": "Hazir ve Bekleme Kuyruklari - Bagli Liste (Linked List) Yapisi"
+        },
+        {
+          "type": "paragraph",
+          "text": "Surec zamanlama akisi: Surec ready queue'dan CPU'ya alinir. CPU'da calisirken I/O istegi yaparsa I/O wait queue'ya, zaman dilimi (time slice) dolarsa tekrar ready queue'ya, cocuk surec olusturursa child termination wait queue'ya gider."
+        },
+        {
+          "type": "analogy",
+          "text": "Zamanlama kuyruklarini bir hastanenin bekleme odalarina benzetebilirsiniz: Hazir kuyrugu = doktoru bekleyen hastalar, Bekleme kuyrugu = test sonucu bekleyen hastalar. Doktor (CPU) her seferinde bir hastayla ilgilenir."
+        }
+      ]
+    },
+    {
+      "id": "ch3-s5",
+      "title": "Baglam Degistirme (Context Switch)",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "CPU baska bir surece gectiginde, sistem eski surecin durumunu kaydetmeli (save state) ve yeni surecin kaydedilmis durumunu yuklemeli (load saved state). Bu isleme baglam degistirme (context switch) denir."
+        },
+        {
+          "type": "keypoint",
+          "text": "Bir surecin baglami (context), PCB'de temsil edilir. Baglam degistirme suresi saf ek yuk (overhead) zamandir - sistem degistirme sirasinda hicbir faydali is yapmaz."
+        },
+        {
+          "type": "diagram",
+          "ascii": "   Process P0      Isletim Sistemi     Process P1\n   ----------      ----------------    ----------\n   calistir\n       |--- kesme/sistem cagrisi -->\n       |         durumu PCB0'a kaydet\n       |              ...\n       |         durumu PCB1'den yukle\n       |                               calistir\n       |                                  |\n       |         <-- kesme/sistem cagrisi-|\n       |         durumu PCB1'e kaydet\n       |              ...\n       |         durumu PCB0'dan yukle\n   calistir",
+          "caption": "CPU'nun Surecler Arasi Gecisi (Context Switch) - P0 ve P1 arasinda"
+        },
+        {
+          "type": "warning",
+          "text": "Baglam degistirme suresi donanim destegine baglidir. Isletim sistemi ve PCB ne kadar karmasiksa, baglam degistirme o kadar uzun surer. Bazi donanimlar CPU basina birden fazla yazmac seti saglayarak birden fazla baglami ayni anda yuklenmis tutar."
+        },
+        {
+          "type": "analogy",
+          "text": "Baglam degistirmeyi bir ogrencinin ders calismasi gibi dusunun: Matematik calisirken fizige gecmek istediginde, once matematigin neresinde kaldigini not eder (save state), sonra fizik notlarini acar (load state). Bu gecis suresi boyunca aslinda ne matematik ne fizik calisiyor - bu saf kayip zamandir (overhead)."
+        }
+      ]
+    },
+    {
+      "id": "ch3-s6",
+      "title": "Surec Islemleri - Olusturma (Process Creation)",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "Ebeveyn (parent) surec cocuk (children) surecleri olusturur. Cocuklar da kendi cocuklarini olusturarak bir surec agaci (tree of processes) meydana getirir. Surecler genellikle surec tanimlayicisi (process identifier - pid) ile tanimlanir ve yonetilir."
+        },
+        {
+          "type": "list",
+          "items": [
+            "Kaynak paylasim secenekleri: Ebeveyn ve cocuklar tum kaynaklari paylasinir / Cocuklar ebeveynin kaynaklarinin bir alt kumesini paylasinir / Kaynak paylasilmaz",
+            "Yurutme secenekleri: Ebeveyn ve cocuklar es zamanli (concurrently) calisir / Ebeveyn cocuklar sonlanana kadar bekler"
+          ]
+        },
+        {
+          "type": "paragraph",
+          "text": "UNIX'te surec olusturma: fork() sistem cagrisi yeni surec olusturur. exec() sistem cagrisi, fork()'tan sonra surecin bellek alanini yeni bir programla degistirir. Ebeveyn surec cocugun sonlanmasini beklemek icin wait() cagrisini kullanir."
+        },
+        {
+          "type": "diagram",
+          "ascii": "                         pid = fork()\n                        /            \\\n                       /              \\\n              ebeveyn (pid > 0)    cocuk (pid == 0)\n                  |                    |\n              wait()               exec()\n                  |                    |\n              ebeveyn                exit()\n              devam eder               |",
+          "caption": "UNIX'te fork/exec/wait Akisi"
+        },
+        {
+          "type": "code",
+          "language": "c",
+          "code": "#include <sys/types.h>\n#include <stdio.h>\n#include <unistd.h>\n\nint main()\n{\n    pid_t pid;\n\n    /* cocuk surec olustur */\n    pid = fork();\n\n    if (pid < 0) { /* hata olustu */\n        fprintf(stderr, \"Fork Failed\");\n        return 1;\n    }\n    else if (pid == 0) { /* cocuk surec */\n        execlp(\"/bin/ls\",\"ls\",NULL);\n    }\n    else { /* ebeveyn surec */\n        /* cocugun tamamlanmasini bekle */\n        wait(NULL);\n        printf(\"Child Complete\");\n    }\n\n    return 0;\n}",
+          "caption": "fork() ile Ayri Surec Olusturan C Programi"
+        },
+        {
+          "type": "diagram",
+          "ascii": "              systemd (pid=1)\n             /       |       \\\n         logind    python     sshd\n        pid=8415  pid=2808   pid=3028\n           |                    \\\n         bash                  sshd\n        pid=8416              pid=3610\n        /    \\                    \\\n      ps     vim                 tcsh\n   pid=9298 pid=9204           pid=4005",
+          "caption": "Linux'ta Surec Agaci (Process Tree) - systemd kok surecdir (pid=1)"
+        },
+        {
+          "type": "keypoint",
+          "text": "fork() cocuk surece 0, ebeveyne cocugun pid'sini, hata durumunda -1 dondurur. Cocuk surec, ebeveynin adres alaninin bir kopyasidir."
+        }
+      ]
+    },
+    {
+      "id": "ch3-s7",
+      "title": "Surec Sonlandirma (Process Termination)",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "Surec son komutunu calistirdiktan sonra exit() sistem cagrisi ile isletim sisteminden silinmesini ister. Cocuk, wait() araciligiyla ebeveyne durum verisi dondurur ve surecin kaynaklari isletim sistemi tarafindan serbest birakilir."
+        },
+        {
+          "type": "list",
+          "items": [
+            "Ebeveyn, abort() sistem cagrisiyla cocuk sureclerin yurutulmesini sonlandirabilir",
+            "Cocuk, kendisine ayrilan kaynaklari astiysa sonlandirilabilir",
+            "Cocuga atanan gorev artik gerekli degilse sonlandirilabilir",
+            "Ebeveyn cikiyorsa ve isletim sistemi ebeveyn olmadan cocugun devam etmesine izin vermiyorsa"
+          ]
+        },
+        {
+          "type": "keypoint",
+          "text": "Basamakli sonlandirma (Cascading termination): Bir surec sonlandiginda tum cocuklari, torunlari vb. de sonlandirilir. Bu islem isletim sistemi tarafindan baslatilir."
+        },
+        {
+          "type": "paragraph",
+          "text": "wait() sistem cagrisi ile ebeveyn cocugun sonlanmasini bekleyebilir: pid = wait(&status); Bu cagri durum bilgisini ve sonlanan surecin pid'sini dondurur."
+        },
+        {
+          "type": "warning",
+          "text": "Zombi surec (Zombie process): Ebeveyn wait() cagirmadiysa sonlanan cocuk surec zombi olur - surec tablosunda yer kaplar ama calismaz. Yetim surec (Orphan process): Ebeveyn wait() cagirmadan sonlandiysa cocuk yetim olur. Linux'ta yetim surecler init/systemd sureci tarafindan evlat edinilir."
+        },
+        {
+          "type": "analogy",
+          "text": "Zombi sureci, isi bitmis ama kimsenin teslim almadigi bir kargo gibi dusunun - yer kaplar ama hicbir ise yaramaz. Yetim sureci ise velisi giden bir cocuk gibi dusunun - devlet (init sureci) onu sahiplenir."
+        }
+      ]
+    },
+    {
+      "id": "ch3-s8",
+      "title": "Surecler Arasi Iletisim (Interprocess Communication - IPC)",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "Bir sistemdeki surecler bagimsiz (independent) veya isbirligi yapan (cooperating) olabilir. Isbirligi yapan surec, diger surecleri etkileyebilir veya onlardan etkilenebilir. Isbirligi yapan surecler, surecler arasi iletisim (Interprocess Communication - IPC) mekanizmasina ihtiyac duyar."
+        },
+        {
+          "type": "list",
+          "items": [
+            "Bilgi paylasimi (Information sharing): Birden fazla surecin ayni verilere erisimi",
+            "Hesaplama hizlandirma (Computation speedup): Gorevleri alt gorevlere bolme",
+            "Modulerlik (Modularity): Sistem islevlerini ayri sureclere bolme",
+            "Kolaylik (Convenience): Kullanicinin birden fazla gorevi ayni anda yapabilmesi"
+          ]
+        },
+        {
+          "type": "keypoint",
+          "text": "IPC'nin iki temel modeli vardir: Paylasilan bellek (Shared memory) ve Mesaj gecirme (Message passing)."
+        },
+        {
+          "type": "diagram",
+          "ascii": "   Paylasilan Bellek              Mesaj Gecirme\n   (Shared Memory)               (Message Passing)\n  +--------------+              +--------------+\n  |  Process A   |              |  Process A   |\n  +--------------+              +--------------+\n  | Shared Memory|<-->          |              |\n  +--------------+              |  Process B   |\n  |  Process B   |              +--------------+\n  +--------------+              | message queue|\n  |              |              | m0|m1|m2|... |\n  |   kernel     |              |   kernel     |\n  +--------------+              +--------------+\n      (a)                           (b)",
+          "caption": "IPC Modelleri: (a) Paylasilan Bellek, (b) Mesaj Gecirme"
+        },
+        {
+          "type": "paragraph",
+          "text": "Paylasilan bellekte (Shared memory) iletisim, isletim sistemi degil kullanici surecleri tarafindan kontrol edilir. Mesaj gecirmede (Message passing) ise iletisim kernel uzerinden gerceklesir. Paylasilan bellek daha hizlidir ancak senkronizasyon sorunlari vardir."
+        }
+      ]
+    },
+    {
+      "id": "ch3-s9",
+      "title": "Paylasilan Bellekte IPC - Uretici-Tuketici Problemi (Producer-Consumer Problem)",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "Uretici-Tuketici problemi (Producer-Consumer problem), isbirligi yapan surecler icin temel bir paradigmadir. Uretici (producer) surec bilgi uretir, tuketici (consumer) surec bu bilgiyi tuketir."
+        },
+        {
+          "type": "list",
+          "items": [
+            "Sinirsiz tampon (Unbounded-buffer): Tampon boyutuna pratik sinir yoktur. Uretici asla beklemez, tuketici bos tampon varsa bekler.",
+            "Sinirli tampon (Bounded-buffer): Sabit tampon boyutu vardir. Uretici tampon doluysa bekler, tuketici bos tampon varsa bekler."
+          ]
+        },
+        {
+          "type": "code",
+          "language": "c",
+          "code": "#define BUFFER_SIZE 10\ntypedef struct {\n    . . .\n} item;\n\nitem buffer[BUFFER_SIZE];\nint in = 0;\nint out = 0;",
+          "caption": "Sinirli Tampon (Bounded Buffer) - Paylasilan Veri Yapisi"
+        },
+        {
+          "type": "code",
+          "language": "c",
+          "code": "// URETICI (Producer)\nitem next_produced;\nwhile (true) {\n    /* uretilecek ogesi uret */\n    while (((in + 1) % BUFFER_SIZE) == out)\n        ; /* bos bekle - tampon dolu */\n    buffer[in] = next_produced;\n    in = (in + 1) % BUFFER_SIZE;\n}\n\n// TUKETICI (Consumer)\nitem next_consumed;\nwhile (true) {\n    while (in == out)\n        ; /* bos bekle - tampon bos */\n    next_consumed = buffer[out];\n    out = (out + 1) % BUFFER_SIZE;\n    /* tuketilen ogeyi isle */\n}",
+          "caption": "Uretici ve Tuketici Kodlari - Dairesel tampon (circular buffer) kullanir"
+        },
+        {
+          "type": "warning",
+          "text": "Bu cozumde en fazla BUFFER_SIZE-1 eleman kullanilabilir! Tum tamponlari doldurmak icin counter degiskeni eklenmeli, ancak bu durumda yaris durumu (race condition) riski olusur."
+        },
+        {
+          "type": "paragraph",
+          "text": "Yaris Durumu (Race Condition): counter++ ve counter-- islemleri atomik degildir. Makine dilinde her biri 3 komuta donusur. Islemlerin arasina girilirse (interleaving) yanlis sonuclar elde edilebilir. Ornegin counter=5 iken uretici ve tuketici es zamanli calisirsa, sonuc 4, 5 veya 6 olabilir!"
+        }
+      ]
+    },
+    {
+      "id": "ch3-s10",
+      "title": "Mesaj Gecirme Sistemlerinde IPC (IPC in Message-Passing Systems)",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "Mesaj gecirme (Message passing) yonteminde surecler, paylasilan degiskenler kullanmadan birbirleriyle iletisim kurar. IPC tesisi iki islem saglar: send(message) ve receive(message). Mesaj boyutu sabit veya degisken olabilir."
+        },
+        {
+          "type": "keypoint",
+          "text": "Dogrudan iletisim (Direct communication): Surecler birbirlerini acikca adlandirir. send(P, message) - P surece mesaj gonder, receive(Q, message) - Q surecten mesaj al. Baglanti otomatik kurulur, her cift arasinda tam olarak bir baglanti vardir."
+        },
+        {
+          "type": "keypoint",
+          "text": "Dolayli iletisim (Indirect communication): Mesajlar posta kutularina (mailboxes/ports) gonderilir ve alinir. Her posta kutusunun benzersiz bir kimlik numarasi vardir. Surecler ancak ortak bir posta kutusunu paylasiyorlarsa iletisim kurabilir."
+        },
+        {
+          "type": "list",
+          "items": [
+            "Engellenen (Blocking/Synchronous): Engellenen gonderme - mesaj alinana kadar gonderen bloke olur. Engellenen alma - mesaj mevcut olana kadar alici bloke olur.",
+            "Engellenmeyen (Non-blocking/Asynchronous): Engellenmeyen gonderme - gonderen mesaji gonderir ve devam eder. Engellenmeyen alma - alici gecerli bir mesaj veya null alir.",
+            "Her iki islem de engellenen ise buna randevu (rendezvous) denir."
+          ]
+        },
+        {
+          "type": "paragraph",
+          "text": "Tamponlama (Buffering): Mesaj kuyrugu uc sekilde uygulanir: (1) Sifir kapasite (Zero capacity) - kuyrukta mesaj yok, gonderen aliciyi bekler (randevu), (2) Sinirli kapasite (Bounded capacity) - sonlu n mesaj, doldugunda gonderen bekler, (3) Sinirsiz kapasite (Unbounded capacity) - sonsuz uzunluk, gonderen asla beklemez."
+        },
+        {
+          "type": "code",
+          "language": "c",
+          "code": "// Mesaj Gecirme ile Uretici-Tuketici\n// URETICI (Producer)\nmessage next_produced;\nwhile (true) {\n    /* uretilecek ogeyi uret */\n    send(next_produced);\n}\n\n// TUKETICI (Consumer)\nmessage next_consumed;\nwhile (true) {\n    receive(next_consumed);\n    /* tuketilen ogeyi isle */\n}",
+          "caption": "Mesaj Gecirme ile Uretici-Tuketici Cozumu - Paylasilan degisken yok"
+        }
+      ]
+    },
+    {
+      "id": "ch3-s11",
+      "title": "IPC Sistem Ornekleri (Examples of IPC Systems)",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "POSIX Paylasilan Bellek (POSIX Shared Memory): Surec once shm_open() ile paylasilan bellek segmenti olusturur, ftruncate() ile boyutunu ayarlar, mmap() ile bellek eslemesi yapar. Okuma ve yazma, mmap()'in dondurdugu isaretci ile yapilir."
+        },
+        {
+          "type": "code",
+          "language": "c",
+          "code": "// POSIX Paylasilan Bellek - Uretici (Producer)\n#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\n#include <fcntl.h>\n#include <sys/shm.h>\n#include <sys/stat.h>\n\nint main() {\n    const int SIZE = 4096;\n    const char *name = \"OS\";\n    int shm_fd;\n    void *ptr;\n\n    /* paylasilan bellek nesnesi olustur */\n    shm_fd = shm_open(name, O_CREAT | O_RDWR, 0666);\n    ftruncate(shm_fd, SIZE);\n\n    /* bellek esleme */\n    ptr = mmap(0, SIZE, PROT_WRITE, MAP_SHARED, shm_fd, 0);\n\n    /* paylasilan bellege yaz */\n    sprintf(ptr, \"%s\", \"Hello\");\n    ptr += strlen(\"Hello\");\n    sprintf(ptr, \"%s\", \"World!\");\n\n    return 0;\n}",
+          "caption": "POSIX Paylasilan Bellek Uretici Kodu"
+        },
+        {
+          "type": "code",
+          "language": "c",
+          "code": "// POSIX Paylasilan Bellek - Tuketici (Consumer)\nint main() {\n    const int SIZE = 4096;\n    const char *name = \"OS\";\n    int shm_fd;\n    void *ptr;\n\n    /* paylasilan bellek nesnesini ac */\n    shm_fd = shm_open(name, O_RDONLY, 0666);\n    ptr = mmap(0, SIZE, PROT_READ, MAP_SHARED, shm_fd, 0);\n\n    /* paylasilan bellekten oku */\n    printf(\"%s\", (char *)ptr);\n\n    /* paylasilan bellek nesnesini sil */\n    shm_unlink(name);\n\n    return 0;\n}",
+          "caption": "POSIX Paylasilan Bellek Tuketici Kodu"
+        },
+        {
+          "type": "paragraph",
+          "text": "Windows IPC: Gelismis yerel prosedur cagrisi (Advanced Local Procedure Call - LPC) tesisini kullanir. Yalnizca ayni sistemdeki surecler arasinda calisir. Portlari (posta kutulari gibi) kullanarak iletisim kanallari kurar."
+        }
+      ]
+    },
+    {
+      "id": "ch3-s12",
+      "title": "Borular ve Istemci-Sunucu Iletisimi (Pipes and Client-Server Communication)",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "Borular (Pipes), iki surecin iletisim kurmasini saglayan bir kanal gorevi gorur. Iki tur boru vardir:"
+        },
+        {
+          "type": "list",
+          "items": [
+            "Siradan borular (Ordinary pipes): Olusturan surecin disinda erisilemez. Tipik olarak ebeveyn surec boru olusturur ve cocuk surec ile iletisim kurar. Tek yonlu (unidirectional). Windows'ta bunlara anonim borular (anonymous pipes) denir.",
+            "Adlandirilmis borular (Named pipes): Ebeveyn-cocuk iliskisi gerektirmez. Cift yonlu (bidirectional) iletisim saglar. Birden fazla surec ayni adlandirilmis boruyu kullanabilir. Hem UNIX hem Windows'ta desteklenir."
+          ]
+        },
+        {
+          "type": "code",
+          "language": "c",
+          "code": "#include <stdio.h>\n#include <unistd.h>\n#include <sys/types.h>\n\nint main(void) {\n    int fd[2], nbytes;\n    pid_t childpid;\n    char string[] = \"Hello, world!\\n\";\n    char readbuffer[80];\n\n    pipe(fd);  /* boru olustur */\n\n    if((childpid = fork()) == -1) {\n        perror(\"fork\");\n        exit(1);\n    }\n\n    if(childpid == 0) {\n        /* Cocuk: borunun giris tarafini kapat */\n        close(fd[0]);\n        /* Cikis tarafindan yaz */\n        write(fd[1], string, (strlen(string)+1));\n        exit(0);\n    }\n    else {\n        /* Ebeveyn: borunun cikis tarafini kapat */\n        close(fd[1]);\n        /* Giris tarafindan oku */\n        nbytes = read(fd[0], readbuffer, sizeof(readbuffer));\n        printf(\"Received string: %s\", readbuffer);\n    }\n\n    return(0);\n}",
+          "caption": "pipe() Sistem Cagrisi ile IPC - Tam C Programi"
+        },
+        {
+          "type": "diagram",
+          "ascii": "      Parent                    Child\n    +--------+                +--------+\n    | fd[0]  |<-----.    .--->| fd[0]  |\n    | fd[1]  |---.  |    |   | fd[1]  |\n    +--------+   |  |    |   +--------+\n                 v  |    ^\n               +----------+\n               |   pipe   |\n               | (buffer) |\n               +----------+\n    fd[0] = okuma ucu (read-end)\n    fd[1] = yazma ucu (write-end)",
+          "caption": "Ordinary Pipe Yapisi - fd[0] okuma, fd[1] yazma ucunu temsil eder"
+        },
+        {
+          "type": "keypoint",
+          "text": "Her surecin varsayilan olarak 3 dosya tanimlayicisi (file descriptor) vardir: Standard Input (stdin) = 0, Standard Output (stdout) = 1, Standard Error (stderr) = 2. dup() ve dup2() sistem cagrilari ile bu tanimlayicilar yeniden yonlendirilebilir (redirect)."
+        },
+        {
+          "type": "paragraph",
+          "text": "dup() sistem cagrisi, dosya tanimlayicilarini cogaltir (duplicate). Yeniden atanacak tanimlayicilar once kapatilmali, sonra dup() cagrilmalidir. dup2(source_fd, target_fd) versiyonu ise hedef tanimlayiciyi dogrudan kullanicinin belirledigi degere atar."
+        }
+      ]
+    }
+  ],
+  "flashcards": [
+    {
+      "id": "ch3-fc1",
+      "front": "Surec (Process) nedir?",
+      "back": "Yurutulme asamasindaki bir programdir (a program in execution). Sirali sekilde ilerler ve metin bolumu, veri, yigin, heap ve program sayaci icerir.",
+      "difficulty": "easy"
+    },
+    {
+      "id": "ch3-fc2",
+      "front": "Program ile surec arasindaki fark nedir?",
+      "back": "Program, diskte saklanan pasif (passive) bir varliktir (executable file). Surec ise belege yuklenmis aktif (active) bir varliktir. Bir program birden fazla surec olabilir.",
+      "difficulty": "easy"
+    },
+    {
+      "id": "ch3-fc3",
+      "front": "Bir surecin bellekteki 5 bolumu nelerdir?",
+      "back": "1) Text (program kodu), 2) Data (global degiskenler), 3) Heap (dinamik bellek - malloc), 4) Stack (gecici veriler - fonksiyon parametreleri, yerel degiskenler), 5) Program counter ve registers.",
+      "difficulty": "easy"
+    },
+    {
+      "id": "ch3-fc4",
+      "front": "Bir surecin 5 durumu (state) nelerdir?",
+      "back": "1) New (olusturuluyor), 2) Running (komutlar yurutuluyor), 3) Waiting (olay bekleniyor), 4) Ready (islemciye atanmayi bekliyor), 5) Terminated (yurutme tamamlandi).",
+      "difficulty": "easy"
+    },
+    {
+      "id": "ch3-fc5",
+      "front": "PCB (Process Control Block) nedir ve hangi bilgileri icerir?",
+      "back": "Her surecle iliskili bilgileri saklayan veri yapisidir. Icerir: surec durumu, program sayaci, CPU yazmaclari, CPU zamanlama bilgisi, bellek yonetim bilgisi, muhasebe bilgisi, G/C durum bilgisi.",
+      "difficulty": "medium"
+    },
+    {
+      "id": "ch3-fc6",
+      "front": "Baglam degistirme (Context Switch) nedir?",
+      "back": "CPU'nun bir surecten digerine gecerken eski surecin durumunu PCB'ye kaydetmesi ve yeni surecin durumunu PCB'den yuklemesi islemidir. Bu sure saf ek yuk (overhead) zamandir.",
+      "difficulty": "easy"
+    },
+    {
+      "id": "ch3-fc7",
+      "front": "fork() sistem cagrisi ne yapar ve ne dondurur?",
+      "back": "Yeni bir cocuk surec olusturur. Ebeveyne cocugun pid'sini (>0), cocuk surece 0, hata durumunda -1 dondurur. Cocuk, ebeveynin adres alaninin bir kopyasidir.",
+      "difficulty": "medium"
+    },
+    {
+      "id": "ch3-fc8",
+      "front": "exec() sistem cagrisi ne yapar?",
+      "back": "fork()'tan sonra kullanilir ve surecin bellek alanini yeni bir program ile degistirir. Boylece cocuk surec ebeveynden farkli bir program calistirir.",
+      "difficulty": "medium"
+    },
+    {
+      "id": "ch3-fc9",
+      "front": "Zombi surec (Zombie process) nedir?",
+      "back": "Sonlanan ancak ebeveyni wait() cagirmadigindan surec tablosundan silinemeyen surectir. Surec tablosunda yer kaplar ama calismaz.",
+      "difficulty": "medium"
+    },
+    {
+      "id": "ch3-fc10",
+      "front": "Yetim surec (Orphan process) nedir?",
+      "back": "Ebeveyni wait() cagirmadan sonlanan surecin cocugudur. Linux'ta yetim surecler init/systemd (pid=1) sureci tarafindan evlat edinilir.",
+      "difficulty": "medium"
+    },
+    {
+      "id": "ch3-fc11",
+      "front": "Basamakli sonlandirma (Cascading termination) nedir?",
+      "back": "Bir surec sonlandiginda, tum cocuklari, torunlari vb. de otomatik olarak isletim sistemi tarafindan sonlandirilmasidir.",
+      "difficulty": "medium"
+    },
+    {
+      "id": "ch3-fc12",
+      "front": "IPC'nin iki temel modeli nedir?",
+      "back": "1) Paylasilan bellek (Shared memory) - surecler ortak bellek alani kullanir, 2) Mesaj gecirme (Message passing) - surecler send/receive islemleriyle iletisir.",
+      "difficulty": "easy"
+    },
+    {
+      "id": "ch3-fc13",
+      "front": "Paylasilan bellek (Shared memory) ile mesaj gecirme (Message passing) arasindaki temel fark nedir?",
+      "back": "Paylasilan bellekte iletisim kullanici surecleri tarafindan kontrol edilir ve daha hizlidir. Mesaj gecirmede iletisim kernel uzerinden gerceklesir, sistem cagrilari gerektirir ancak senkronizasyon problemi yoktur.",
+      "difficulty": "medium"
+    },
+    {
+      "id": "ch3-fc14",
+      "front": "Sinirli tampon (Bounded buffer) ile sinirsiz tampon (Unbounded buffer) arasindaki fark nedir?",
+      "back": "Sinirli tampon: Sabit boyut, uretici tampon doluysa bekler, tuketici bossa bekler. Sinirsiz tampon: Pratik sinir yok, uretici asla beklemez, tuketici bossa bekler.",
+      "difficulty": "medium"
+    },
+    {
+      "id": "ch3-fc15",
+      "front": "Dogrudan iletisim (Direct communication) ile dolayli iletisim (Indirect communication) arasindaki fark nedir?",
+      "back": "Dogrudan: Surecler birbirlerini adla belirtir - send(P, msg), receive(Q, msg). Her cift icin tek baglanti. Dolayli: Posta kutusu (mailbox/port) kullanilir - send(A, msg), receive(A, msg). Birden fazla surec bir kutuyu paylasabilir.",
+      "difficulty": "hard"
+    },
+    {
+      "id": "ch3-fc16",
+      "front": "Mesaj gecirmede engellenen (blocking) ve engellenmeyen (non-blocking) islemler nedir?",
+      "back": "Blocking (senkron): Sender mesaj alinana kadar, receiver mesaj gelene kadar bloke olur. Non-blocking (asenkron): Sender gonderir ve devam eder, receiver gecerli mesaj veya null alir. Ikisi de blocking ise 'rendezvous' denir.",
+      "difficulty": "hard"
+    },
+    {
+      "id": "ch3-fc17",
+      "front": "Mesaj tamponlamanin (buffering) uc kapasitesi nedir?",
+      "back": "1) Sifir kapasite: Kuyruk yok, gonderen aliciyi bekler (rendezvous). 2) Sinirli kapasite: n mesajlik kuyruk, doldugunda gonderen bekler. 3) Sinirsiz kapasite: Sonsuz kuyruk, gonderen asla beklemez.",
+      "difficulty": "hard"
+    },
+    {
+      "id": "ch3-fc18",
+      "front": "POSIX paylasilan bellek nasil olusturulur?",
+      "back": "1) shm_open() ile segment olustur, 2) ftruncate() ile boyutu ayarla, 3) mmap() ile bellek eslemesi yap. Okuma/yazma mmap'in dondurdugu isaretci ile yapilir. Silmek icin shm_unlink() kullanilir.",
+      "difficulty": "hard"
+    },
+    {
+      "id": "ch3-fc19",
+      "front": "Siradan boru (Ordinary pipe) ile adlandirilmis boru (Named pipe) arasindaki farklar nelerdir?",
+      "back": "Ordinary pipe: Tek yonlu, ebeveyn-cocuk iliskisi gerektirir, surec disinda erisilemez. Named pipe: Cift yonlu, ebeveyn-cocuk iliskisi gerekmez, birden fazla surec kullanabilir, hem UNIX hem Windows destekler.",
+      "difficulty": "medium"
+    },
+    {
+      "id": "ch3-fc20",
+      "front": "pipe() sistem cagrisi nasil calisir?",
+      "back": "int fd[2] dizisi ile cagrilir. fd[0] okuma ucu (read-end), fd[1] yazma ucu (write-end). Kernel duzeyde bir tampon olusturur. fork() ile cocuk surec dosya tanimlayicilarini miras alir.",
+      "difficulty": "medium"
+    },
+    {
+      "id": "ch3-fc21",
+      "front": "Hazir kuyrugu (Ready queue) ile bekleme kuyrugu (Wait queue) arasindaki fark nedir?",
+      "back": "Ready queue: Ana bellekte bulunan, CPU'ya atanmayi bekleyen surecler. Wait queue: Bir olayin (I/O tamamlanmasi gibi) gerceklesmesini bekleyen surecler.",
+      "difficulty": "easy"
+    },
+    {
+      "id": "ch3-fc22",
+      "front": "Linux'ta surecler hangi veri yapisinda temsil edilir?",
+      "back": "task_struct adli C yapisinda temsil edilir. pid, state, time_slice, parent, children, files, mm (adres alani) gibi alanlar icerir. Surecler cift bagli listede (doubly linked list) saklanir.",
+      "difficulty": "medium"
+    },
+    {
+      "id": "ch3-fc23",
+      "front": "Yaris durumu (Race condition) nedir?",
+      "back": "Birden fazla surecin paylasilan verilere es zamanli erisim sagladiginda ve sonucun erisim sirasina baglidigi durumdur. Ornegin counter++ ve counter-- atomik olmadigi icin araya girilmesi yanlis sonuc uretebilir.",
+      "difficulty": "hard"
+    },
+    {
+      "id": "ch3-fc24",
+      "front": "Google Chrome tarayicisi neden coklu surec mimarisi kullanir?",
+      "back": "3 tur surec kullanir: Browser (kullanici arayuzu, disk/ag I/O), Renderer (web sayfalari, HTML/JS - sandbox'ta calisir), Plug-in (her eklenti tipi icin). Bir sekme cokerse diger sekmeler etkilenmez.",
+      "difficulty": "medium"
+    },
+    {
+      "id": "ch3-fc25",
+      "front": "Android'de surec onem hiyerarsisi (process importance hierarchy) nedir?",
+      "back": "En onemliden en onemsiz: 1) Foreground process, 2) Visible process, 3) Service process, 4) Background process, 5) Empty process. Android en az onemli sureclerden baslanarak sonlandirir.",
+      "difficulty": "medium"
+    },
+    {
+      "id": "ch3-fc26",
+      "front": "wait() sistem cagrisi ne dondurur?",
+      "back": "Sonlanan cocuk surecin pid'sini ve durum bilgisini dondurur. Sozdizimi: pid = wait(&status); Ebeveyn, cocuk sonlanana kadar bloke olur.",
+      "difficulty": "medium"
+    },
+    {
+      "id": "ch3-fc27",
+      "front": "dup() ve dup2() sistem cagrilari ne yapar?",
+      "back": "dup(fd): Dosya tanimlayicisini cogaltir, en dusuk numarali bos tanimlayiciyi kullanir. dup2(source_fd, target_fd): Hedef tanimlayiciyi dogrudan belirtir. Standart I/O yonlendirmesi icin kullanilir.",
+      "difficulty": "hard"
+    },
+    {
+      "id": "ch3-fc28",
+      "front": "Windows'ta surec olusturma nasil yapilir?",
+      "back": "CreateProcess() API fonksiyonu kullanilir. UNIX fork()'tan farkli olarak, yeni surec bastan bir program yukler. WaitForSingleObject() ile cocugun bitmesi beklenir. CloseHandle() ile handle'lar kapatilir.",
+      "difficulty": "hard"
+    },
+    {
+      "id": "ch3-fc29",
+      "front": "Windows LPC (Local Procedure Call) nedir?",
+      "back": "Windows'ta mesaj gecirme tabanli IPC mekanizmasidir. Yalnizca ayni sistemdeki surecler arasinda calisir. Portlari (posta kutulari gibi) kullanarak iletisim kanallari kurar. Baglanti portu ve iletisim portlari kullanir.",
+      "difficulty": "hard"
+    },
+    {
+      "id": "ch3-fc30",
+      "front": "Bir surecin Stack ve Heap bolumleri arasindaki fark nedir?",
+      "back": "Stack: Otomatik yonetilir, fonksiyon cagrilarinda buyur/kuculur, yerel degiskenler ve donus adresleri icerir, yukari buyur. Heap: Programci tarafindan yonetilir (malloc/free), dinamik bellek ayirma, asagi buyur.",
+      "difficulty": "easy"
+    },
+    {
+      "id": "ch3-fc31",
+      "front": "Surecler arasi iletisime (IPC) neden ihtiyac duyulur?",
+      "back": "4 neden: 1) Bilgi paylasimi (Information sharing), 2) Hesaplama hizlandirma (Computation speedup), 3) Modulerlik (Modularity), 4) Kolaylik (Convenience).",
+      "difficulty": "easy"
+    },
+    {
+      "id": "ch3-fc32",
+      "front": "Standart dosya tanimlayicilari (file descriptors) nelerdir?",
+      "back": "0 = Standard Input (stdin), 1 = Standard Output (stdout), 2 = Standard Error (stderr). Her surec varsayilan olarak bu 3 tanimlayiciya sahiptir.",
+      "difficulty": "medium"
+    }
+  ],
+  "quiz": [
+    {
+      "id": "ch3-q1",
+      "question": "Asagidakilerden hangisi bir surecin bellekteki bolumleri arasinda DEGİLDIR?",
+      "options": [
+        "Text (Metin)",
+        "Stack (Yigin)",
+        "Heap (Yigin Bellegi)",
+        "Cache (On Bellek)"
+      ],
+      "correctIndex": 3,
+      "explanation": "Bir surecin bellekteki bolumleri Text, Data, Heap ve Stack'tir. Cache, CPU donanim bilesenidir ve surecin bellek bolumu degildir.",
+      "difficulty": "easy"
+    },
+    {
+      "id": "ch3-q2",
+      "question": "fork() sistem cagrisi cocuk surece hangi degeri dondurur?",
+      "options": [
+        "Ebeveynin PID'si",
+        "-1",
+        "0",
+        "1"
+      ],
+      "correctIndex": 2,
+      "explanation": "fork() cocuk surece 0 dondurur, ebeveyn surece cocugun PID'sini (pozitif deger) dondurur. Hata durumunda -1 dondurur.",
+      "difficulty": "easy"
+    },
+    {
+      "id": "ch3-q3",
+      "question": "Hangi surec durumu gecisi 'scheduler dispatch' ile gerceklesir?",
+      "options": [
+        "New -> Ready",
+        "Ready -> Running",
+        "Running -> Waiting",
+        "Waiting -> Ready"
+      ],
+      "correctIndex": 1,
+      "explanation": "Scheduler dispatch, ready kuyrugundaki bir sureci secip CPU'ya atar, yani Ready -> Running gecisini saglar.",
+      "difficulty": "easy"
+    },
+    {
+      "id": "ch3-q4",
+      "question": "Baglam degistirme (context switch) sirasinda ne olur?",
+      "options": [
+        "Yalnizca yeni surecin durumu yuklenir",
+        "Eski surecin durumu kaydedilir ve yeni surecin durumu yuklenir",
+        "Her iki surec de ayni anda calisir",
+        "Isletim sistemi yarali isler yapar"
+      ],
+      "correctIndex": 1,
+      "explanation": "Context switch sirasinda eski surecin durumu PCB'ye kaydedilir (save state), yeni surecin durumu PCB'den yuklenir (load state). Bu sure saf overhead'dir.",
+      "difficulty": "easy"
+    },
+    {
+      "id": "ch3-q5",
+      "question": "Zombi surec ne zaman olusur?",
+      "options": [
+        "Surec olusturuldugunda",
+        "Surec beklemedeyken",
+        "Cocuk sonlanmis ama ebeveyn wait() cagirmamissa",
+        "Ebeveyn surec sonlandiginda"
+      ],
+      "correctIndex": 2,
+      "explanation": "Bir cocuk surec sonlandiginda ama ebeveyni henuz wait() cagirmadiysa, cocuk zombi surec olur. Surec tablosunda yer kaplar ama calismaz.",
+      "difficulty": "medium"
+    },
+    {
+      "id": "ch3-q6",
+      "question": "POSIX paylasilan bellekte segment olusturmak icin hangi fonksiyon kullanilir?",
+      "options": [
+        "mmap()",
+        "shm_open()",
+        "ftruncate()",
+        "malloc()"
+      ],
+      "correctIndex": 1,
+      "explanation": "shm_open() paylasilan bellek segmentini olusturur veya acar. ftruncate() boyutunu ayarlar, mmap() bellek eslemesi yapar.",
+      "difficulty": "medium"
+    },
+    {
+      "id": "ch3-q7",
+      "question": "Sinirli tampon (bounded buffer) cozumunde en fazla kac eleman kullanilabilir?",
+      "options": [
+        "BUFFER_SIZE",
+        "BUFFER_SIZE - 1",
+        "BUFFER_SIZE + 1",
+        "BUFFER_SIZE / 2"
+      ],
+      "correctIndex": 1,
+      "explanation": "in ve out isaretcilerini kullanarak dolu/bos ayrimi yapmak icin bir pozisyon bos birakilir, bu nedenle en fazla BUFFER_SIZE-1 eleman kullanilabilir.",
+      "difficulty": "medium"
+    },
+    {
+      "id": "ch3-q8",
+      "question": "Asagidaki kod calistirildiktan sonra kac surec olusur?\n\nfork();\nfork();\nprintf(\"hello\\n\");",
+      "options": [
+        "2",
+        "3",
+        "4",
+        "1"
+      ],
+      "correctIndex": 2,
+      "explanation": "Ilk fork() 2 surec olusturur. Ikinci fork() her iki surec tarafindan cagrilir ve toplam 4 surec olur. Her biri printf'i calistirir.",
+      "difficulty": "medium"
+    },
+    {
+      "id": "ch3-q9",
+      "question": "Dogrudan iletisimde (Direct communication) her surec cifti arasinda kac baglanti bulunur?",
+      "options": [
+        "Sinirsiz",
+        "Sifir",
+        "Tam olarak bir",
+        "En az iki"
+      ],
+      "correctIndex": 2,
+      "explanation": "Dogrudan iletisimde baglantilar otomatik kurulur ve her iletisim kuran surec cifti arasinda tam olarak bir baglanti bulunur.",
+      "difficulty": "medium"
+    },
+    {
+      "id": "ch3-q10",
+      "question": "Hem send hem receive engellendiginde (blocking) bu duruma ne denir?",
+      "options": [
+        "Deadlock",
+        "Rendezvous",
+        "Race condition",
+        "Starvation"
+      ],
+      "correctIndex": 1,
+      "explanation": "Hem send hem receive blocking oldugunda buna rendezvous denir. Gonderen alicinin mesaji almasini, alici da mesajin gelmesini bekler.",
+      "difficulty": "medium"
+    },
+    {
+      "id": "ch3-q11",
+      "question": "pipe() sistem cagrisinda fd[0] ve fd[1] ne icin kullanilir?",
+      "options": [
+        "fd[0] = yazma, fd[1] = okuma",
+        "fd[0] = okuma, fd[1] = yazma",
+        "Her ikisi de okuma icin",
+        "Her ikisi de yazma icin"
+      ],
+      "correctIndex": 1,
+      "explanation": "fd[0] borunun okuma ucunu (read-end), fd[1] ise yazma ucunu (write-end) temsil eder.",
+      "difficulty": "medium"
+    },
+    {
+      "id": "ch3-q12",
+      "question": "Asagidakilerden hangisi PCB'de SAKLANMAZ?",
+      "options": [
+        "Program sayaci",
+        "CPU yazmaclari",
+        "Kaynak kodu (source code)",
+        "Surec durumu"
+      ],
+      "correctIndex": 2,
+      "explanation": "PCB'de surec durumu, program sayaci, CPU yazmaclari, zamanlama bilgisi, bellek bilgisi, muhasebe bilgisi ve I/O bilgisi saklanir. Kaynak kodu PCB'de degil, text section'da saklanir.",
+      "difficulty": "easy"
+    },
+    {
+      "id": "ch3-q13",
+      "question": "Yaris durumu (Race condition) orneginde, counter=5 baslangicindan sonra uretici counter++ ve tuketici counter-- yaparsa counter'in olasi son degerleri nelerdir?",
+      "options": [
+        "Yalnizca 5",
+        "4, 5 veya 6",
+        "Yalnizca 4",
+        "0 ile 10 arasi herhangi bir deger"
+      ],
+      "correctIndex": 1,
+      "explanation": "counter++ ve counter-- atomik olmadigindan, interleaving'e bagli olarak counter 4, 5 veya 6 olabilir. Dogru sonuc 5 olmalidir ama yaris durumu nedeniyle 4 veya 6 da olabilir.",
+      "difficulty": "hard"
+    },
+    {
+      "id": "ch3-q14",
+      "question": "Google Chrome tarayicisinda Renderer sureci neden sandbox icinde calisir?",
+      "options": [
+        "Performansi artirmak icin",
+        "Bellek kullanimini azaltmak icin",
+        "Disk ve ag I/O'sunu kisitlayarak guvenlik istismarlarinin etkisini azaltmak icin",
+        "Birden fazla sekme acabilmek icin"
+      ],
+      "correctIndex": 2,
+      "explanation": "Renderer sureci HTML, JavaScript isler ve sandbox'ta disk ve ag I/O'su kisitlanir. Boylece bir web sitesindeki guvenlik acigi sistemin geneline etki edemez.",
+      "difficulty": "medium"
+    },
+    {
+      "id": "ch3-q15",
+      "question": "Siradan borular (ordinary pipes) ile ilgili hangisi YANLISTIR?",
+      "options": [
+        "Tek yonlu iletisim saglar",
+        "Ebeveyn-cocuk iliskisi gerektirir",
+        "Cift yonlu (bidirectional) iletisim saglar",
+        "Olusturan surec disinda erisilemez"
+      ],
+      "correctIndex": 2,
+      "explanation": "Ordinary pipes tek yonlu (unidirectional) iletisim saglar. Cift yonlu iletisim icin ya iki pipe ya da named pipe kullanilmalidir.",
+      "difficulty": "medium"
+    },
+    {
+      "id": "ch3-q16",
+      "question": "exec() sistem cagrisi ne zaman kullanilir?",
+      "options": [
+        "Sureci sonlandirmak icin",
+        "Yeni cocuk surec olusturmak icin",
+        "fork() sonrasi surecin bellegini yeni bir programla degistirmek icin",
+        "Ebeveyn surecin cocugu beklemesi icin"
+      ],
+      "correctIndex": 2,
+      "explanation": "exec() genellikle fork()'tan sonra kullanilir ve mevcut surecin bellek alanini tamamen yeni bir programla degistirir.",
+      "difficulty": "easy"
+    },
+    {
+      "id": "ch3-q17",
+      "question": "Asagidaki durumlardan hangisinde ebeveyn surec cocuk sureci sonlandirabilir (abort)?",
+      "options": [
+        "Cocuk kendisine ayrilan kaynaklari astiysa",
+        "Cocuga atanan gorev artik gerekmiyorsa",
+        "Ebeveyn cikiyor ve OS cocugun yetim kalmasina izin vermiyorsa",
+        "Yukaridakilerin hepsi"
+      ],
+      "correctIndex": 3,
+      "explanation": "Ebeveyn bu uc durumun hepsinde abort() ile cocugu sonlandirabilir.",
+      "difficulty": "medium"
+    },
+    {
+      "id": "ch3-q18",
+      "question": "Sifir kapasiteli tampon (zero capacity buffer) kullanan mesaj gecirmede ne olur?",
+      "options": [
+        "Gonderen asla beklemez",
+        "Alici asla beklemez",
+        "Gonderen, alici mesaji alana kadar bekler (rendezvous)",
+        "Mesajlar kaybolur"
+      ],
+      "correctIndex": 2,
+      "explanation": "Sifir kapasite demek kuyrukta hic mesaj biriktirilemez demektir. Bu nedenle gonderen, alici mesaji alana kadar beklemek zorundadir (rendezvous).",
+      "difficulty": "hard"
+    },
+    {
+      "id": "ch3-q19",
+      "question": "Asagidaki kodda kac farkli 'hello' yazilir?\n\nfork();\nfork();\nfork();\nprintf(\"hello\\n\");",
+      "options": [
+        "3",
+        "6",
+        "8",
+        "4"
+      ],
+      "correctIndex": 2,
+      "explanation": "Her fork() surec sayisini ikiyle carpar: 1->2->4->8. Toplam 8 surec olusur ve her biri 'hello' yazar. Formul: 2^n (n = fork sayisi).",
+      "difficulty": "hard"
+    },
+    {
+      "id": "ch3-q20",
+      "question": "Android'de bellek ihtiyaci oldugunda en once hangi tur surec sonlandirilir?",
+      "options": [
+        "Foreground process",
+        "Service process",
+        "Empty process",
+        "Visible process"
+      ],
+      "correctIndex": 2,
+      "explanation": "Android surec onem hiyerarsisinde en az onemli olan empty process en once sonlandirilir. Siralama: Foreground > Visible > Service > Background > Empty.",
+      "difficulty": "medium"
+    },
+    {
+      "id": "ch3-q21",
+      "question": "Windows'ta surec olusturmak icin hangi API fonksiyonu kullanilir?",
+      "options": [
+        "fork()",
+        "CreateProcess()",
+        "spawn()",
+        "exec()"
+      ],
+      "correctIndex": 1,
+      "explanation": "Windows'ta CreateProcess() API fonksiyonu kullanilir. Bu fonksiyon UNIX'teki fork()+exec() kombinasyonuna benzer sekilde calisir.",
+      "difficulty": "easy"
+    },
+    {
+      "id": "ch3-q22",
+      "question": "dup2(fd[1], STDOUT_FILENO) cagrisi ne yapar?",
+      "options": [
+        "fd[1]'i kapatir",
+        "Standart ciktiyi borunun yazma ucuna yonlendirir",
+        "Standart girisi borunun okuma ucuna yonlendirir",
+        "Yeni bir boru olusturur"
+      ],
+      "correctIndex": 1,
+      "explanation": "dup2(fd[1], STDOUT_FILENO) standart ciktiyi (stdout, fd=1) borunun yazma ucuna (fd[1]) yonlendirir. Boylece printf() ile yazilan veriler boruya gider.",
+      "difficulty": "hard"
+    }
+  ],
+  "fillBlanks": [
+    {
+      "id": "ch3-fb1",
+      "sentence": "Surec (process), yurutulme asamasindaki bir ___dir.",
+      "answer": "program",
+      "acceptableAnswers": [
+        "program",
+        "programdir"
+      ],
+      "hint": "Diskte saklanan pasif varlik neydi?",
+      "difficulty": "easy"
+    },
+    {
+      "id": "ch3-fb2",
+      "sentence": "Bir surecin bellek yerlesiminde, dinamik olarak ayrilan bellek ___ bolumunde saklanir.",
+      "answer": "heap",
+      "acceptableAnswers": [
+        "heap",
+        "Heap",
+        "yigin bellegi"
+      ],
+      "hint": "malloc() ile ayrilan bellek nereye gider?",
+      "difficulty": "easy"
+    },
+    {
+      "id": "ch3-fb3",
+      "sentence": "Her surecle iliskili bilgiler ___ (Process Control Block) adli veri yapisinda saklanir.",
+      "answer": "PCB",
+      "acceptableAnswers": [
+        "PCB",
+        "Surec Kontrol Blogu",
+        "Process Control Block"
+      ],
+      "hint": "Surec durumu, program sayaci, yazmaclari saklayan blok",
+      "difficulty": "easy"
+    },
+    {
+      "id": "ch3-fb4",
+      "sentence": "fork() sistem cagrisi cocuk surece ___ degerini dondurur.",
+      "answer": "0",
+      "acceptableAnswers": [
+        "0",
+        "sifir"
+      ],
+      "hint": "Cocuk surecin kendisini tanimlamak icin kontrol ettigi deger",
+      "difficulty": "easy"
+    },
+    {
+      "id": "ch3-fb5",
+      "sentence": "Ebeveyni wait() cagirmadan sonlanan bir surecin cocuguna ___ surec denir.",
+      "answer": "yetim",
+      "acceptableAnswers": [
+        "yetim",
+        "orphan",
+        "Orphan"
+      ],
+      "hint": "Ebeveyn olmadan kalan surec",
+      "difficulty": "medium"
+    },
+    {
+      "id": "ch3-fb6",
+      "sentence": "Sonlanan ama ebeveyninin wait() cagirmadigindan surec tablosundan silinemeyen surece ___ surec denir.",
+      "answer": "zombi",
+      "acceptableAnswers": [
+        "zombi",
+        "zombie",
+        "Zombie"
+      ],
+      "hint": "Calismiyor ama surec tablosunda yer kapliyor",
+      "difficulty": "medium"
+    },
+    {
+      "id": "ch3-fb7",
+      "sentence": "IPC'nin iki temel modeli ___ ve mesaj gecirmedir (message passing).",
+      "answer": "paylasilan bellek",
+      "acceptableAnswers": [
+        "paylasilan bellek",
+        "shared memory",
+        "Shared memory"
+      ],
+      "hint": "Surecler ortak bir bellek alani kullanir",
+      "difficulty": "easy"
+    },
+    {
+      "id": "ch3-fb8",
+      "sentence": "Hem send hem receive islemlerinin engellendigi (blocking) duruma ___ denir.",
+      "answer": "rendezvous",
+      "acceptableAnswers": [
+        "rendezvous",
+        "Rendezvous",
+        "randevu"
+      ],
+      "hint": "Fransizca kokenli bir kelime, bulusma noktasi anlamina gelir",
+      "difficulty": "hard"
+    },
+    {
+      "id": "ch3-fb9",
+      "sentence": "Bir surecin durumlarini gosteren diyagramda, Ready durumundan Running durumuna gecis ___ ile saglanir.",
+      "answer": "scheduler dispatch",
+      "acceptableAnswers": [
+        "scheduler dispatch",
+        "dispatch",
+        "zamanlayici"
+      ],
+      "hint": "Zamanlayicinin sureci CPU'ya atamasi",
+      "difficulty": "medium"
+    },
+    {
+      "id": "ch3-fb10",
+      "sentence": "pipe() sistem cagrisinda fd[0] okuma ucunu, fd[___] ise yazma ucunu temsil eder.",
+      "answer": "1",
+      "acceptableAnswers": [
+        "1"
+      ],
+      "hint": "Dizinin ikinci elemani",
+      "difficulty": "medium"
+    },
+    {
+      "id": "ch3-fb11",
+      "sentence": "Linux'ta tum sureclerin kok sureci olan ve pid=1'e sahip surec ___ olarak adlandirilir.",
+      "answer": "systemd",
+      "acceptableAnswers": [
+        "systemd",
+        "init",
+        "systemd/init"
+      ],
+      "hint": "Sistemin ilk baslatilan sureci",
+      "difficulty": "medium"
+    },
+    {
+      "id": "ch3-fb12",
+      "sentence": "POSIX paylasilan bellekte, bellek segmentinin boyutunu ayarlamak icin ___ fonksiyonu kullanilir.",
+      "answer": "ftruncate",
+      "acceptableAnswers": [
+        "ftruncate",
+        "ftruncate()"
+      ],
+      "hint": "Dosya boyutunu kesmek/ayarlamak icin kullanilan POSIX fonksiyonu",
+      "difficulty": "hard"
+    },
+    {
+      "id": "ch3-fb13",
+      "sentence": "Bir surec I/O istegi yaptiginda ___ durumuna gecer.",
+      "answer": "waiting",
+      "acceptableAnswers": [
+        "waiting",
+        "Waiting",
+        "bekleyen",
+        "bekleme"
+      ],
+      "hint": "I/O tamamlanana kadar surec ne yapar?",
+      "difficulty": "easy"
+    },
+    {
+      "id": "ch3-fb14",
+      "sentence": "CPU'nun bir surecten digerine gecmesi islemine ___ denir.",
+      "answer": "baglam degistirme",
+      "acceptableAnswers": [
+        "baglam degistirme",
+        "context switch",
+        "Context Switch"
+      ],
+      "hint": "Eski durum kaydedilir, yeni durum yuklenir",
+      "difficulty": "easy"
+    },
+    {
+      "id": "ch3-fb15",
+      "sentence": "Dolayli iletisimde mesajlar ___ (mailbox) araciligiyla gonderilir ve alinir.",
+      "answer": "posta kutusu",
+      "acceptableAnswers": [
+        "posta kutusu",
+        "mailbox",
+        "posta kutulari",
+        "port"
+      ],
+      "hint": "Mesajlarin biriktigi ve alindigi ara depo",
+      "difficulty": "medium"
+    }
+  ],
+  "examQuestions": [
+    {
+      "id": "ch3-ex1",
+      "type": "shortanswer",
+      "points": 4,
+      "question": "Process Control Block (PCB) icerisinde hangi bilgiler tutulur? En az 6 tane listeleyin.",
+      "solution": "1. Process State (surec durumu: new, running, waiting, ready, terminated)\n2. Program Counter (PC) - siradaki instruction adresi\n3. CPU Registers - accumulator, index, stack pointer vb.\n4. CPU Scheduling Info - priority, scheduling queue pointer\n5. Memory Management Info - base/limit registers, page tables\n6. Accounting Info - CPU kullanim suresi, zaman limitleri\n7. I/O Status Info - acik dosyalar listesi, atanmis I/O cihazlari",
+      "steps": [
+        "PCB = Process Control Block = surec hakkindaki tum bilgileri tutar",
+        "Her surec icin bir PCB olusturulur",
+        "Context switch sirasinda PCB kaydedilir/yuklenir"
+      ]
+    },
+    {
+      "id": "ch3-ex2",
+      "type": "calculation",
+      "points": 4,
+      "question": "Asagidaki C kodunda kac tane surec (process) olusur? (Ana surec dahil)\n\nfork();\nfork();\nfork();",
+      "context": "fork();\nfork();\nfork();",
+      "solution": "Toplam 8 surec olusur.\n\nIlk fork(): 1 -> 2 surec\nIkinci fork(): 2 -> 4 surec\nUcuncu fork(): 4 -> 8 surec\n\nHer fork() mevcut surec sayisini 2 ile carpar.\nFormul: 2^n (n = fork sayisi) = 2^3 = 8",
+      "steps": [
+        "Baslangic: 1 surec (parent)",
+        "fork() #1: Her surec 1 child olusturur -> 1*2 = 2 surec",
+        "fork() #2: Her surec 1 child olusturur -> 2*2 = 4 surec",
+        "fork() #3: Her surec 1 child olusturur -> 4*2 = 8 surec",
+        "Genel formul: n tane ardisik fork() -> 2^n surec"
+      ]
+    },
+    {
+      "id": "ch3-ex3",
+      "type": "calculation",
+      "points": 4,
+      "question": "Asagidaki C kodunda kac tane surec olusur?\n\nfork();\nfork();\nif(fork() == 0) { fork(); }",
+      "context": "fork();\nfork();\nif(fork() == 0) {\n  fork();\n}",
+      "solution": "Adim adim:\n1. fork() #1: 1->2 surec\n2. fork() #2: 2->4 surec\n3. fork() #3: 4->8 surec (4 child, 4 parent)\n4. if(fork()==0) sadece child'larda true -> 4 child fork() yapar -> 4 yeni surec\nToplam: 8 + 4 = 12 surec",
+      "steps": [
+        "fork() #1: 2 surec",
+        "fork() #2: 4 surec",
+        "fork() #3: 8 surec (bu fork ayni zamanda if kosulunu test eder)",
+        "fork()==0 sadece child sureclerde true doner -> 4 child",
+        "Bu 4 child icinde fork() #4 calisir -> 4 yeni child daha",
+        "Toplam: 8 + 4 = 12 surec"
+      ]
+    },
+    {
+      "id": "ch3-ex4",
+      "type": "shortanswer",
+      "points": 4,
+      "question": "Context switch (baglam degistirme) sirasinda isletim sistemi hangi islemleri yapar? Neden context switch suresi \"pure overhead\" olarak kabul edilir?",
+      "solution": "Context switch adimlari:\n1. Mevcut surecin CPU state'ini (registers, PC, flags) PCB'ye kaydet\n2. Mevcut surecin durumunu guncelle (running -> ready/waiting)\n3. Yeni surecin PCB'sinden CPU state'ini yukle\n4. Yeni surecin durumunu guncelle (ready -> running)\n5. Yeni surecin instruction'ina dallan\n\nPure overhead cunku: Context switch sirasinda sistem hicbir faydali is yapmaz. Sadece durum degistirme islemi yapilir. Donanim destegi (register setleri) bu sureyi kisaltabilir.",
+      "steps": [
+        "Save state of current process to its PCB",
+        "Update process state",
+        "Load state of new process from its PCB",
+        "Update new process state to running",
+        "Resume execution at new PC value"
+      ]
+    },
+    {
+      "id": "ch3-ex5",
+      "type": "truefalse",
+      "points": 2,
+      "question": "fork() system call'u cagrildiginda, child process parent'in address space'inin bir kopyasini alir ancak ayni process ID'ye sahip olur.",
+      "solution": "YANLIS (False). Child process, parent'in address space kopyasini alir ancak FARKLI bir process ID (PID) alir. fork() parent'a child PID, child'a 0 dondurur. Eger ayni PID olsaydi OS surecleri ayirt edemezdi."
+    },
+    {
+      "id": "ch3-ex6",
+      "type": "shortanswer",
+      "points": 4,
+      "question": "User mode ile kernel mode arasindaki gecis (mode switching) hangi durumlarda gerceklesir? En az 3 ornek verin.",
+      "solution": "User -> Kernel gecisi:\n1. System Call (trap): Surec OS servisi talep ettiginde (ornegin open(), read(), write())\n2. Interrupt: Donanim interrupt'u geldiginde (timer, I/O completion)\n3. Exception: Hata durumunda (division by zero, illegal memory access, page fault)\n\nKernel -> User gecisi:\n- System call return'u sonrasinda\n- Interrupt handler tamamlandiktan sonra",
+      "steps": [
+        "System call (trap) - programmatic gecis",
+        "Hardware interrupt - external event",
+        "Exception - error condition",
+        "Her ucunde de mode bit 1->0 olarak degisir"
+      ]
+    }
+  ]
+}

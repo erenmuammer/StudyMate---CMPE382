@@ -1,0 +1,1010 @@
+{
+  "id": "ch2",
+  "title": "OS Yapisi ve Servisleri (OS Structures)",
+  "titleEn": "Operating-System Structures",
+  "sections": [
+    {
+      "id": "s1",
+      "title": "Isletim Sistemi Servisleri (Operating System Services)",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "Isletim sistemi, programlarin yurutulmesi icin bir ortam saglar. Hem kullaniciya hem de sisteme yonelik cesitli servisler sunar. Bu servisler, kullanicinin sistemle etkilesimini kolaylastirir ve kaynaklarin verimli kullanilmasini saglar."
+        },
+        {
+          "type": "heading",
+          "text": "Kullaniciya Yonelik Servisler"
+        },
+        {
+          "type": "list",
+          "items": [
+            "Kullanici Arayuzu (User Interface - UI): CLI, GUI veya dokunmatik ekran arayuzleri",
+            "Program Yurutme (Program Execution): Programlari bellige yukleyip calistirma",
+            "G/C Islemleri (I/O Operations): Dosya veya cihaz uzerinde giris/cikis islemleri",
+            "Dosya Sistemi Yonetimi (File-System Manipulation): Dosya okuma, yazma, olusturma, silme",
+            "Iletisim (Communications): Surecler arasi bilgi alisiverisi (ayni bilgisayar veya ag uzerinden)",
+            "Hata Tespiti (Error Detection): Donanim ve yazilim hatalarini surekli izleme"
+          ]
+        },
+        {
+          "type": "heading",
+          "text": "Sisteme Yonelik Servisler"
+        },
+        {
+          "type": "list",
+          "items": [
+            "Kaynak Tahsisi (Resource Allocation): CPU donguleri, bellek, dosya depolama gibi kaynaklarin paylasimi",
+            "Kayit Tutma (Logging/Accounting): Hangi kullanicinin ne kadar kaynak kullandigini izleme",
+            "Koruma ve Guvenlik (Protection and Security): Kaynaklara erisim kontrolu ve dis saldirilara karsi savunma"
+          ]
+        },
+        {
+          "type": "analogy",
+          "text": "Isletim sistemi servislerini bir otelin hizmetlerine benzetebilirsiniz: Resepsiyon (UI), oda servisi (program yurutme), elektrik/su (I/O), dosya dolabi (dosya sistemi), telefon hatti (iletisim), guvenlik kamerasi (hata tespiti), oda dagitimi (kaynak tahsisi), fatura sistemi (kayit tutma) ve kapi kilidi (koruma/guvenlik)."
+        }
+      ]
+    },
+    {
+      "id": "s2",
+      "title": "Sistem Cagrilari (System Calls)",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "Sistem cagrilari (system calls), isletim sistemi tarafindan saglanan servislere programlama arayuzu sunar. Genellikle C veya C++ ile yazilmis rutinler olarak sunulur. Programcilar dogrudan sistem cagrisi yerine, daha ust seviye API'ler (Application Programming Interface) kullanir."
+        },
+        {
+          "type": "keypoint",
+          "text": "En yaygin uc API: Windows icin Win32 API, POSIX tabanli sistemler (UNIX, Linux, macOS) icin POSIX API ve Java Virtual Machine icin Java API."
+        },
+        {
+          "type": "heading",
+          "text": "Sistem Cagrisi Uygulamasi (System Call Implementation)"
+        },
+        {
+          "type": "paragraph",
+          "text": "Her sistem cagrisi bir numara ile iliskilendirilmistir. Sistem cagrisi arayuzu (system-call interface), bu numaralara gore indekslenimis bir tablo tutar. Kullanici programi API araciligiyla cagrida bulunur, sistem cagrisi arayuzu ilgili cagruyi kernel'da calistirir ve sonucu dondurur."
+        },
+        {
+          "type": "heading",
+          "text": "Parametre Gecirme Yontemleri (Parameter Passing)"
+        },
+        {
+          "type": "list",
+          "items": [
+            "Register (Yazmaclarda): Parametreler dogrudan CPU yazmaclarinda tasinir",
+            "Blok/Tablo (Block): Parametreler bellekte bir tabloya yazilir, tablonun adresi yazmac ile gonderilir (Linux ve Solaris bu yontemi kullanir)",
+            "Yigin (Stack): Parametreler program tarafindan yigina itilir (push), isletim sistemi tarafindan cikarilir (pop)"
+          ]
+        },
+        {
+          "type": "analogy",
+          "text": "Sistem cagrilarini bir restoranda garson ile iletisime benzetebilirsiniz: Siz (program) menuden bir sey istersiniz (API), garson (sistem cagrisi arayuzu) sipasirinizi numarasi ile mutfaga (kernel) iletir ve sonucu size getirir. Parametreleri ise ya sozlu olarak (register), ya kagida yazarak (blok/tablo), ya da tepsi ile (stack) iletebilirsiniz."
+        },
+        {
+          "type": "diagram",
+          "title": "Standart C Kutuphane Ornegi",
+          "ascii": "  Kullanici Programi\n  +------------------+\n  | #include <stdio.h>|\n  | printf(\"Hello\");  |---+\n  +------------------+   |\n                         v\n  [user mode]    standard C library\n  -----------------------------------\n  [kernel mode]  write() system call\n                         |\n                         v\n                 Kernel islemleri"
+        }
+      ]
+    },
+    {
+      "id": "s3",
+      "title": "Sistem Cagrisi Turleri (Types of System Calls)",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "Sistem cagrilari alti ana kategoriye ayrilir. Her kategori, isletim sisteminin farkli bir islevini kapsar."
+        },
+        {
+          "type": "heading",
+          "text": "1. Surec Kontrolu (Process Control)"
+        },
+        {
+          "type": "list",
+          "items": [
+            "Surec olusturma ve sonlandirma (create/terminate process)",
+            "Yukleme ve yurutme (load, execute)",
+            "Surec ozelliklerini alma ve ayarlama (get/set process attributes)",
+            "Bekleme ve sinyal (wait, signal)",
+            "Bellek tahsisi ve serbest birakma (allocate/free memory)"
+          ]
+        },
+        {
+          "type": "heading",
+          "text": "2. Dosya Yonetimi (File Management)"
+        },
+        {
+          "type": "list",
+          "items": [
+            "Dosya olusturma ve silme (create, delete file)",
+            "Dosya acma ve kapatma (open, close)",
+            "Okuma, yazma, yeniden konumlandirma (read, write, reposition)",
+            "Dosya ozelliklerini alma ve ayarlama (get/set file attributes)"
+          ]
+        },
+        {
+          "type": "heading",
+          "text": "3. Cihaz Yonetimi (Device Management)"
+        },
+        {
+          "type": "list",
+          "items": [
+            "Cihaz talep etme ve serbest birakma (request/release device)",
+            "Okuma, yazma, yeniden konumlandirma (read, write, reposition)",
+            "Cihaz ozelliklerini alma ve ayarlama (get/set device attributes)",
+            "Cihazlari mantiksal olarak baglama veya ayirma (logically attach/detach)"
+          ]
+        },
+        {
+          "type": "heading",
+          "text": "4. Bilgi Bakimi (Information Maintenance)"
+        },
+        {
+          "type": "list",
+          "items": [
+            "Zaman ve tarih bilgisi alma/ayarlama (get/set time or date)",
+            "Sistem verisi alma/ayarlama (get/set system data)",
+            "Surec, dosya veya cihaz ozelliklerini alma/ayarlama"
+          ]
+        },
+        {
+          "type": "heading",
+          "text": "5. Iletisim (Communications)"
+        },
+        {
+          "type": "list",
+          "items": [
+            "Iletisim baglantisi olusturma/silme (create/delete connection)",
+            "Mesaj gonderme/alma: Mesaj gecirme modeli (message passing model) - host veya surec adina gore",
+            "Paylasimli bellek modeli (shared-memory model): Bellek bolgeleri olusturup erisim saglama",
+            "Durum bilgisi aktarma (transfer status information)",
+            "Uzak cihazlari baglama/ayirma (attach/detach remote devices)"
+          ]
+        },
+        {
+          "type": "heading",
+          "text": "6. Koruma (Protection)"
+        },
+        {
+          "type": "list",
+          "items": [
+            "Kaynaklara erisimi kontrol etme (control access to resources)",
+            "Izinleri alma ve ayarlama (get/set permissions)",
+            "Kullanici erisimini izin verme veya reddetme (allow/deny user access)"
+          ]
+        },
+        {
+          "type": "keypoint",
+          "text": "Windows ve Unix'te karsilik gelen sistem cagrilari farkli isimlerle anilir. Ornegin: Surec olusturma icin Windows'ta CreateProcess(), Unix'te fork(); Dosya acma icin Windows'ta CreateFile(), Unix'te open(); Koruma icin Windows'ta SetFileSecurity(), Unix'te chmod() kullanilir."
+        },
+        {
+          "type": "warning",
+          "text": "Sinavlarda sik sorulan konu: Sistem cagrisi turlerinin orneklerini Windows ve Unix icin bilmek gerekir. Ozellikle fork(), exec(), open(), read(), write(), close(), chmod() gibi Unix sistem cagrilari onemlidir."
+        }
+      ]
+    },
+    {
+      "id": "s4",
+      "title": "Sistem Programlari / Sistem Servisleri (System Services / System Programs)",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "Sistem programlari (system programs), program gelistirme ve yurutme icin uygun bir ortam saglar. Kullanicilarin isletim sistemi hakkindaki gorusu, gercek sistem cagrilarindan cok sistem programlari tarafindan belirlenir."
+        },
+        {
+          "type": "list",
+          "items": [
+            "Dosya yonetimi (File management): Dosya ve dizinleri olusturma, silme, kopyalama, yeniden adlandirma, yazdirma, listeleme",
+            "Dosya degistirme (File modification): Metin editorleri ile dosya olusturma ve degistirme",
+            "Durum bilgisi (Status information): Tarih, saat, kullanilabilir bellek, disk alani, kullanici sayisi gibi bilgiler; bazi sistemler registry kullanarak yapilandirma bilgisi saklar",
+            "Programlama dili destegi (Programming-language support): Derleyiciler (compilers), assembler'lar, debugger'lar ve yorumlayicilar (interpreters)",
+            "Program yukleme ve yurutme (Program loading and execution): Mutlak yukleyiciler, yer degistirebilir yukleyiciler (relocatable loaders), baglanti editorleri (linkage editors)",
+            "Iletisim (Communications): Surecler, kullanicilar ve bilgisayar sistemleri arasinda sanal baglantilar olusturma",
+            "Arka plan servisleri (Background services): Acilista baslatilan, services/subsystems/daemons olarak bilinen islemler; disk kontrolu, surec zamanlama, hata kaydi gibi islemleri yapar",
+            "Uygulama programlari (Application programs): Sisteme ait olmayan, kullanici tarafindan calistirilan programlar"
+          ]
+        },
+        {
+          "type": "analogy",
+          "text": "Sistem programlarini bir binanin yonetim ofisine benzetin: Dosya yonetimi bina arsivciligine, durum bilgisi bina yonetim paneline, arka plan servisleri ise 7/24 calisan guvenlik ve temizlik ekibine benzer. Kullanicilar genellikle binanin ic yapisini (kernel) degil, yonetim ofisini (sistem programlari) gorur."
+        }
+      ]
+    },
+    {
+      "id": "s5",
+      "title": "Baglayicilar ve Yukleyiciler (Linkers and Loaders)",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "Kaynak kod, derlendikten sonra herhangi bir fiziksel bellek konumuna yuklenebilecek sekilde tasarlanmis nesne dosyalarina (relocatable object files) donusturulur. Baglayici (linker) bu nesne dosyalarini tek bir calistirilabilir (executable) dosyada birlestirir. Yukleyici (loader) ise bu dosyayi bellige yukleyerek calistirma islemini baslatir."
+        },
+        {
+          "type": "diagram",
+          "title": "Baglayici ve Yukleyici Sureci",
+          "ascii": "  Kaynak Program (main.c)\n         |\n         v\n  [Derleyici (Compiler)]    gcc -c main.c\n         |\n         v\n  Nesne Dosyasi (main.o)\n         |         <-- diger nesne dosyalari\n         v\n  [Baglayici (Linker)]      gcc -o main main.o -lm\n         |\n         v\n  Calistirilabilir Dosya (main)\n         |         <-- dinamik kutuphaneler (DLLs)\n         v\n  [Yukleyici (Loader)]      ./main\n         |\n         v\n  Bellekte Calisan Program"
+        },
+        {
+          "type": "keypoint",
+          "text": "Yer degistirme (Relocation): Program parcalarina son adresleri atar ve program icindeki kod/verileri bu adreslere uyarlar. Modern sistemler kutuphaneleri dogrudan calistirilabilir dosyaya baglamaz; bunun yerine dinamik olarak baglanan kutuphaneler (Dynamically Linked Libraries - DLLs) kullanilir. Bu kutuphaneler ihtiyac duyuldugunda yuklenir ve ayni kutuphaneden yararlanacak tum programlar tarafindan paylasilir."
+        },
+        {
+          "type": "keypoint",
+          "text": "Nesne ve calistirilabilir dosyalarin standart formatlari vardir (ornegin Linux'ta ELF - Executable and Linkable Format, Windows'ta PE - Portable Executable). Bu sayede isletim sistemi dosyayi nasil yukleyecegini ve baslatacagini bilir."
+        }
+      ]
+    },
+    {
+      "id": "s6",
+      "title": "Uygulamalarin Isletim Sistemine Bagliligi (Why Applications are OS Specific)",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "Bir isletim sisteminde derlenmis uygulamalar genellikle baska isletim sistemlerinde calistirilamaz. Her isletim sistemi kendine ozgu sistem cagrilari, dosya formatlari ve ABI (Application Binary Interface) sunar."
+        },
+        {
+          "type": "heading",
+          "text": "Coklu Platform Cozumleri"
+        },
+        {
+          "type": "list",
+          "items": [
+            "Yorumlanan dil kullanma (Interpreted language): Python, Ruby gibi dillerde yazilan kodlar, yorumlayicisi olan her platformda calisir",
+            "Sanal makine iceren dil kullanma (VM-based language): Java gibi dillerde kod, sanal makinede (JVM) calisir",
+            "Standart dil ile her platform icin ayri derleme: C gibi dillerde yazilip her OS icin ayri ayri derlenir"
+          ]
+        },
+        {
+          "type": "keypoint",
+          "text": "ABI (Application Binary Interface), API'nin mimari seviyedeki karsilgidir. Farkli ikili kod bilesenlerinin belirli bir isletim sistemi ve CPU mimarisinde nasil etkilesecegini tanimlar. API kaynak kod seviyesinde uyumluluk saglarken, ABI ikili (binary) seviyede uyumluluk saglar."
+        },
+        {
+          "type": "analogy",
+          "text": "Bir uygulamayi belirli bir OS'a baglilik acisindan bir kitaba benzetebilirsiniz: Turkce yazilmis bir kitabi (Windows icin derlenimis uygulama), sadece Turkce bilenler (Windows) okuyabilir. Diger dilde (OS) okunabilmesi icin ya tercume edilmeli (yeniden derleme), ya da evrensel bir dil kullanilmali (Java/Python)."
+        }
+      ]
+    },
+    {
+      "id": "s7",
+      "title": "Isletim Sistemi Tasarimi ve Uygulamasi (Design and Implementation)",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "Isletim sistemi tasarimi 'cozulmus' bir problem degildir, ancak bazi yaklasimlar basarili olmustur. Farkli isletim sistemlerinin ic yapisi buyuk olcude degisebilir. Tasarim, hedefler ve spesifikasyonlar belirlenerek baslar ve donanim secimi ile sistem tipinden etkilenir."
+        },
+        {
+          "type": "heading",
+          "text": "Kullanici ve Sistem Hedefleri"
+        },
+        {
+          "type": "list",
+          "items": [
+            "Kullanici hedefleri (User goals): OS kullanisli, kolay ogrenilir, guvenilir, guvenli ve hizli olmalidir",
+            "Sistem hedefleri (System goals): OS tasarimi, uygulamasi ve bakimi kolay; esnek, guvenilir, hatasiz ve verimli olmalidir"
+          ]
+        },
+        {
+          "type": "heading",
+          "text": "Politika ve Mekanizma Ayirimi (Policy vs Mechanism)"
+        },
+        {
+          "type": "keypoint",
+          "text": "Politika (Policy): 'Ne' yapilmali? (Ornek: Her 100 saniyede bir kesme - interrupt). Mekanizma (Mechanism): 'Nasil' yapilmali? (Ornek: Zamanlayici - timer). Politikayi mekanizmadan ayirmak, esneklik saglar; politika degistiginde mekanizmayi degistirmek gerekmez."
+        },
+        {
+          "type": "heading",
+          "text": "Uygulama (Implementation)"
+        },
+        {
+          "type": "list",
+          "items": [
+            "Ilk isletim sistemleri assembly dilinde yazilmistir",
+            "Daha sonra Algol, PL/1 gibi diller kullanilmistir; simdi C ve C++ hakimdir",
+            "Gercekte genellikle dil karisimi kullanilir: en alt seviyeler assembly, ana govde C, sistem programlari C/C++/Python/shell scripts",
+            "Yuksek seviyeli dil tasimaliliga (portability) yardim eder, ancak daha yavas olabilir",
+            "Emulasyon (Emulation), bir OS'un yerel olmayan donanim uzerinde calismasini saglayabilir"
+          ]
+        },
+        {
+          "type": "warning",
+          "text": "Sinavda onemli: Politika ve Mekanizma ayirimi sik sorulan kavramdir. Politika 'ne yapilacak' sorusuna, mekanizma 'nasil yapilacak' sorusuna cevap verir. Bu ayrimi acik orneklerle aciklayabilmeniz beklenir."
+        }
+      ]
+    },
+    {
+      "id": "s8",
+      "title": "Isletim Sistemi Yapisi (Operating System Structure)",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "Genel amacli isletim sistemleri cok buyuk programlardir. Bu programlari yapilandirmanin cesitli yollari vardir: Basit yapi (MS-DOS), monolitik yapi (UNIX), katmanli yapi (Layered), mikrocekirdek (Microkernel), moduler yapi (Modules) ve hibrit sistemler (Hybrid)."
+        },
+        {
+          "type": "heading",
+          "text": "1. Monolitik Yapi (Monolithic Structure)"
+        },
+        {
+          "type": "paragraph",
+          "text": "Orijinal UNIX, donanim sinirlamalari nedeniyle sinirli yapilandirmaya sahipti. Sistem iki ana parcadan olusur: Sistem programlari ve cekirdek (kernel). Cekirdek, sistem cagrisi arayuzunun altinda ve fiziksel donanimimin ustunde yer alan her seyi kapsar: dosya sistemi, CPU zamanlama, bellek yonetimi gibi tum islevleri tek bir seviyede saglar."
+        },
+        {
+          "type": "diagram",
+          "title": "Geleneksel UNIX / Monolitik Yapi",
+          "ascii": "        +---------------------------+\n        |      Kullanicilar         |\n        +---------------------------+\n        | Kabuklar (Shells)         |\n        | Derleyiciler, Yorumlayici |\n        | Sistem Kutuphaneleri      |\n        +===========================+\n        | Sistem Cagrisi Arayuzu    |\n        +---------------------------+\n  K     | sinyal  | dosya  | CPU    |\n  E     | isleme  | sistemi| zamanl.|\n  R     | karakter| blok   | sayfa  |\n  N     | I/O     | I/O    | yonet. |\n  E     | terminal| disk   | sanal  |\n  L     | surucu  | surucu | bellek |\n        +===========================+\n        | Donanim Arayuzu (Kernel)  |\n        +---------------------------+\n        | Terminal | Cihaz  | Bellek |\n        | Denetl.  | Denetl.| Denetl.|\n        +---------------------------+"
+        },
+        {
+          "type": "paragraph",
+          "text": "Linux da monolitik artI moduler (monolithic plus modular) tasarima sahiptir. Uygulamalar, glibc standart C kutuphanesi araciligiyla sistem cagrisi arayuzune erisir; altinda dosya sistemleri, CPU zamanlayici, bellek yoneticisi, ag (TCP/IP), blok ve karakter cihazlari ile cihaz surculeri bulunur."
+        },
+        {
+          "type": "heading",
+          "text": "2. Katmanli Yaklasim (Layered Approach)"
+        },
+        {
+          "type": "paragraph",
+          "text": "Isletim sistemi bir dizi katmana (layer/level) bolunur; her katman alt katmanlarin uzerine insa edilir. En alt katman (katman 0) donanim, en ust katman (katman N) kullanici arayuzudur. Her katman yalnizca altindaki katmanlarin islevlerini ve servislerini kullanir."
+        },
+        {
+          "type": "diagram",
+          "title": "Katmanli Yaklasim (Layered Approach)",
+          "ascii": "  +-------------------------------+\n  |  Katman N: Kullanici Arayuzu  |\n  +-------------------------------+\n  |  Katman N-1                   |\n  +-------------------------------+\n  |           ...                 |\n  +-------------------------------+\n  |  Katman 1                     |\n  +-------------------------------+\n  |  Katman 0: Donanim            |\n  +-------------------------------+"
+        },
+        {
+          "type": "heading",
+          "text": "3. Mikrocekirdek (Microkernel)"
+        },
+        {
+          "type": "paragraph",
+          "text": "Cekirdekten mumkun oldugunca fazla islevi kullanici alanina (user space) tasir. Mach, mikrocekirdek ornegidir; Mac OS X cekirdegi Darwin, kisimen Mach'a dayanir. Kullanici modulleri arasindaki iletisim mesaj gecirme (message passing) ile saglanir."
+        },
+        {
+          "type": "diagram",
+          "title": "Mikrocekirdek Yapisi",
+          "ascii": "  [Kullanici Modu - User Mode]\n  +----------+ +---------+ +----------+\n  |Uygulama  | |Dosya    | |Cihaz     |\n  |Programi  | |Sistemi  | |Surucusu  |\n  +----^-----+ +----^----+ +----^-----+\n       |   mesajlar  |          |\n  =====|=============|==========|======\n  [Cekirdek Modu - Kernel Mode]\n  +--------+ +----------+ +---------+\n  | IPC    | |Bellek    | |CPU      |\n  |        | |Yonetimi  | |Zamanlama|\n  +--------+ +----------+ +---------+\n  +------------------------------------+\n  |         Mikrocekirdek              |\n  +------------------------------------+\n  +------------------------------------+\n  |           Donanim                  |\n  +------------------------------------+"
+        },
+        {
+          "type": "list",
+          "items": [
+            "Avantajlar: Genisletmesi kolay, yeni mimarilere tasinmasi kolay, daha guvenilir (daha az kod kernel modunda calisir), daha guvenli",
+            "Dezavantajlar: Kullanici alani ile cekirdek alani arasindaki iletisimin performans yuku (overhead)"
+          ]
+        },
+        {
+          "type": "heading",
+          "text": "4. Moduler Yapi - Yuklenebilir Cekirdek Modulleri (Loadable Kernel Modules - LKMs)"
+        },
+        {
+          "type": "paragraph",
+          "text": "Bircogu modern isletim sistemi yuklenebilir cekirdek modulleri (LKMs) kullanir. Nesne yonelimli (object-oriented) bir yaklasim benimser: her cekirdek bileseni ayri tutulur, birbirleriyle bilinen arayuzler uzerinden iletisir ve gerektiginde cekirdege yuklenebilir. Katmanli yapiya benzer ama daha esnektir. Linux ve Solaris bu yaklasimi kullanir."
+        },
+        {
+          "type": "heading",
+          "text": "5. Hibrit Sistemler (Hybrid Systems)"
+        },
+        {
+          "type": "paragraph",
+          "text": "Modern isletim sistemlerinin cogu tek bir saf model kullanmaz; performans, guvenlik ve kullanilabilirlik ihtiyaclarini karsilamak icin birden fazla yaklasimi birlestirir."
+        },
+        {
+          "type": "list",
+          "items": [
+            "Linux ve Solaris: Cekirdek adres alaninda monolitik + islevlerin dinamik yuklenmesi icin moduler",
+            "Windows: Cogunlukla monolitik + farkli alt sistem 'kisilik'leri (personalities) icin mikrocekirdek",
+            "Apple macOS / iOS: Hibrit, katmanli yapi; Aqua UI + Cocoa programlama ortami; cekirdek (Darwin) Mach mikrocekirdegi + BSD Unix parcalari + I/O kit + kernel extensions (kexts)",
+            "Android: Degistirilmis Linux cekirdegi + HAL + Bionic libc + native kutuphaneler + ART VM + Android cati yapilari (frameworks)"
+          ]
+        },
+        {
+          "type": "analogy",
+          "text": "OS yapilarini bina mimarisine benzetebilirsiniz: Monolitik yapi, tek katli buyuk bir fabrika gibidir - her sey ayni cati altindadir, hizlidir ama bir bolum bozulursa tum fabrika etkilenir. Katmanli yapi, cok katli bir bina gibidir - her kat kendi isini yapar. Mikrocekirdek, merkezi bir yonetim ofisi (kucuk cekirdek) + dis kaynak kullanan sube ofisleri (kullanici alani modulleri) gibidir. Moduler yapi ise Lego bloklari gibidir - ihtiyaca gore parca ekleyip cikarabilirsiniz."
+        }
+      ]
+    },
+    {
+      "id": "s9",
+      "title": "Isletim Sistemi Olusturma ve Baslatma (Building and Booting)",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "Isletim sistemleri genellikle cesitli cevre birimleriyle belirli bir sistem sinifi uzerinde calismak uzere tasarlanir. Cogu durumda, satin alinan bilgisayarda isletim sistemi zaten kurulu gelir, ancak sifirdan da olusturulabilir."
+        },
+        {
+          "type": "heading",
+          "text": "Linux Olusturma Adimlari"
+        },
+        {
+          "type": "list",
+          "items": [
+            "Linux kaynak kodunu indir (kernel.org)",
+            "Cekirdegi yapilandir: make menuconfig",
+            "Cekirdegi derle: make (vmlinuz cekirdek imajini uretir)",
+            "Cekirdek modullerini derle: make modules",
+            "Modulleri yukle: make modules_install",
+            "Yeni cekirdegi kur: make install"
+          ]
+        },
+        {
+          "type": "heading",
+          "text": "Sistem Baslatma (System Boot)"
+        },
+        {
+          "type": "paragraph",
+          "text": "Guc verildiginde, islem sabit bir bellek konumundan baslar. Isletim sistemi donanima sunulmalidir ki donanim onu baslatabilsin."
+        },
+        {
+          "type": "list",
+          "items": [
+            "Bootstrap loader (BIOS): ROM veya EEPROM'da saklanir; cekirdegi bulur, bellige yukler ve baslatir",
+            "Boot block: Bazi sistemlerde iki asamali surec; ROM kodu sabit konumdaki boot block'u yukler, o da bootstrap loader'i diskten yukler",
+            "UEFI (Unified Extensible Firmware Interface): Modern sistemlerde BIOS'un yerini alan firmware arayuzu",
+            "GRUB: Yaygin bootstrap loader; birden fazla diskten, surum ve cekirdek secenekleriyle cekirdek secimi yapilabilir",
+            "Cekirdek yuklendikten sonra sistem calisir (running) durumuna gecer"
+          ]
+        },
+        {
+          "type": "keypoint",
+          "text": "Boot sureci kisaca: Guc acilir -> BIOS/UEFI firmware calisiir -> Bootstrap loader cekirdegi bulur -> Cekirdek bellige yuklenir -> Sistem baslatilir. GRUB gibi boot loader'lar, farkli isletim sistemi ve cekirdek surumlerinin secilmesine olanak tanir."
+        }
+      ]
+    },
+    {
+      "id": "s10",
+      "title": "Isletim Sistemi Hata Ayiklama (Operating System Debugging)",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "Hata ayiklama (debugging), hatalari (bugs) bulma ve duzeltme islemidir. Ayni zamanda performans ayarlama (performance tuning) islemini de icerir."
+        },
+        {
+          "type": "list",
+          "items": [
+            "Log dosyalari (Log files): Isletim sistemi hata bilgilerini iceren kayit dosyalari uretir",
+            "Core dump: Bir uygulama basarisiz olursa, sureccin bellegini yakalayan dosya olusturulur",
+            "Crash dump: Isletim sistemi arizasinda cekirdek bellegini iceren dosya olusturulur",
+            "Izleme listeleri (Trace listings): Faaliyetlerin kaydedilip analiz edilmesi",
+            "Profilleme (Profiling): Istatistiksel egilimler bulmak icin komut isaretcisinin periyodik orneklemesi"
+          ]
+        },
+        {
+          "type": "keypoint",
+          "text": "Kernighan Yasasi: 'Hata ayiklamak, kodu ilk basta yazmaktan iki kat daha zordur. Bu nedenle, kodu olabildigince akillica yazarsaniz, taniminiz geregi onu hata ayiklamak icin yeterince zeki degilsinizdir.'"
+        },
+        {
+          "type": "analogy",
+          "text": "Hata ayiklamayi bir dedektiflik isine benzetebilirsiniz: Log dosyalari olaylar raporu, core dump olay yeri fotografi, crash dump buyuk kaza raporu ve profiling ise guvenlik kamerasi kayitlari gibidir."
+        }
+      ]
+    }
+  ],
+  "flashcards": [
+    {
+      "id": "fc1",
+      "front": "Sistem cagrisi (System Call) nedir?",
+      "back": "Isletim sistemi tarafindan saglanan servislere erisim icin programlama arayuzu sunan mekanizmadir. Genellikle C/C++ ile yazilmis rutinler seklinde sunulur ve programcilar dogrudan sistem cagrisi yerine API'ler (Win32, POSIX, Java) araciligiyla kullanir."
+    },
+    {
+      "id": "fc2",
+      "front": "API ile sistem cagrisi arasindaki fark nedir?",
+      "back": "API (Application Programming Interface), programcilara sunulan ust seviye arayuzdur. Sistem cagrisi ise dogrudan cekirdege yapilan cagidir. API, sistem cagrilarini sarmalar (wrap) ve detaylarini gizler. Ornegin printf() bir API cagrisidir, arka planda write() sistem cagrisini kullanir."
+    },
+    {
+      "id": "fc3",
+      "front": "Sistem cagrilarinda parametre gecirmenin uc yolu nelerdir?",
+      "back": "1) Register (Yazmac): Parametreler CPU yazmaclarinda tasinir. 2) Blok/Tablo: Parametreler bellekteki bir tabloya yazilir, adres yazmacla iletilir (Linux/Solaris). 3) Stack (Yigin): Program parametreleri yigina iter (push), OS cikarir (pop)."
+    },
+    {
+      "id": "fc4",
+      "front": "Alti sistem cagrisi turunu sayiniz.",
+      "back": "1) Surec kontrolu (Process control) 2) Dosya yonetimi (File management) 3) Cihaz yonetimi (Device management) 4) Bilgi bakimi (Information maintenance) 5) Iletisim (Communications) 6) Koruma (Protection)"
+    },
+    {
+      "id": "fc5",
+      "front": "Unix'te fork() ve exec() ne yapar?",
+      "back": "fork(): Mevcut surecin bir kopyasini olusturarak yeni bir surec (child process) yaratir. exec(): Bir sureccin bellek alanina yeni bir program yukler ve calistirmaya baslar. Genellikle fork() ile olusturulan cocuk surecte exec() cagirilir."
+    },
+    {
+      "id": "fc6",
+      "front": "Mesaj gecirme modeli (Message Passing) ile paylasimli bellek modeli (Shared Memory) arasindaki fark nedir?",
+      "back": "Mesaj gecirme: Surecler birbirlerine mesaj gondererek iletisir (host veya surec adina gore, client-server modeli). Paylasimli bellek: Surecler ortak bir bellek bolgesine eriserek veri paylasir. Mesaj gecirme daha guvenli ama daha yavas; paylasimli bellek daha hizli ama senkronizasyon gerektirir."
+    },
+    {
+      "id": "fc7",
+      "front": "Sistem programlari (system programs) nelerdir?",
+      "back": "Program gelistirme ve yurutme icin uygun ortam saglayan programlardir. Kategorileri: dosya yonetimi, dosya degistirme, durum bilgisi, programlama dili destegi, program yukleme/yurutme, iletisim, arka plan servisleri (daemons). Kullanicilarin OS hakkindaki gorusu genellikle sistem programlari tarafindan sekillenir."
+    },
+    {
+      "id": "fc8",
+      "front": "Daemon (arka plan servisi) nedir?",
+      "back": "Sistem baslatildiginda calismaya baslayan ve arka planda calisan surecclerdir. Services, subsystems veya daemons olarak da bilinir. Disk kontrolu, surec zamanlama, hata kaydi gibi gorevleri yapar. Kullanici baglaminda (user context) calisir, cekirdek baglaminda degil."
+    },
+    {
+      "id": "fc9",
+      "front": "Linker (baglayici) ne yapar?",
+      "back": "Derleyici tarafindan uretilen nesne dosyalarini (relocatable object files) ve kutuphaneleri birlestirerek tek bir calistirilabilir (executable) dosya olusturur. Ornegin: gcc -o main main.o -lm komutu linker'i calistirir."
+    },
+    {
+      "id": "fc10",
+      "front": "Loader (yukleyici) ne yapar?",
+      "back": "Ikincil depolamadan (disk) calistirilabilir dosyayi bellige yukler ve calistirmaya baslar. Relocation (yer degistirme) islemiyle program parcalarina son adresleri atar ve kod/verileri bu adreslere uyarlar."
+    },
+    {
+      "id": "fc11",
+      "front": "DLL (Dynamically Linked Library) nedir?",
+      "back": "Dinamik olarak baglanan kutuphanelerdir. Calistirilabilir dosyaya gomulmu yerine, ihtiyac duyuldugunda yuklenir. Ayni kutuphaneden yararlanan tum programlar tarafindan paylasilir (bir kez yuklenir). Windows'ta .dll, Linux'ta .so dosyalari olarak bilinir."
+    },
+    {
+      "id": "fc12",
+      "front": "ABI (Application Binary Interface) nedir?",
+      "back": "API'nin mimari seviyedeki karsilgidir. Farkli ikili (binary) kod bilesenlerinin belirli bir isletim sistemi ve CPU mimarisinde nasil etkilesecegini tanimlar. Adres genisligi, fonksiyon cagrisi yontemi, sistem cagrisi yontemi gibi detaylari kapsar."
+    },
+    {
+      "id": "fc13",
+      "front": "Politika (Policy) ve Mekanizma (Mechanism) ayrimi nedir?",
+      "back": "Politika: NE yapilacagini belirler (Ornek: Her 100 ms'de bir kesme olustur). Mekanizma: NASIL yapilacagini belirler (Ornek: Zamanlayici - timer). Bu ayrim esneklik saglar; politika degistiginde (100ms yerine 200ms) mekanizmayi degistirmek gerekmez."
+    },
+    {
+      "id": "fc14",
+      "front": "Monolitik cekirdek (Monolithic Kernel) nedir?",
+      "back": "Tum isletim sistemi islevlerinin (dosya sistemi, bellek yonetimi, CPU zamanlama, cihaz surculeri vb.) tek bir buyuk cekirdek icinde calistigi yapidir. UNIX ve Linux monolitik cekirdek kullanir. Avantaji hiz, dezavantaji bir bilesendeki hatanin tum sistemi etkileyebilmesidir."
+    },
+    {
+      "id": "fc15",
+      "front": "Katmanli yaklasimin (Layered Approach) ozellikleri nelerdir?",
+      "back": "OS, her biri alt katmanlarin uzerine insa edilen katmanlara bolunur. Katman 0: donanim, Katman N: kullanici arayuzu. Her katman yalnizca altindaki katmanlarin islevlerini kullanir. Avantaji: modulerlik ve hata ayiklama kolayligi. Dezavantaji: katmanlar arasi iletisimde performans kaybi."
+    },
+    {
+      "id": "fc16",
+      "front": "Mikrocekirdek (Microkernel) ne yapar ve ornek veriniz.",
+      "back": "Cekirdekten mumkun oldugunca cok islevi kullanici alanina tasir. Cekirdekte sadece IPC, bellek yonetimi ve CPU zamanlama kalir. Ornek: Mach. Mac OS X'in Darwin cekirdegi kisemen Mach'a dayanir. Avantajlari: genisletilebilirlik, tasimalilik, guvenilirlik, guvenlik. Dezavantaji: user-kernel iletisim yuku."
+    },
+    {
+      "id": "fc17",
+      "front": "LKM (Loadable Kernel Modules) nedir?",
+      "back": "Yuklenebilir cekirdek modulleri, nesne yonelimli yaklasimla her cekirdek bilesenini ayri tutar. Bilesenler bilinen arayuzler uzerinden iletisir ve gerektiginde cekirdege yuklenebilir. Katmanli yapiya benzer ama daha esnektir. Linux, Solaris gibi sistemlerde kullanilir."
+    },
+    {
+      "id": "fc18",
+      "front": "Hibrit sistem (Hybrid System) nedir? Ornekler veriniz.",
+      "back": "Birden fazla OS yapi yaklasimini birlestiren sistemlerdir. Linux: monolitik + moduler. Windows: monolitik + mikrocekirdek (alt sistem personalities). macOS: Mach mikrocekirdek + BSD + I/O kit + kernel extensions. Android: degistirilmis Linux cekirdegi + Dalvik/ART VM + HAL."
+    },
+    {
+      "id": "fc19",
+      "front": "macOS/Darwin cekirdegi hangi bilesenlerden olusur?",
+      "back": "Darwin cekirdegi: Mach mikrocekirdegi (zamanlama, IPC, bellek yonetimi) + BSD (POSIX) sistem cagrilari + I/O kit + kexts (kernel extensions - yuklenebilir cekirdek modulleri). Uygulamalar library interface araciligiyla Mach traps veya BSD sistem cagrilarina erisir."
+    },
+    {
+      "id": "fc20",
+      "front": "Android mimarisi hangi katmanlardan olusur?",
+      "back": "Asagidan yukariya: Donanim -> Linux cekirdegi -> Bionic (C kutuphanesi) -> HAL (Hardware Abstraction Layer) -> Native kutuphaneler (SQLite, OpenGL, WebKit, SSL) -> Android frameworks + ART VM + JNI -> Uygulamalar."
+    },
+    {
+      "id": "fc21",
+      "front": "Bootstrap loader (BIOS) ne yapar?",
+      "back": "ROM veya EEPROM'da saklanir. Bilgisayar acildiginda sabit bellek konumundan calisir, cekirdegi bulur, bellige yukler ve baslatir. Modern sistemlerde BIOS'un yerini UEFI (Unified Extensible Firmware Interface) almistir."
+    },
+    {
+      "id": "fc22",
+      "front": "GRUB nedir?",
+      "back": "GRUB (GRand Unified Bootloader), yaygin kullanilan bir bootstrap loader'dir. Birden fazla disk, surum ve cekirdek secenekleriyle farkli isletim sistemleri ve cekirdek yapilandirmalari arasinda secim yapilmasina olanak tanir."
+    },
+    {
+      "id": "fc23",
+      "front": "Core dump ve crash dump arasindaki fark nedir?",
+      "back": "Core dump: Bir kullanici uygulamasi basarisiz oldugunda, o sureccin bellek icerigini yakalayan dosyadir. Crash dump: Isletim sisteminin kendisi cokerse, cekirdek belleginin icerigini kaydeden dosyadir. Her ikisi de hata ayiklama icin kullanilir."
+    },
+    {
+      "id": "fc24",
+      "front": "Profiling (profilleme) nedir?",
+      "back": "Performans ayarlama icin kullanilan bir tekniktir. Komut isaretcisinin (instruction pointer) periyodik olarak orneklenmesi ile istatistiksel egilimler belirlenir. Hangi fonksiyonlarin en cok CPU zamani tukettigini anlamaya yardimci olur."
+    },
+    {
+      "id": "fc25",
+      "front": "Relocation (yer degistirme) islemi nedir?",
+      "back": "Yukleyicinin (loader) program parcalarina son bellek adreslerini atamasi ve program icindeki kod ve verileri bu adreslere uyarlamasi islemidir. Bu sayede program, bellegin herhangi bir yerine yuklenebilir."
+    },
+    {
+      "id": "fc26",
+      "front": "Relocatable object file nedir?",
+      "back": "Derleyici tarafindan uretilen ve herhangi bir fiziksel bellek konumuna yuklenebilecek sekilde tasarlanmis nesne dosyasidir. Linker bu dosyalari birlestirerek tek bir calistirilabilir dosya olusturur."
+    },
+    {
+      "id": "fc27",
+      "front": "ELF ve PE dosya formatlari nedir?",
+      "back": "ELF (Executable and Linkable Format): Linux ve Unix sistemlerde kullanilan standart calistirilabilir dosya formati. PE (Portable Executable): Windows'ta kullanilan standart format. Her iki format da OS'un dosyayi nasil yukleyip calistiracagini bilmesini saglar."
+    },
+    {
+      "id": "fc28",
+      "front": "Registry nedir ve hangi isletim sistemi kullanir?",
+      "back": "Yapilandirma bilgilerini depolamak ve almak icin kullanilan merkezi bir veritabanidir. Windows isletim sistemi registry kullanir. Sistem ayarlari, uygulama tercihleri ve donanim bilgileri burada saklanir."
+    },
+    {
+      "id": "fc29",
+      "front": "FreeBSD'de surec olusturma nasil calisir?",
+      "back": "Kullanici giris yapar -> secili kabuk (shell) baslatilir -> Kabuk fork() sistem cagrisi ile yeni surec olusturur -> exec() ile programa yukler -> Kabuk surecin bitmesini bekler veya kullanici komutlarina devam eder. Surec cikar: kod=0 hata yok, kod>0 hata kodu."
+    },
+    {
+      "id": "fc30",
+      "front": "iOS mimarisi hangi katmanlardan olusur?",
+      "back": "Asagidan yukariya: Core OS (Mac OS X cekirdegine dayali) -> Core Services (bulut bilisim, veritabanlari) -> Media Services (grafik, ses, video) -> Cocoa Touch (Objective-C/Swift API) -> Uygulamalar. ARM CPU mimarisinde calisir."
+    },
+    {
+      "id": "fc31",
+      "front": "Windows'ta dosya yonetimi icin hangi sistem cagrilari kullanilir?",
+      "back": "CreateFile() (dosya olusturma/acma), ReadFile() (okuma), WriteFile() (yazma), CloseHandle() (kapatma). Unix karsiliklarI: open(), read(), write(), close()."
+    },
+    {
+      "id": "fc32",
+      "front": "Standart C kutuphanesi (Standard C Library) sistem cagrilari ile nasil etkilesir?",
+      "back": "C kutuphanesi, sistem cagri arayuzunun bir kismini saglar. Ornegin C programinda printf() cagirildiginda, C kutuphanesi bunu yakalar ve gerekli sistem cagrisini (write()) calistirarak sonucu kullanici programina dondurur. Kullanici modundan cekirdek moduna gecis bu katmanda yapilir."
+    }
+  ],
+  "quiz": [
+    {
+      "id": "q1",
+      "question": "Asagidakilerden hangisi isletim sisteminin kullaniciya yonelik servislerinden biri DEGILDIR?",
+      "options": [
+        "A) Program yurutme (Program Execution)",
+        "B) Kaynak tahsisi (Resource Allocation)",
+        "C) Dosya sistemi yonetimi (File-System Manipulation)",
+        "D) Hata tespiti (Error Detection)"
+      ],
+      "answer": "B",
+      "explanation": "Kaynak tahsisi (Resource Allocation), sisteme yonelik (system-oriented) bir servistir. Kullaniciya yonelik servisler: UI, program yurutme, I/O islemleri, dosya sistemi yonetimi, iletisim ve hata tespitidir. Kaynak tahsisi, kayit tutma ve koruma/guvenlik ise sisteme yonelik servislerdir."
+    },
+    {
+      "id": "q2",
+      "question": "Sistem cagrilarinda parametre gecirme yontemlerinden hangisi Linux ve Solaris tarafindan kullanilir?",
+      "options": [
+        "A) Yalnizca register (yazmac) yontemi",
+        "B) Blok/tablo yontemi (parametreler bellekteki tabloya yazilir)",
+        "C) Yalnizca stack (yigin) yontemi",
+        "D) Dogrudan bellek erisimi (DMA)"
+      ],
+      "answer": "B",
+      "explanation": "Linux ve Solaris, blok/tablo yontemini kullanir. Bu yontemde parametreler bellekte bir tabloya veya bloga yerlestirilir ve tablonun adresi bir yazmac araciligiyla isletim sistemine gonderilir. Bu yontem, parametre sayisinda sinir koymaz."
+    },
+    {
+      "id": "q3",
+      "question": "Asagidaki eslemelerden hangisi YANLISTIR?",
+      "options": [
+        "A) fork() - Unix surec olusturma",
+        "B) CreateFile() - Windows dosya yonetimi",
+        "C) chmod() - Windows koruma sistemi",
+        "D) pipe() - Unix iletisim"
+      ],
+      "answer": "C",
+      "explanation": "chmod() bir Unix/POSIX sistem cagrisidir ve dosya izinlerini degistirmek icin kullanilir. Windows'ta koruma icin SetFileSecurity(), InitializeSecurityDescriptor(), SetSecurityDescriptorGroup() gibi cagrilar kullanilir. Unix'te koruma icin chmod(), umask() ve chown() kullanilir."
+    },
+    {
+      "id": "q4",
+      "question": "Bir C programinda printf('Hello') cagirildiginda asagidaki olaylardan hangisi gerceklesir?",
+      "options": [
+        "A) Dogrudan cekirdek moduna gecilir ve ekrana yazdirma yapilir",
+        "B) Standart C kutuphanesi cagiyi yakalayip write() sistem cagrisini baslatir",
+        "C) printf() kendisi bir sistem cagrisidir ve dogrudan cekirdekte calisir",
+        "D) Islem tamamen kullanici modunda tamamlanir, cekirdege gerek yoktur"
+      ],
+      "answer": "B",
+      "explanation": "printf() bir kutuphane fonksiyonudur (API), sistem cagrisi degildir. C programi printf() cagirir -> Standart C kutuphanesi bunu yakalar -> write() sistem cagrisini baslatir (user mode'dan kernel mode'a gecis olur) -> Cekirdek yazma islemini gerceklestirir -> Sonuc C kutuphanesi araciligiyla kullanici programina doner."
+    },
+    {
+      "id": "q5",
+      "question": "Asagidakilerden hangisi sistem programlarinin (system programs) bir kategorisi DEGILDIR?",
+      "options": [
+        "A) Dosya yonetimi (File management)",
+        "B) CPU zamanlama (CPU scheduling)",
+        "C) Arka plan servisleri (Background services)",
+        "D) Programlama dili destegi (Programming-language support)"
+      ],
+      "answer": "B",
+      "explanation": "CPU zamanlama (CPU scheduling), cekirdek (kernel) icinde gerceklesen bir islevdir, sistem programi kategorisi degildir. Sistem programlarinin kategorileri: dosya yonetimi, dosya degistirme, durum bilgisi, programlama dili destegi, program yukleme/yurutme, iletisim, arka plan servisleri ve uygulama programlari."
+    },
+    {
+      "id": "q6",
+      "question": "Linker (baglayici) ve Loader (yukleyici) arasindaki temel fark nedir?",
+      "options": [
+        "A) Linker kodu derler, Loader calistirir",
+        "B) Linker nesne dosyalarini birlestirip calistirilabilir dosya olusturur, Loader bu dosyayi bellige yukler",
+        "C) Linker bellekte calisir, Loader diskte calisir",
+        "D) Ikisi de ayni isi yapar, farkli isimlerdir"
+      ],
+      "answer": "B",
+      "explanation": "Linker, derleyici tarafindan uretilen nesne dosyalarini (.o) ve kutuphaneleri birlestirerek tek bir calistirilabilir (executable) dosya olusturur. Loader ise bu calistirilabilir dosyayi ikincil depolamadan (disk) bellige yukler ve relocation (yer degistirme) islemini yaparak programin calistirilmasini saglar."
+    },
+    {
+      "id": "q7",
+      "question": "DLL (Dynamically Linked Library) kullanmanin temel avantaji nedir?",
+      "options": [
+        "A) Program daha hizli derlenir",
+        "B) Her program kendi kutuphanesini tasir, bagimsizlik saglar",
+        "C) Kutuphane bir kez yuklenir ve birden fazla program tarafindan paylasilir, bellek tasarrufu saglar",
+        "D) Statik baglamadan daha guvenlidir"
+      ],
+      "answer": "C",
+      "explanation": "DLL'ler ihtiyac duyuldugunda yuklenir ve ayni kutuphaneden yararlanan tum programlar tarafindan paylasilir (bellekte bir kez yuklu kalir). Bu, bellek tasarrufu ve disk alani tasarrufu saglar. Ayrica kutuphane guncellenmek istendiginde programlarin yeniden derlenmesine gerek kalmaz."
+    },
+    {
+      "id": "q8",
+      "question": "ABI (Application Binary Interface) ile API (Application Programming Interface) arasindaki fark nedir?",
+      "options": [
+        "A) ABI daha yeni bir teknolojidir",
+        "B) API kaynak kod seviyesinde, ABI ikili (binary) seviyede uyumluluk saglar",
+        "C) ABI sadece Windows'ta, API sadece Linux'ta kullanilir",
+        "D) ABI ve API ayni seydir"
+      ],
+      "answer": "B",
+      "explanation": "API, kaynak kod seviyesinde programlama arayuzu sunar; ayni API'yi kullanan kod farkli platformlarda derlenebilir. ABI ise ikili (binary) seviyede uyumluluk tanimlar; adres genisligi, fonksiyon cagrisi yontemi, sistem cagrisi yontemi gibi mimari detaylari belirler. ABI uyumsuzlugu nedeniyle bir OS icin derlenmis ikili dosya baska bir OS'ta calismaz."
+    },
+    {
+      "id": "q9",
+      "question": "Politika (Policy) ve Mekanizma (Mechanism) ayirimi hakkinda hangisi DOGRUDUR?",
+      "options": [
+        "A) Politika 'nasil' yapilacagini, mekanizma 'ne' yapilacagini belirler",
+        "B) Politika 'ne' yapilacagini, mekanizma 'nasil' yapilacagini belirler",
+        "C) Her ikisi de ayni anlama gelir",
+        "D) Politika donanim, mekanizma yazilim ile ilgilidir"
+      ],
+      "answer": "B",
+      "explanation": "Politika 'ne yapilmali' sorusuna cevap verir (ornek: her 100 saniyede bir kesme olustur). Mekanizma 'nasil yapilmali' sorusuna cevap verir (ornek: zamanlayici - timer). Bu ayrimi korumak esneklik saglar; politika degistiginde (100 yerine 200 ms) mekanizmayi (timer) degistirmek gerekmez."
+    },
+    {
+      "id": "q10",
+      "question": "Monolitik cekirdek yapisinin EN BUYUK dezavantaji nedir?",
+      "options": [
+        "A) Cok yavas calisir",
+        "B) Genisletilmesi imkansizdir",
+        "C) Bir bilesendeki hata tum sistemi etkileyebilir, bakim ve debug zordur",
+        "D) Sadece eski donamimlarda calisir"
+      ],
+      "answer": "C",
+      "explanation": "Monolitik cekirdekte tum islevler (dosya sistemi, bellek yonetimi, cihaz surculeri vb.) tek bir buyuk cekirdek icinde calisir. Bir bilesendeki hata tum cekirdegi ve dolayisiyla tum sistemi cokertebilir. Ayrica buyuk kod tabani nedeniyle bakim ve hata ayiklama zordur. Buna karsin monolitik yapi, fonksiyon cagrilari dogrudan yapildigindan performans acisindan avantajlidir."
+    },
+    {
+      "id": "q11",
+      "question": "Mikrocekirdek (Microkernel) yapisinda cekirdekte kalan temel bilesenler hangileridir?",
+      "options": [
+        "A) Dosya sistemi, cihaz surculeri, ag yigini",
+        "B) IPC (surecler arasi iletisim), bellek yonetimi, CPU zamanlama",
+        "C) Kullanici arayuzu, kabuk, sistem kutuphaneleri",
+        "D) Tum isletim sistemi bilesenleri"
+      ],
+      "answer": "B",
+      "explanation": "Mikrocekirdekte cekirdekte yalnizca en temel islevler kalir: IPC (Interprocess Communication), bellek yonetimi ve CPU zamanlama. Dosya sistemi, cihaz surculeri gibi diger bilesenler kullanici alanina (user space) tasinir ve mesaj gecirme (message passing) ile cekirdekle iletisir. Bu sayede cekirdek kucuk, guvenilir ve guvenli kalir."
+    },
+    {
+      "id": "q12",
+      "question": "Mikrocekirdek yapisinin performans dezavantaji neden olusur?",
+      "options": [
+        "A) Cekirdek cok buyuk oldugu icin",
+        "B) Kullanici alani ile cekirdek alani arasindaki mesaj gecirme iletisim yuku (overhead) nedeniyle",
+        "C) Dosya sistemi olmadigi icin",
+        "D) Sadece tek islemci destekledigi icin"
+      ],
+      "answer": "B",
+      "explanation": "Mikrocekirdekte dosya sistemi ve cihaz surculeri gibi bilesenler kullanici alaninda calisir. Bu bilesenler cekirdekle iletisirken surekli kullanici modu-cekirdek modu gecisleri (context switch) ve mesaj gecirme islemleri yapilir. Bu ek iletisim yuku (overhead), monolitik cekirdege kiyasla performans kaybina neden olur."
+    },
+    {
+      "id": "q13",
+      "question": "LKM (Loadable Kernel Modules) hakkinda hangisi YANLISTIR?",
+      "options": [
+        "A) Nesne yonelimli (object-oriented) bir yaklasim kullanir",
+        "B) Her bileseni cekirdege gerektiginde yuklenir",
+        "C) Katmanli yapiya benzer ama daha esnektir",
+        "D) Sadece mikrocekirdek yapisinda kullanilabilir"
+      ],
+      "answer": "D",
+      "explanation": "LKM sadece mikrocekirdek yapisina ozgu degildir; aslinda Linux ve Solaris gibi monolitik cekirdek kullanan sistemlerde de yaygin olarak kullanilir. LKM, her cekirdek bilesenini ayri tutar, bilinen arayuzler uzerinden iletisim saglar ve cekirdege calisma zamaninda yuklenebilir/cikarilabilir. Bu moduler yaklasim monolitik cekirdeklerle birlikte kullanilarak esneklik saglar."
+    },
+    {
+      "id": "q14",
+      "question": "Apple macOS'un Darwin cekirdegi hangi bilesenleri icerir?",
+      "options": [
+        "A) Yalnizca BSD Unix cekirdegi",
+        "B) Mach mikrocekirdegi + BSD Unix parcalari + I/O kit + kernel extensions",
+        "C) Yalnizca Linux cekirdegi",
+        "D) Monolitik Windows NT cekirdegi"
+      ],
+      "answer": "B",
+      "explanation": "Darwin, Apple macOS ve iOS'un cekirdek ortamidir. Mach mikrocekirdegi (zamanlama, IPC, bellek yonetimi), BSD (POSIX) sistem cagrilari, I/O kit ve kernel extensions (kexts - dinamik yuklenebilir moduller) icerir. Bu hibrit yaklasim hem mikrocekirdek hem monolitik hem de moduler ozellikleri birlestirir."
+    },
+    {
+      "id": "q15",
+      "question": "Android mimarisinde Dalvik/ART VM ne amacla kullanilir?",
+      "options": [
+        "A) Donanim suruculerini yonetmek icin",
+        "B) Java ile yazilan Android uygulamalarini calistirmak icin",
+        "C) Linux cekirdegini derlemek icin",
+        "D) Ag iletisimini yonetmek icin"
+      ],
+      "answer": "B",
+      "explanation": "Android'de uygulamalar Java (ve Kotlin) ile gelistirilir. Java sinif dosyalari Java bytecode'a derlenir, ardidan calistirilabilir formata donusturulerek Dalvik (eski) veya ART (yeni - Android Runtime) sanal makinesinde calistirilir. Bu VM, uygulamalarin donanim bagimsiz calismasini saglar."
+    },
+    {
+      "id": "q16",
+      "question": "Sistem baslatma (boot) surecinde UEFI'nin rolu nedir?",
+      "options": [
+        "A) Isletim sistemi cekirdegini derler",
+        "B) BIOS'un modern yedegi olup cekirdegi bulur, bellige yukler ve baslatir",
+        "C) Yalnizca ag baglantisi saglar",
+        "D) Dosya sistemini formatlar"
+      ],
+      "answer": "B",
+      "explanation": "UEFI (Unified Extensible Firmware Interface), geleneksel BIOS'un yerini alan modern firmware arayuzudur. Bilgisayar acildiginda sabit bellek konumundan calisir, cekirdegi (kernel) bulur, bellige yukler ve baslatir. BIOS'a kiyasla daha buyuk disk destegi, daha hizli baslatma ve guvenlik ozellikleri (Secure Boot) sunar."
+    },
+    {
+      "id": "q17",
+      "question": "Asagidakilerden hangisi 'bilgi bakimi' (information maintenance) turunde bir sistem cagrisidir?",
+      "options": [
+        "A) open()",
+        "B) fork()",
+        "C) getpid()",
+        "D) chmod()"
+      ],
+      "answer": "C",
+      "explanation": "getpid() sureccin kimlik numarasini (process ID) donduren bir bilgi bakimi sistem cagrisidir. open() dosya yonetimi, fork() surec kontrolu, chmod() ise koruma kategorisindedir. Bilgi bakimi cagrilari: getpid(), alarm(), sleep() (Unix); GetCurrentProcessID(), SetTimer(), Sleep() (Windows)."
+    },
+    {
+      "id": "q18",
+      "question": "Asagidakilerden hangisi hibrit sistem kullanan isletim sistemlerinden biri DEGILDIR?",
+      "options": [
+        "A) macOS",
+        "B) Windows",
+        "C) MS-DOS",
+        "D) Android"
+      ],
+      "answer": "C",
+      "explanation": "MS-DOS basit bir yapi (simple structure) kullanan eski bir isletim sistemidir ve hibrit sistem degildir. macOS (Mach + BSD + I/O kit), Windows (monolitik + mikrocekirdek personalities) ve Android (Linux kernel + ART VM + HAL) hibrit yaklasim kullanan modern isletim sistemleridir."
+    },
+    {
+      "id": "q19",
+      "question": "Kernighan Yasasi debugging hakkinda ne soyler?",
+      "options": [
+        "A) Hata ayiklama, kod yazmaktan daha kolaydir",
+        "B) Hata ayiklama, kodu yazmaktan iki kat daha zordur; bu nedenle olabildigince akillica kod yazarsaniz hata ayiklamak icin yeterince zeki degilsinizdir",
+        "C) Hata ayiklama sadece assembler dilinde mumkundur",
+        "D) Otomatik araclar tum hatalari bulabilir"
+      ],
+      "answer": "B",
+      "explanation": "Kernighan Yasasi: 'Debugging is twice as hard as writing the code in the first place. Therefore, if you write the code as cleverly as possible, you are, by definition, not smart enough to debug it.' Bu yasa, kodun basit ve anlasilir yazilmasinin onemini vurgular."
+    },
+    {
+      "id": "q20",
+      "question": "Asagidaki senaryoda hangi tur sistem cagrisi kullanilir: Bir surec baska bir surecin bitmesini bekliyor?",
+      "options": [
+        "A) Dosya yonetimi (File management)",
+        "B) Surec kontrolu (Process control)",
+        "C) Iletisim (Communications)",
+        "D) Bilgi bakimi (Information maintenance)"
+      ],
+      "answer": "B",
+      "explanation": "Bir sureccin baska bir sureccin bitmesini beklemesi, surec kontrolu (process control) kategorisindedir. Unix'te wait() ve Windows'ta WaitForSingleObject() sistem cagrilari bu amacla kullanilir. Bu cagrilar, ebeveyn surecin cocuk sureccin tamamlanmasini beklemesini saglar."
+    },
+    {
+      "id": "q21",
+      "question": "Asagidakilerden hangisi mikrocekirdek yapisinin avantajlarINDAN biridir?",
+      "options": [
+        "A) Yuksek performans",
+        "B) Basit implementasyon",
+        "C) Yeni mimarilere tasimasi kolay (portability)",
+        "D) Dusuk bellek kullanimi"
+      ],
+      "answer": "C",
+      "explanation": "Mikrocekirdek avantajlari: genisletmesi kolay, yeni mimarilere tasinmasi (port) kolay, daha guvenilir (daha az kod kernel modunda calisir) ve daha guvenli. Performans dezavantaji vardir cunku kullanici-cekirdek gecisleri ek yuk olusturur. Implementasyonu basit degildir, mesaj gecirme mekanizmalari karmasik olabilir."
+    },
+    {
+      "id": "q22",
+      "question": "Linux cekirdegi olusturmak icin dogru sira hangisidir?",
+      "options": [
+        "A) make -> make menuconfig -> make install",
+        "B) make menuconfig -> make -> make modules -> make modules_install -> make install",
+        "C) make install -> make -> make menuconfig",
+        "D) gcc kernel.c -> make install"
+      ],
+      "answer": "B",
+      "explanation": "Dogru sira: 1) make menuconfig (cekirdegi yapilandir) 2) make (cekirdegi derle, vmlinuz uretir) 3) make modules (cekirdek modullerini derle) 4) make modules_install (modulleri kur) 5) make install (yeni cekirdegi sisteme kur). Bu adimlar sirali yapilmalidir."
+    },
+    {
+      "id": "q23",
+      "question": "Asagidaki ifadelerden hangisi katmanli yaklasim (Layered Approach) icin DOGRUDUR?",
+      "options": [
+        "A) Her katman herhangi bir katmanin islevlerini kullanabilir",
+        "B) Her katman yalnizca altindaki katmanlarin islevlerini ve servislerini kullanir",
+        "C) Katman 0 kullanici arayuzu, katman N donanim katmanidir",
+        "D) Katmanlar arasi iletisim mesaj gecirme ile saglanir"
+      ],
+      "answer": "B",
+      "explanation": "Katmanli yaklasimda her katman yalnizca altindaki katmanlarin islevlerini (functions/operations) ve servislerini kullanir. Katman 0 donanimdir (en alt), katman N kullanici arayuzudur (en ust). Mesaj gecirme mikrocekirdek yapisina ozgudur, katmanli yaklasimda fonksiyon cagrilari kullanilir."
+    }
+  ],
+  "fillBlanks": [
+    {
+      "id": "fb1",
+      "text": "Sistem cagrilari genellikle dogrudan kullanilmaz; bunun yerine programcilar _______ araciligiyla isletim sistemi servislerine erisir.",
+      "answer": "API (Application Programming Interface)",
+      "explanation": "Programcilar Win32 API, POSIX API veya Java API gibi ust seviye arayuzler kullanir. Bu API'ler arka planda gerekli sistem cagrilarini yapar."
+    },
+    {
+      "id": "fb2",
+      "text": "Linux ve Solaris'te sistem cagrilarina parametre gecirmek icin _______ yontemi kullanilir; parametreler bellekteki bir tabloya yazilir ve tablonun adresi yazmac ile gonderilir.",
+      "answer": "blok/tablo (block/table)",
+      "explanation": "Bu yontemde parametreler bellekteki bir blok veya tabloya yerlestirilir. Tablonun baslangic adresi bir yazmac (register) araciligiyla isletim sistemine iletilir. Bu yaklasim, parametre sayisinda sinir koymaz."
+    },
+    {
+      "id": "fb3",
+      "text": "Unix'te yeni bir surec olusturmak icin _______ sistem cagrisi, olusturulan surece yeni program yuklemek icin _______ sistem cagrisi kullanilir.",
+      "answer": "fork() / exec()",
+      "explanation": "fork() mevcut sureccin bir kopyasini (cocuk surec) olusturur. exec() ise sureccin bellek alanina yeni bir program yukler. Genellikle fork() ile surec olusturulur, ardindan cocuk surecte exec() ile istenilen program yuklenir."
+    },
+    {
+      "id": "fb4",
+      "text": "Iletisim sistem cagrilarinda iki temel model vardir: _______ ve _______.",
+      "answer": "mesaj gecirme modeli (message passing model) / paylasimli bellek modeli (shared-memory model)",
+      "explanation": "Mesaj gecirme modelinde surecler mesaj gonderip alarak iletisir (host/surec adina gore). Paylasimli bellek modelinde surecler ortak bellek bolgelerini olusturup eriiserek veri paylasir."
+    },
+    {
+      "id": "fb5",
+      "text": "Nesne dosyalarini birlestirip tek bir calistirilabilir dosya olusturan araca _______, bu dosyayi bellige yukleyip calistirilmasini saglayan araca _______ denir.",
+      "answer": "linker (baglayici) / loader (yukleyici)",
+      "explanation": "Linker, derleyicinin urettigi .o dosyalarini ve kutuphaneleri birlestirir. Loader, olusturulan calistirilabilir dosyayi diskten bellige yukler ve relocation islemiyle program adreslerini ayarlar."
+    },
+    {
+      "id": "fb6",
+      "text": "Modern sistemlerde kutuphaneler calistirilabilir dosyaya gomulmez; bunun yerine _______ kullanilir ve bu kutuphaneler ihtiyac duyuldugunda yuklenir.",
+      "answer": "dinamik olarak baglanan kutuphaneler (Dynamically Linked Libraries / DLLs)",
+      "explanation": "DLL'ler calisma zamaninda yuklenir ve ayni kutuphaneden yararlanan tum programlar tarafindan paylasilir (bellekte bir kez yuklu kalir). Windows'ta .dll, Linux'ta .so uzantili dosyalardir."
+    },
+    {
+      "id": "fb7",
+      "text": "API'nin mimari seviyedeki karsiligi olan _______, farkli ikili kod bilesenlerinin belirli bir OS ve CPU mimarisinde nasil etkilesecegini tanimlar.",
+      "answer": "ABI (Application Binary Interface)",
+      "explanation": "ABI, ikili (binary) seviyede uyumluluk saglar. Adres genisligi, fonksiyon cagrisi kurallari, sistem cagrisi yontemi gibi dusuk seviyeli detaylari belirler. Bu nedenle bir OS icin derlenmis program, farkli ABI'ye sahip baska bir OS'ta calismaz."
+    },
+    {
+      "id": "fb8",
+      "text": "'Ne yapilacagi' sorusuna cevap veren _______, 'nasil yapilacagi' sorusuna cevap veren _______ kavramindan ayrilmalidir; bu ayrim esneklik saglar.",
+      "answer": "politika (policy) / mekanizma (mechanism)",
+      "explanation": "Politika: Her 100 ms'de bir kesme olustur (ne). Mekanizma: Timer (zamanlayici) kullan (nasil). Politika degistiginde (200 ms) mekanizmayi degistirmek gerekmez; sadece zamanlayicinin degeri guncellenir."
+    },
+    {
+      "id": "fb9",
+      "text": "_______ cekirdek yapisinda tum OS islevleri tek bir buyuk cekirdekte calisir; _______ yapisinda ise mumkun oldugunca cok islev kullanici alanina tasinir.",
+      "answer": "monolitik (monolithic) / mikrocekirdek (microkernel)",
+      "explanation": "Monolitik cekirdekte dosya sistemi, bellek yonetimi, cihaz surculeri hepsi tek cekirdekte calisir (hizli ama riskli). Mikrocekirdekte cekirdekte sadece IPC, bellek yonetimi ve CPU zamanlama kalir, diger servisler kullanici alaninda calisir (daha guvenli ama mesaj gecirme yuku var)."
+    },
+    {
+      "id": "fb10",
+      "text": "Bilgisayar acildiginda ROM veya EEPROM'da saklanan _______ cekirdegi bulur, bellige yukler ve baslatir. Modern sistemlerde bunun yerini _______ almistir.",
+      "answer": "bootstrap loader (BIOS) / UEFI (Unified Extensible Firmware Interface)",
+      "explanation": "Bootstrap loader (BIOS), bilgisayar acildiginda sabit bellek konumundan calisarak cekirdegi baslatir. UEFI, BIOS'un modern yedegi olup daha buyuk disk destegi, daha hizli baslatma ve guvenlik ozellikleri (Secure Boot) sunar."
+    },
+    {
+      "id": "fb11",
+      "text": "Bir uygulama basarisiz oldugunda sureccin bellegini yakalayan dosyaya _______, isletim sistemi cokerse cekirdek bellegini kaydeden dosyaya _______ denir.",
+      "answer": "core dump / crash dump",
+      "explanation": "Core dump, kullanici uygulamasinin cokme aninda surec belleginin diske yazilmasidir. Crash dump ise isletim sisteminin kendisinin cokmesi durumunda cekirdek belleginin kaydedilmesidir. Her ikisi de post-mortem hata ayiklama icin kullanilir."
+    },
+    {
+      "id": "fb12",
+      "text": "Bircogu modern OS, _______ adli yuklenebilir cekirdek modulleri kullanir; bu moduller nesne yonelimli yaklasimla gerektiginde cekirdege yuklenir ve cikarilir.",
+      "answer": "LKM (Loadable Kernel Modules)",
+      "explanation": "LKM'ler, her cekirdek bilesenini ayri tutar ve bilinen arayuzler uzerinden iletisim saglar. Cekirdege calisma zamaninda yuklenip cikarilabilir. Linux, Solaris gibi sistemlerde kullanilir ve katmanli yapiya benzer ama daha esnektir."
+    },
+    {
+      "id": "fb13",
+      "text": "Linux cekirdegi derlendiginde uretilen cekirdek imaj dosyasinin adi _______'dur.",
+      "answer": "vmlinuz",
+      "explanation": "make komutu ile Linux cekirdegi derlendiginde vmlinuz adli sikistirilmis cekirdek imaji uretilir. Bu dosya, boot loader (ornegin GRUB) tarafindan bellige yuklenerek sistem baslatilir."
+    },
+    {
+      "id": "fb14",
+      "text": "Apple macOS'un cekirdek ortami olan _______, Mach mikrocekirdegi ve BSD Unix parcalarini bir arada icerir.",
+      "answer": "Darwin",
+      "explanation": "Darwin, macOS ve iOS'un acik kaynakli cekirdek ortamidir. Mach mikrocekirdegi (zamanlama, IPC, bellek yonetimi), BSD (POSIX) sistem cagrilari, I/O kit ve kernel extensions (kexts) icerir. Uygulamalar library interface uzerinden Mach traps veya BSD cagrilarina erisir."
+    },
+    {
+      "id": "fb15",
+      "text": "Arka plan servisleri (background services) acilis zamaninda baslatilir ve _______, _______ veya _______ olarak da bilinir.",
+      "answer": "services / subsystems / daemons",
+      "explanation": "Background services, sistem baslatildiginda calismaya baslayan ve arka planda calisan surecclerdir. Disk kontrolu, surec zamanlama, hata kaydi gibi gorevleri yapar. Kullanici baglaminda (user context) calisir, cekirdek baglaminda degil."
+    }
+  ]
+}

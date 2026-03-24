@@ -1,0 +1,948 @@
+{
+  "id": "ch4",
+  "title": "Thread'ler ve Eszamanlilik (Threads & Concurrency)",
+  "titleEn": "Threads & Concurrency",
+  "sections": [
+    {
+      "id": "s1",
+      "title": "Thread'lere Genel Bakis (Overview)",
+      "content": [
+        {
+          "type": "heading",
+          "text": "Thread Nedir?"
+        },
+        {
+          "type": "paragraph",
+          "text": "Thread (is parcacigi), bir prosesin (process) icinde calisabilen temel CPU kullanim birimidir. Her thread kendi thread ID'sine, program sayacina (program counter - PC), register setine ve stack'ine sahiptir. Ayni prosese ait thread'ler kod, veri ve dosya gibi kaynaklari paylasirlar."
+        },
+        {
+          "type": "analogy",
+          "text": "Thread'leri bir ofiste calisan isci grubu gibi dusunun. Ofis (proses), ayni masalari, dosyalari ve yaziciyi (paylasilan kaynaklar) kullanir. Ancak her isci (thread) kendi not defterine (stack) ve kendi isini takip ettigi gorev listesine (PC, registers) sahiptir. Yeni bir ofis (proses) acmak yerine mevcut ofise yeni bir isci eklemek cok daha ucuz ve hizlidir."
+        },
+        {
+          "type": "diagram",
+          "title": "Tek Thread'li vs Cok Thread'li Proses (Single vs Multithreaded Process)",
+          "ascii": "  Tek Thread'li Proses         Cok Thread'li Proses\n  +------------------+        +------------------------+\n  | code | data |files|       | code  | data  | files  |\n  +------------------+        +------------------------+\n  | regs | PC |stack |        |regs|regs|regs|  (her   |\n  +------------------+        |stck|stck|stck|  thread  |\n  |    ~~ thread     |        | PC | PC | PC |  icin)  |\n  +------------------+        +------------------------+\n                              | ~~ | ~~ | ~~ | threads |\n                              +------------------------+"
+        },
+        {
+          "type": "keypoint",
+          "text": "Tek thread'li proseste bir thread vardir; cok thread'li proseste ayni kod, veri ve dosyalari paylasan birden fazla thread bulunur. Her thread'in kendine ait register seti, stack'i ve PC'si vardir."
+        }
+      ]
+    },
+    {
+      "id": "s2",
+      "title": "Motivasyon ve Faydalar (Motivation & Benefits)",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "Modern uygulamalarin buyuk cogunlugu cok thread'lidir (multithreaded). Bir uygulama icindeki farkli gorevler ayri thread'ler tarafindan gerceklestirilebilir: ekrani guncelleme (update display), veri cekme (fetch data), yazim denetimi (spell checking), ag isteklerini cevaplama (answer network request) gibi."
+        },
+        {
+          "type": "list",
+          "title": "Thread Kullanmanin 4 Temel Faydasi",
+          "items": [
+            "Yanit Verebilirlik (Responsiveness): Prosesin bir kismi bloke olsa bile calisma devam edebilir. Ozellikle kullanici arayuzleri (UI) icin kritik oneme sahiptir.",
+            "Kaynak Paylasimi (Resource Sharing): Thread'ler prosesin kaynaklarini paylasiyor, paylasimli bellek (shared memory) veya mesaj gecisinden (message passing) daha kolaydir.",
+            "Ekonomi (Economy): Proses olusturmaktan daha ucuzdur. Thread degistirme (thread switching), baglam degistirmeden (context switching) daha dusuk ek yuke sahiptir.",
+            "Olceklenebilirlik (Scalability): Proses, cok cekirdekli (multicore) mimarilerin avantajlarindan yararlanabilir."
+          ]
+        },
+        {
+          "type": "analogy",
+          "text": "Bir web sunucusu dusunun: Her istemci istegi geldiginde yeni bir proses olusturmak yerine, sunucu yeni bir thread olusturur ve istegi ona devreder, kendisi dinlemeye devam eder. Bu, bir restoranda her musteri icin yeni bir restoran acmak yerine yeni bir garson (thread) istendiginde atamaya benzer."
+        },
+        {
+          "type": "diagram",
+          "title": "Cok Thread'li Sunucu Mimarisi (Multithreaded Server Architecture)",
+          "ascii": "  (1) istek          (2) yeni thread\n  [client] --------> [server] --------> [thread]\n                       |  ^\n                       |  |\n                 (3) dinlemeye\n                 devam eder"
+        },
+        {
+          "type": "warning",
+          "text": "Proses olusturma agir bir islemdir (heavy-weight), thread olusturma ise hafif bir islemdir (light-weight). Cekirdekler (kernels) genellikle cok thread'lidir."
+        }
+      ]
+    },
+    {
+      "id": "s3",
+      "title": "Cok Cekirdekli Programlama (Multicore Programming)",
+      "content": [
+        {
+          "type": "heading",
+          "text": "Eszamanlilik ve Paralellik (Concurrency vs Parallelism)"
+        },
+        {
+          "type": "paragraph",
+          "text": "Cok cekirdekli (multicore) ve cok islemcili (multiprocessor) sistemler programcilara zorluklar cikarir. Bu zorluklar: gorevlerin bolunmesi (dividing activities), denge (balance), veri bolunmesi (data splitting), veri bagimliligi (data dependency), test ve hata ayiklama (testing and debugging) olarak siralanabilir."
+        },
+        {
+          "type": "keypoint",
+          "text": "Paralellik (Parallelism): Bir sistem birden fazla gorevi AYNI ANDA gerceklestirebilir. Eszamanlilik (Concurrency): Birden fazla gorev ILERLEME KAYDEDER ancak ayni anda calismak zorunda degildir. Tek islemcili sistemde zamanlayici (scheduler) eszamanliligi saglar."
+        },
+        {
+          "type": "diagram",
+          "title": "Eszamanlilik vs Paralellik (Concurrency vs Parallelism)",
+          "ascii": "Eszamanlilik (Tek cekirdek - Concurrent on single core):\n  single core: |T1|T2|T3|T4|T1|T2|T3|T4|T1|...\n               =====================================> zaman\n\nParalellik (Cok cekirdek - Parallel on multi-core):\n  core 1: |T1|T3|T1|T3|T1|...\n  core 2: |T2|T4|T2|T4|T2|...\n           =====================> zaman"
+        },
+        {
+          "type": "list",
+          "title": "Paralellik Turleri (Types of Parallelism)",
+          "items": [
+            "Veri Paralelligi (Data Parallelism): Ayni verinin alt kumeleri birden fazla cekirdege dagitilir ve HER CEKIRDEKTE AYNI ISLEM uygulanir.",
+            "Gorev Paralelligi (Task Parallelism): Thread'ler cekirdeklere dagitilir ve HER THREAD FARKLI BIR ISLEM gerceklestirir."
+          ]
+        },
+        {
+          "type": "diagram",
+          "title": "Veri ve Gorev Paralelligi (Data vs Task Parallelism)",
+          "ascii": "Veri Paralelligi:         Gorev Paralelligi:\n     [  DATA  ]               [    DATA    ]\n    / | | \\                  / |  |  \\   \n   v  v v  v                v  v  v   v\n [c0][c1][c2][c3]         [c0][c1][c2][c3]\n ayni islem x4           farkli islemler"
+        }
+      ]
+    },
+    {
+      "id": "s4",
+      "title": "Amdahl Yasasi (Amdahl's Law)",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "Amdahl Yasasi, hem seri (serial) hem de paralel (parallel) bilesenlere sahip bir uygulamaya ek cekirdek eklemenin performans kazancini belirler. S seri kismin oranini, N islemci cekirdek sayisini temsil eder."
+        },
+        {
+          "type": "keypoint",
+          "text": "Amdahl Yasasi Formulu: speedup <= 1 / (S + (1-S)/N) , burada S = seri kisim orani, N = cekirdek sayisi. N sonsuza yaklasirken hizlanma 1/S'ye yaklasir."
+        },
+        {
+          "type": "paragraph",
+          "text": "Ornek: Uygulama %75 paralel / %25 seri ise, 1'den 2 cekirdege geciste hizlanma 1.6 kattir. Seri kisim cok kucuk olsa bile (ornegin %5), maksimum hizlanma 1/0.05 = 20 kat ile sinirlidir. Bu, seri kismin performans uzerinde orantisiz bir etkiye sahip oldugunu gosterir."
+        },
+        {
+          "type": "warning",
+          "text": "Uygulamanin seri kisminin ek cekirdek eklenerek elde edilen performans kazanci uzerinde orantisiz (disproportionate) etkisi vardir. Seri kisim %50 ise, sonsuz cekirdekle bile en fazla 2x hizlanma elde edilir!"
+        }
+      ]
+    },
+    {
+      "id": "s5",
+      "title": "Kullanici ve Cekirdek Thread'leri & Coklu Thread Modelleri (User/Kernel Threads & Multithreading Models)",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "Kullanici thread'leri (User threads) kullanici seviyesindeki thread kutuphaneleri tarafindan yonetilir. Uc temel kutuphane vardir: POSIX Pthreads, Windows threads ve Java threads. Cekirdek thread'leri (Kernel threads) ise cekirdek (kernel) tarafindan desteklenir. Windows, Linux, Mac OS X, iOS ve Android gibi tum modern isletim sistemleri cekirdek thread'lerini destekler."
+        },
+        {
+          "type": "heading",
+          "text": "Coklu is parcacigi Modelleri (Multithreading Models)"
+        },
+        {
+          "type": "paragraph",
+          "text": "Kullanici thread'leri ile cekirdek thread'leri arasindaki iliski uc model ile tanimlanir: Coktan-Bire (Many-to-One), Bire-Bir (One-to-One) ve Coktan-Coka (Many-to-Many)."
+        },
+        {
+          "type": "diagram",
+          "title": "Coktan-Bire Modeli (Many-to-One Model)",
+          "ascii": "     Kullanici Alani (User Space)\n   [UT] [UT] [UT] [UT]\n     \\    |    |   /\n      \\   |   |  /\n       \\  |  | /\n        v v v v\n     +----------+\n     |    KT    |    <-- Tek Kernel Thread\n     +----------+\n     Cekirdek Alani (Kernel Space)\n\n  * Bir thread bloklarsa HEPSI bloklanir\n  * Ornek: Solaris Green Threads, GNU Portable Threads"
+        },
+        {
+          "type": "diagram",
+          "title": "Bire-Bir Modeli (One-to-One Model)",
+          "ascii": "     Kullanici Alani (User Space)\n   [UT] [UT] [UT] [UT]\n     |    |    |    |\n     |    |    |    |\n     v    v    v    v\n   [KT] [KT] [KT] [KT]\n     Cekirdek Alani (Kernel Space)\n\n  * Daha fazla eszamanlilik saglar\n  * Her kullanici thread'i bir kernel thread olusturur\n  * Ornek: Windows, Linux"
+        },
+        {
+          "type": "diagram",
+          "title": "Coktan-Coka Modeli (Many-to-Many Model)",
+          "ascii": "     Kullanici Alani (User Space)\n   [UT] [UT] [UT] [UT]\n     \\  / \\  / \\  /\n      \\/   \\/   \\/\n      /\\   /\\   /\\\n     /  \\ /  \\ /  \\\n   [KT] [KT] [KT]\n     Cekirdek Alani (Kernel Space)\n\n  * Bircok kullanici thread'i bircok kernel thread'e eslesir\n  * OS yeterli sayida kernel thread olusturabilir\n  * Yaygin degil; Windows ThreadFiber paketi"
+        },
+        {
+          "type": "keypoint",
+          "text": "Iki Seviyeli Model (Two-level Model): Coktan-Coka modeline benzer, ancak bir kullanici thread'inin bir kernel thread'ine BAGLANMASINA (bound) izin verir. Bu, bazi thread'lerin dogrudan bir kernel thread'ine atanmasini saglar."
+        }
+      ]
+    },
+    {
+      "id": "s6",
+      "title": "Thread Kutuphaneleri (Thread Libraries)",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "Thread kutuphanesi (thread library), programciya thread olusturma ve yonetme icin API saglar. Iki temel uygulama yolu vardir: tamamen kullanici alaninda (user space) kutuphane veya isletim sistemi tarafindan desteklenen cekirdek seviyesi (kernel-level) kutuphane."
+        },
+        {
+          "type": "heading",
+          "text": "Pthreads (POSIX Threads)"
+        },
+        {
+          "type": "paragraph",
+          "text": "Pthreads, thread olusturma ve senkronizasyon icin bir POSIX standardi (IEEE 1003.1c) API'sidir. Bir spesifikasyondur (specification), uygulama (implementation) degil. UNIX isletim sistemlerinde (Linux ve Mac OS X) yaygindir. Kullanici seviyesi veya cekirdek seviyesi olarak saglanabilir."
+        },
+        {
+          "type": "code",
+          "language": "c",
+          "title": "Pthreads Ornegi - Ana Program (Pthreads Example - Main)",
+          "code": "#include <pthread.h>\n#include <stdio.h>\n#include <stdlib.h>\n\nint sum; /* bu veri thread'ler tarafindan paylasiliyor */\nvoid *runner(void *param); /* thread'ler bu fonksiyonu cagirir */\n\nint main(int argc, char *argv[])\n{\n    pthread_t tid;           /* thread tanimlayicisi */\n    pthread_attr_t attr;     /* thread ozellikleri */\n\n    /* thread'in varsayilan ozelliklerini ayarla */\n    pthread_attr_init(&attr);\n    /* thread'i olustur */\n    pthread_create(&tid, &attr, runner, argv[1]);\n    /* thread'in bitmesini bekle */\n    pthread_join(tid, NULL);\n\n    printf(\"sum = %d\\n\", sum);\n}"
+        },
+        {
+          "type": "code",
+          "language": "c",
+          "title": "Pthreads Ornegi - Runner Fonksiyonu (Pthreads Example - Runner)",
+          "code": "/* Thread bu fonksiyonda calisacak */\nvoid *runner(void *param)\n{\n    int i, upper = atoi(param);\n    sum = 0;\n\n    for (i = 1; i <= upper; i++)\n        sum += i;\n\n    pthread_exit(0);\n}"
+        },
+        {
+          "type": "code",
+          "language": "c",
+          "title": "10 Thread'i Birlestirme Ornegi (Joining 10 Threads)",
+          "code": "#define NUM_THREADS 10\n\n/* birlestirilecek thread dizisi */\npthread_t workers[NUM_THREADS];\n\nfor (int i = 0; i < NUM_THREADS; i++)\n    pthread_join(workers[i], NULL);"
+        },
+        {
+          "type": "heading",
+          "text": "Java Thread'leri (Java Threads)"
+        },
+        {
+          "type": "paragraph",
+          "text": "Java thread'leri JVM tarafindan yonetilir ve genellikle isletim sisteminin sagladigi thread modeli kullanilarak uygulanir. Java'da thread olusturmanin iki yolu vardir: Thread sinifini genisletmek (extending Thread class) veya Runnable arayuzunu uygulamak (implementing Runnable interface). Standart pratik Runnable arayuzunu uygulamaktir."
+        },
+        {
+          "type": "code",
+          "language": "java",
+          "title": "Java Runnable Arayuzu ve Thread Olusturma",
+          "code": "// Runnable arayuzunu uygulama\nclass Task implements Runnable {\n    public void run() {\n        System.out.println(\"I am a thread.\");\n    }\n}\n\n// Thread olusturma ve baslatma\nThread worker = new Thread(new Task());\nworker.start();\n\n// Thread'in bitmesini bekleme\ntry {\n    worker.join();\n} catch (InterruptedException ie) { }"
+        },
+        {
+          "type": "keypoint",
+          "text": "Windows'ta thread olusturmak icin CreateThread() fonksiyonu, bekleme icin WaitForSingleObject() fonksiyonu kullanilir. Pthreads'te pthread_create() ve pthread_join() kullanilir. Java'da Thread sinifi ve start()/join() metotlari kullanilir."
+        }
+      ]
+    },
+    {
+      "id": "s7",
+      "title": "Ortuk Is Parcacigi Olusturma (Implicit Threading)",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "Thread sayisi arttikca program dogrulugunun saglanmasi zorlasir. Ortuk is parcacigi olusturma (implicit threading), thread'lerin olusturulma ve yonetiminin programcilar yerine derleyiciler (compilers) ve calisma zamani kutuphaneleri (run-time libraries) tarafindan yapilmasini ifade eder."
+        },
+        {
+          "type": "list",
+          "title": "Bes Ortuk Threading Yontemi",
+          "items": [
+            "Thread Havuzlari (Thread Pools): Onceden olusturulan thread'ler is bekler. Mevcut thread'i kullanmak, yeni thread olusturmaktan daha hizlidir. Thread sayisini havuz boyutuyla sinirlar.",
+            "Fork-Join: Birden fazla thread (gorev) fork edilir, sonra join edilir. Problem yeterince kucukse dogrudan cozulur, degilse alt gorevlere bolunur.",
+            "OpenMP: C, C++, FORTRAN icin derleyici yonergeleri (compiler directives) ve API seti. Paylasimli bellek ortamlarinda paralel programlama destegi saglar. #pragma omp parallel ile paralel bolgeler (parallel regions) tanimlanir.",
+            "Grand Central Dispatch (GCD): Apple'in macOS ve iOS icin teknolojisi. Gorevleri dispatch kuyruklarina (dispatch queues) yerlestirir.",
+            "Intel Threading Building Blocks (TBB): Paralel C++ programlari tasarlamak icin sablon kutuphanesi. parallel_for ifadesiyle donguler paralellestirilebilir."
+          ]
+        },
+        {
+          "type": "code",
+          "language": "c",
+          "title": "OpenMP Ornegi (OpenMP Example)",
+          "code": "#include <omp.h>\n#include <stdio.h>\n\nint main(int argc, char *argv[])\n{\n    /* seri kod */\n\n    #pragma omp parallel\n    {\n        printf(\"I am a parallel region.\");\n    }\n\n    /* seri kod */\n    return 0;\n}\n\n/* Dongu paralellistirme */\n#pragma omp parallel for\nfor (i = 0; i < N; i++) {\n    c[i] = a[i] + b[i];\n}"
+        },
+        {
+          "type": "diagram",
+          "title": "Fork-Join Paralelligi (Fork-Join Parallelism)",
+          "ascii": "                    fork      [task]\n                  /-------->  [    ] --\\\n  [main thread] -<                     >-> [main thread] -->\n                  \\-------->  [task]  --/\n                    fork      [    ]   join"
+        },
+        {
+          "type": "keypoint",
+          "text": "Java Thread Havuzlari: Executors sinifinda uc fabrika metodu vardir: newSingleThreadExecutor(), newFixedThreadPool(int size), newCachedThreadPool(). ExecutorService arabirimi ile gorevler submit() veya execute() ile havuza gonderilir."
+        }
+      ]
+    },
+    {
+      "id": "s8",
+      "title": "Threading Sorunlari: fork()/exec() ve Sinyal Isleme (Threading Issues: fork()/exec() & Signal Handling)",
+      "content": [
+        {
+          "type": "heading",
+          "text": "fork() ve exec() Semantigi"
+        },
+        {
+          "type": "paragraph",
+          "text": "Cok thread'li bir programda fork() cagirildiginda soru sudur: Sadece cagiran thread mi kopyalanir yoksa tum thread'ler mi? Bazi UNIX sistemleri fork()'un iki versiyonuna sahiptir. exec() ise her zamanki gibi calisir - calistirilan sureci (tum thread'ler dahil) yeni programla degistirir."
+        },
+        {
+          "type": "heading",
+          "text": "Sinyal Isleme (Signal Handling)"
+        },
+        {
+          "type": "paragraph",
+          "text": "Sinyaller (signals), UNIX sistemlerinde bir surecee belirli bir olayin gerceklestigini bildirmek icin kullanilir. Bir sinyal isleyici (signal handler) sinyalleri isler. Her sinyalin cekirdek tarafindan calistirilan varsayilan bir isleyicisi (default handler) vardir. Kullanici tanimli sinyal isleyici (user-defined signal handler) varsayilani gecersiz kilabilir."
+        },
+        {
+          "type": "list",
+          "title": "Cok Thread'li Programda Sinyal Teslimi Secenekleri",
+          "items": [
+            "Sinyali, ilgili thread'e teslim et (deliver to the thread to which signal applies)",
+            "Sinyali, prosesteki tum thread'lere teslim et (deliver to every thread)",
+            "Sinyali, prosesteki belirli thread'lere teslim et (deliver to certain threads)",
+            "Prosesteki tum sinyalleri almak icin belirli bir thread ata (assign a specific thread)"
+          ]
+        },
+        {
+          "type": "warning",
+          "text": "Senkron sinyaller (ornegin yasadisi bellek erisimi) genellikle sinyali olusturan thread'e teslim edilir. Asenkron sinyaller (ornegin Ctrl+C) icin teslim karari daha karmasiktir."
+        }
+      ]
+    },
+    {
+      "id": "s9",
+      "title": "Thread Iptali ve TLS (Thread Cancellation & Thread-Local Storage)",
+      "content": [
+        {
+          "type": "heading",
+          "text": "Thread Iptali (Thread Cancellation)"
+        },
+        {
+          "type": "paragraph",
+          "text": "Thread iptali, bir thread'i bitmeden once sonlandirmaktir. Iptal edilecek thread hedef thread (target thread) olarak adlandirilir. Iki genel yaklasim vardir."
+        },
+        {
+          "type": "list",
+          "title": "Iptal Turleri",
+          "items": [
+            "Asenkron Iptal (Asynchronous Cancellation): Hedef thread'i HEMEN sonlandirir. Kaynak sizintisi (resource leak) riski vardir.",
+            "Ertelenmiis Iptal (Deferred Cancellation): Hedef thread'in PERIYODIK OLARAK iptal edilip edilmemesi gerektigini kontrol etmesine izin verir. Varsayilan tur budur."
+          ]
+        },
+        {
+          "type": "code",
+          "language": "c",
+          "title": "Pthreads ile Thread Iptali (Thread Cancellation with Pthreads)",
+          "code": "pthread_t tid;\n\n/* thread olustur */\npthread_create(&tid, 0, worker, NULL);\n\n. . .\n\n/* thread'i iptal et */\npthread_cancel(tid);\n\n/* thread'in sonlanmasini bekle */\npthread_join(tid, NULL);"
+        },
+        {
+          "type": "keypoint",
+          "text": "Ertelenmiis iptal yalnizca thread iptal noktasina (cancellation point) ulastiginda gerceklesir, yani pthread_testcancel() cagrildiginda. Sonra temizleme isleyicisi (cleanup handler) cagirilir. Thread iptali devre disi birakilmissa, iptal talebi thread iptali etkinlestirene kadar beklemede kalir."
+        },
+        {
+          "type": "heading",
+          "text": "Thread-Yerel Depolama (Thread-Local Storage - TLS)"
+        },
+        {
+          "type": "paragraph",
+          "text": "Thread-yerel depolama (TLS), her thread'in kendi verisinin bir kopyasina sahip olmasini saglar. Thread olusturma sureci uzerinde kontrol olmadigi durumlarda (ornegin thread havuzu kullanildiginda) kullanislidir. Yerel degiskenlerden (local variables) farklidir: yerel degiskenler yalnizca tek fonksiyon cagrisi sirasinda gorunurken, TLS fonksiyon cagrilari boyunca gorunurdur. static veriye benzer ancak TLS her thread'e ozgudur (unique)."
+        }
+      ]
+    },
+    {
+      "id": "s10",
+      "title": "Zamanlayici Aktivasyonlari ve Isletim Sistemi Ornekleri (Scheduler Activations & OS Examples)",
+      "content": [
+        {
+          "type": "heading",
+          "text": "Zamanlayici Aktivasyonlari (Scheduler Activations)"
+        },
+        {
+          "type": "paragraph",
+          "text": "Coktan-Coka (M:M) ve Iki Seviyeli modeller, uygulamaya tahsis edilen cekirdek thread sayisini korumak icin iletisim gerektirir. Genellikle kullanici ve cekirdek thread'leri arasinda ara veri yapisi olarak hafif surec (Lightweight Process - LWP) kullanilir. Her LWP bir cekirdek thread'ine baglidir."
+        },
+        {
+          "type": "keypoint",
+          "text": "Zamanlayici aktivasyonlari, cekirdekten thread kutuphanesindeki yukariya cagri isleyicisine (upcall handler) iletisim mekanizmasi olan yukariya cagrilar (upcalls) saglar. Bu iletisim, uygulamanin dogru sayida cekirdek thread'ini korumasina olanak tanir."
+        },
+        {
+          "type": "heading",
+          "text": "Windows Thread'leri"
+        },
+        {
+          "type": "paragraph",
+          "text": "Windows API, bire-bir esleme (one-to-one mapping) uygular ve cekirdek seviyesindedir. Her thread: thread ID, islemcinin durumunu temsil eden register seti, kullanici ve cekirdek yiginlari (stacks) ve ozel veri depolama alanina sahiptir. Register seti, yiginlar ve ozel depolama alani thread'in baglamini (context) olusturur."
+        },
+        {
+          "type": "list",
+          "title": "Windows Thread Veri Yapilari",
+          "items": [
+            "ETHREAD (Executive Thread Block): Thread'in ait oldugu prosese ve KTHREAD'e isaret eder, cekirdek alaninda (kernel space) bulunur.",
+            "KTHREAD (Kernel Thread Block): Zamanlama ve senkronizasyon bilgisi, cekirdek modu yigini, TEB'e isaret eder, cekirdek alanindadir.",
+            "TEB (Thread Environment Block): Thread ID, kullanici modu yigini, thread-yerel depolama, kullanici alaninda (user space) bulunur."
+          ]
+        },
+        {
+          "type": "heading",
+          "text": "Linux Thread'leri"
+        },
+        {
+          "type": "paragraph",
+          "text": "Linux, thread'lere thread yerine gorev (task) olarak atifta bulunur. Thread olusturma clone() sistem cagrisi ile yapilir. clone(), bir cocuk gorev'in (child task) ebeveyn gorev'in (parent task) adres alanini paylasimasina olanak tanir."
+        },
+        {
+          "type": "list",
+          "title": "Linux clone() Bayraklari (Flags)",
+          "items": [
+            "CLONE_FS: Dosya sistemi bilgisi paylasiliyor",
+            "CLONE_VM: Ayni bellek alani paylasiliyor",
+            "CLONE_SIGHAND: Sinyal isleyicileri paylasiliyor",
+            "CLONE_FILES: Acik dosya seti paylasiliyor"
+          ]
+        },
+        {
+          "type": "keypoint",
+          "text": "Linux'ta struct task_struct surec veri yapisini isaret eder. clone() cagrisinda kullanilan bayraklar, paylasimin derecesini belirler: tum bayraklar kullanilirsa thread olusur, hicbiri kullanilmazsa fork() benzeri yeni bir proses olusur."
+        }
+      ]
+    }
+  ],
+  "flashcards": [
+    {
+      "id": "fc1",
+      "front": "Thread (Is Parcacigi) nedir ve bir prosesten ne farki vardir?",
+      "back": "Thread, bir prosesin icinde calisabilen temel CPU kullanim birimidir. Her thread kendi thread ID'si, program sayaci (PC), register seti ve stack'ine sahiptir. Prosesten farki: ayni prosesin thread'leri kod, veri ve dosya gibi kaynaklari PAYLASILAR, oysa prosesler birbirinden bagimsizsizdir."
+    },
+    {
+      "id": "fc2",
+      "front": "Thread kullanmanin dort temel faydasi nelerdir?",
+      "back": "1) Yanit Verebilirlik (Responsiveness): Prosesin bir kismi bloke olsa bile calisma devam eder.\n2) Kaynak Paylasimi (Resource Sharing): Thread'ler prosesin kaynaklarini otomatik paylasir.\n3) Ekonomi (Economy): Thread olusturma/degistirme, proses olusturma/degistirmeden daha ucuzdur.\n4) Olceklenebilirlik (Scalability): Cok cekirdekli mimarilerden yararlanir."
+    },
+    {
+      "id": "fc3",
+      "front": "Eszamanlilik (Concurrency) ile Paralellik (Parallelism) arasindaki fark nedir?",
+      "back": "Paralellik (Parallelism): Birden fazla gorev AYNI ANDA gerceklestirilir (birden fazla cekirdek gerektirir).\nEszamanlilik (Concurrency): Birden fazla gorev ILERLEME KAYDEDER, ancak ayni anda calismak zorunda degildir. Tek cekirdekli sistemde zamanlayici ile saglanabilir."
+    },
+    {
+      "id": "fc4",
+      "front": "Veri Paralelligi (Data Parallelism) ile Gorev Paralelligi (Task Parallelism) arasindaki fark nedir?",
+      "back": "Veri Paralelligi: Ayni verinin alt kumeleri birden fazla cekirdege dagitilir ve HER CEKIRDEKTE AYNI ISLEM uygulanir (ornegin buyuk dizinin paylari uzerinde toplama).\nGorev Paralelligi: Thread'ler cekirdeklere dagitilir ve HER THREAD FARKLI BIR ISLEM gerceklestirir."
+    },
+    {
+      "id": "fc5",
+      "front": "Amdahl Yasasi (Amdahl's Law) formulu nedir ve ne anlama gelir?",
+      "back": "Formul: speedup <= 1 / (S + (1-S)/N)\nS = seri kisim orani, N = cekirdek sayisi.\nN sonsuza yaklasirken hizlanma 1/S'ye yaklasir. Ornegin: %25 seri kisim varsa, maksimum hizlanma 4x'tir. Seri kisim, eklenen cekirdeklerle elde edilen performans uzerinde orantisiz etkiye sahiptir."
+    },
+    {
+      "id": "fc6",
+      "front": "Kullanici thread'leri (User Threads) ile Cekirdek thread'leri (Kernel Threads) arasindaki fark nedir?",
+      "back": "Kullanici Thread'leri: Kullanici alanindaki thread kutuphanesi tarafindan yonetilir (Pthreads, Windows threads, Java threads). Cekirdek bunlardan habersizdir.\nCekirdek Thread'leri: Isletim sistemi cekirdegi tarafindan dogrudan desteklenir ve yonetilir. Tum modern OS'ler (Windows, Linux, macOS, iOS, Android) cekirdek thread'lerini destekler."
+    },
+    {
+      "id": "fc7",
+      "front": "Coktan-Bire (Many-to-One) thread modeli nedir? Avantaj ve dezavantajlari?",
+      "back": "Bircok kullanici thread'i TEK bir cekirdek thread'ine eslenir.\nDezavantaj: Bir thread bloklarsa TUM thread'ler bloklanir. Cok cekirdekli sistemde paralel calisma YAPILAMAZ (ayni anda cekirdekte yalnizca bir thread olabilir).\nOrnek: Solaris Green Threads, GNU Portable Threads. Gunumuzde nadir kullanilir."
+    },
+    {
+      "id": "fc8",
+      "front": "Bire-Bir (One-to-One) thread modeli nedir? Avantaj ve dezavantajlari?",
+      "back": "Her kullanici thread'i BIR cekirdek thread'ine eslenir.\nAvantaj: Coktan-bire'den daha fazla eszamanlilik saglar; bir thread bloklansa bile diger thread'ler calisir.\nDezavantaj: Her thread icin bir cekirdek thread'i olusturmak ek yuk getirir, bu nedenle thread sayisi bazen sinirlandirilir.\nOrnek: Windows, Linux."
+    },
+    {
+      "id": "fc9",
+      "front": "Coktan-Coka (Many-to-Many) thread modeli nedir?",
+      "back": "Bircok kullanici thread'i bircok cekirdek thread'ine eslenir. OS yeterli sayida cekirdek thread'i olusturabilir. Iki-Seviyeli (Two-level) varyanti, ek olarak belirli kullanici thread'lerinin bir cekirdek thread'ine BAGLANMASINA (bound) izin verir. Yaygin degil; Windows ThreadFiber paketi ile uygulanabilir."
+    },
+    {
+      "id": "fc10",
+      "front": "Pthreads nedir ve temel fonksiyonlari nelerdir?",
+      "back": "Pthreads, POSIX standardi (IEEE 1003.1c) thread olusturma ve senkronizasyon API'sidir. Spesifikasyondur, uygulama degil. UNIX (Linux, macOS) icin ortaktir.\nTemel fonksiyonlar:\n- pthread_create(): Thread olusturur\n- pthread_join(): Thread'in bitmesini bekler\n- pthread_exit(): Thread'i sonlandirir\n- pthread_attr_init(): Thread ozelliklerini baslatir\n- pthread_cancel(): Thread'i iptal eder"
+    },
+    {
+      "id": "fc11",
+      "front": "pthread_create() fonksiyonunun parametreleri nelerdir?",
+      "back": "pthread_create(&tid, &attr, runner, argv[1]);\n1. &tid - thread tanimlayicisi (thread identifier)\n2. &attr - thread ozellikleri (thread attributes)\n3. runner - thread'in calistiracagi fonksiyon\n4. argv[1] - fonksiyona gecirilecek parametre"
+    },
+    {
+      "id": "fc12",
+      "front": "Java'da thread olusturmanin iki yolu nedir?",
+      "back": "1. Thread sinifini genisletmek (Extending Thread class)\n2. Runnable arayuzunu uygulamak (Implementing Runnable interface) - STANDART PRATIK budur.\n\nRunnable arayuzu:\npublic interface Runnable {\n    public abstract void run();\n}\n\nOlusturma: Thread worker = new Thread(new Task());\nBaslatma: worker.start();\nBekleme: worker.join();"
+    },
+    {
+      "id": "fc13",
+      "front": "Thread Havuzu (Thread Pool) nedir ve avantajlari nelerdir?",
+      "back": "Onceden belirli sayida thread olusturularak bir havuzda is bekletilir.\nAvantajlar:\n1. Mevcut thread'i kullanmak, yeni olusturmaktan daha HIZLIDIR\n2. Thread sayisini havuz boyutuyla SINIRLAR\n3. Gorev olusturma mekaniklerini gorev calistirma stratejilerinden AYIRIR\nJava'da: Executors.newCachedThreadPool(), newFixedThreadPool(size), newSingleThreadExecutor()"
+    },
+    {
+      "id": "fc14",
+      "front": "OpenMP nedir ve nasil kullanilir?",
+      "back": "C, C++, FORTRAN icin derleyici yonergeleri (compiler directives) ve API setidir. Paylasimli bellek ortamlarinda paralel programlama destegi saglar.\n#pragma omp parallel: Paralel bolge olusturur (cekirdek sayisi kadar thread)\n#pragma omp parallel for: Bir for dongusunu paralellestir\nOrnek:\n#pragma omp parallel for\nfor (i = 0; i < N; i++)\n    c[i] = a[i] + b[i];"
+    },
+    {
+      "id": "fc15",
+      "front": "Fork-Join paralelligi nedir?",
+      "back": "Birden fazla thread (gorev) fork edilir ve sonra join edilir. Genel algoritma:\n1. Problem yeterince kucukse dogrudan coz\n2. Degilse alt gorevlere bol (fork)\n3. Sonuclari birlestirir (join)\n4. Sonuclari dondur\n\nJava'da ForkJoinPool ve RecursiveTask/RecursiveAction siniflari ile uygulanir."
+    },
+    {
+      "id": "fc16",
+      "front": "Cok thread'li bir programda fork() ve exec() nasil calisir?",
+      "back": "fork(): Sadece cagiran thread'i mi yoksa tum thread'leri mi kopyalar? Bazi UNIX'ler iki versiyon sunar.\nexec(): Her zamanki gibi calisir - calistirilan sureci TUM THREAD'LER DAHIL yeni programla degistirir.\nEger fork()'tan hemen sonra exec() cagirilacaksa, tum thread'leri kopyalamaya gerek yoktur."
+    },
+    {
+      "id": "fc17",
+      "front": "Cok thread'li bir programda sinyal (signal) teslimi icin hangi secenekler vardir?",
+      "back": "1. Sinyali, sinyalin ilgili oldugu thread'e teslim et\n2. Sinyali, prosesteki TUM thread'lere teslim et\n3. Sinyali, prosesteki BELIRLI thread'lere teslim et\n4. Tum sinyalleri almak icin BELIRLI BIR thread ata\n\nSenkron sinyaller genellikle onu olusturan thread'e teslim edilir. Asenkron sinyallerin teslimi daha karmasiktir."
+    },
+    {
+      "id": "fc18",
+      "front": "Asenkron iptal (Asynchronous Cancellation) ile Ertelenmiis iptal (Deferred Cancellation) arasindaki fark nedir?",
+      "back": "Asenkron Iptal: Hedef thread'i HEMEN sonlandirir. Kaynaklar duzenli serbest birakilamayabilir.\nErtelenmiis Iptal: Hedef thread, iptal edilip edilmeyecegini PERIYODIK OLARAK kontrol eder. Iptal ancak iptal noktasinda (cancellation point) gerceklesir (pthread_testcancel()). Varsayilan tur budur. Daha guvenlidir."
+    },
+    {
+      "id": "fc19",
+      "front": "Thread-Yerel Depolama (Thread-Local Storage - TLS) nedir ve yerel degiskenlerden farki nedir?",
+      "back": "TLS, her thread'in kendi verisinin KOPYASINA sahip olmasini saglar.\nYerel degiskenlerden farki:\n- Yerel degiskenler: Yalnizca tek fonksiyon cagrisi sirasinda gorunur\n- TLS: Fonksiyon cagrilari BOYUNCA gorunur\nstatic veriye benzer, ancak TLS her thread'e OZGUDUR. Thread havuzu gibi thread olusturma sureci uzerinde kontrol olmadiginda kullanislidir."
+    },
+    {
+      "id": "fc20",
+      "front": "Zamanlayici Aktivasyonlari (Scheduler Activations) nedir?",
+      "back": "M:M ve Iki Seviyeli modellerde kullanilir. Kullanici ve cekirdek thread'leri arasinda ara veri yapisi olarak Hafif Surec (Lightweight Process - LWP) kullanilir. Her LWP bir cekirdek thread'ine baglidir. Zamanlayici aktivasyonlari, cekirdekten thread kutuphanesine yukariya cagrilar (upcalls) saglar. Bu iletisim, uygulamanin dogru sayida cekirdek thread'ini korumasina olanak tanir."
+    },
+    {
+      "id": "fc21",
+      "front": "Windows'ta thread veri yapilari (ETHREAD, KTHREAD, TEB) nelerdir?",
+      "back": "ETHREAD (Executive Thread Block): Thread'in ait oldugu prosese ve KTHREAD'e isaret eder. Cekirdek alanindadir.\nKTHREAD (Kernel Thread Block): Zamanlama/senkronizasyon bilgisi, cekirdek modu yigini, TEB'e isaret eder. Cekirdek alanindadir.\nTEB (Thread Environment Block): Thread ID, kullanici modu yigini, TLS. Kullanici alanindadir."
+    },
+    {
+      "id": "fc22",
+      "front": "Linux'ta thread'ler nasil olusturulur?",
+      "back": "Linux, thread'lere 'task' (gorev) der. Thread olusturma clone() sistem cagrisi ile yapilir. clone(), cocuk gorev'in ebeveyn gorev'in adres alanini paylasimasina izin verir. Bayraklar (flags) paylasim davranisini kontrol eder:\n- CLONE_FS: Dosya sistemi bilgisi paylasimi\n- CLONE_VM: Bellek alani paylasimi\n- CLONE_SIGHAND: Sinyal isleyici paylasimi\n- CLONE_FILES: Acik dosya paylasimi"
+    },
+    {
+      "id": "fc23",
+      "front": "Java'da Executor Framework nedir?",
+      "back": "Dogrudan thread olusturmak yerine, Executor arayuzu uzerinden thread olusturma imkani saglar.\nExecutor arayuzu: void execute(Runnable command);\nKullanim: Executor service = new Executor; service.execute(new Task());\nCallable<V> arayuzu, Runnable'dan farkli olarak deger DONDURUR. Future<V> ile sonuc alinir: result.get()."
+    },
+    {
+      "id": "fc24",
+      "front": "Pthreads'te iptal modlari nelerdir?",
+      "back": "Uc iptal modu vardir:\n1. Off (Kapali): State = Disabled, Type = -. Iptal talepleri beklemede kalir.\n2. Deferred (Ertelenmiis): State = Enabled, Type = Deferred. Varsayilan moddur. Iptal, cancellation point'te gerceklesir.\n3. Asynchronous (Asenkron): State = Enabled, Type = Asynchronous. Hemen sonlandirir.\n\nLinux'ta thread iptali sinyaller araciligiyla islenir."
+    },
+    {
+      "id": "fc25",
+      "front": "Hafif Surec (Lightweight Process - LWP) nedir?",
+      "back": "LWP, kullanici thread'leri ile cekirdek thread'leri arasindaki ara veri yapisidir. Kullanici thread'inin uzerinde calisabilecegi sanal bir islemci gibi gorunur. Her LWP bir cekirdek thread'ine baglidir. M:M ve Iki Seviyeli modellerde kullanilir."
+    },
+    {
+      "id": "fc26",
+      "front": "Race Condition (Yaris Durumu) nedir? Thread ornegi ile acikla.",
+      "back": "Birden fazla thread paylasilan veriye eszamanli olarak erisip degistirdiginde ortaya cikar. Ornek: 8 thread ayni degiskeni 10,000 kez artirsin. Beklenen sonuc: 80,000. Ancak senkronizasyon olmadan sonuc her seferinde farkli olabilir (orn: 68820, 61506, 42251). Bunun nedeni, artirma isleminin atomik olmamasi ve thread'lerin birbirinin islemlerini ezmesidir."
+    },
+    {
+      "id": "fc27",
+      "front": "Intel TBB (Threading Building Blocks) nedir?",
+      "back": "Paralel C++ programlari tasarlamak icin bir sablon kutuphanesidir.\nSeri versiyon: for (int i=0; i<n; i++) apply(v[i]);\nTBB ile: parallel_for(size_t(0), n, [=](size_t i) {apply(v[i]);});\nDongu iterasyonlari otomatik olarak mevcut cekirdeklere dagitilir."
+    }
+  ],
+  "quiz": [
+    {
+      "id": "q1",
+      "question": "Asagidakilerden hangisi bir thread'in kendine ait OLMAYAN bilesenidir?",
+      "options": [
+        "A) Program sayaci (Program Counter)",
+        "B) Register seti",
+        "C) Stack",
+        "D) Kod bolumu (Code Section)"
+      ],
+      "answer": "D",
+      "explanation": "Thread'ler kod bolumunu, veri bolumunu ve dosyalar gibi kaynaklari prosesin diger thread'leri ile PAYLASIRLAR. Ancak her thread'in kendine ait program sayaci (PC), register seti ve stack'i vardir.",
+      "difficulty": "easy"
+    },
+    {
+      "id": "q2",
+      "question": "Thread kullanmanin faydalarindan biri olan 'Yanit Verebilirlik (Responsiveness)' ne anlama gelir?",
+      "options": [
+        "A) Thread'ler ayni anda birden fazla CPU kullanabilir",
+        "B) Prosesin bir kismi bloke olsa bile calisma devam edebilir",
+        "C) Thread'ler kaynaklari paylasar",
+        "D) Thread olusturma surec olusturmadan ucuzdur"
+      ],
+      "answer": "B",
+      "explanation": "Yanit verebilirlik, prosesin bir kismi bloke olsa bile (ornegin uzun bir I/O islemi) diger thread'lerin calismaya devam edebilmesidir. Bu ozellikle kullanici arayuzleri (UI) icin onemlidir - kullanici arayuzu thread'i bloke olmaz.",
+      "difficulty": "easy"
+    },
+    {
+      "id": "q3",
+      "question": "Asagidakilerden hangisi eszamanliligi (concurrency) dogru tanimlar?",
+      "options": [
+        "A) Birden fazla gorev ayni anda yururulur",
+        "B) Birden fazla gorev ilerleme kaydeder ama ayni anda calismak zorunda degildir",
+        "C) Yalnizca cok cekirdekli sistemlerde mumkundur",
+        "D) Yalnizca paralel donanim ile saglanabilir"
+      ],
+      "answer": "B",
+      "explanation": "Eszamanlilik (concurrency), birden fazla gorevin ilerleme kaydetmesini destekler ancak ayni anda calismalari gerekmez. Tek islemcili/cekirdekli bir sistemde zamanlayici (scheduler) eszamanliligi saglayabilir. Paralellik ise gercekten ayni anda birden fazla gorev yurutmeyi gerektirir.",
+      "difficulty": "easy"
+    },
+    {
+      "id": "q4",
+      "question": "Amdahl Yasasi'na gore, %40 seri kisma sahip bir uygulama sonsuz sayida cekirdekle en fazla kac kat hizlanabilir?",
+      "options": [
+        "A) 1.67 kat",
+        "B) 2.5 kat",
+        "C) 4.0 kat",
+        "D) 10.0 kat"
+      ],
+      "answer": "B",
+      "explanation": "Amdahl Yasasi: speedup <= 1 / (S + (1-S)/N). N sonsuza yaklasirken (1-S)/N -> 0 olur, dolayisiyla speedup -> 1/S. S = 0.40 icin: speedup = 1/0.40 = 2.5 kat. Seri kisim ne kadar buyukse, elde edilebilecek maksimum hizlanma o kadar dusuktur.",
+      "difficulty": "medium"
+    },
+    {
+      "id": "q5",
+      "question": "Coktan-Bire (Many-to-One) thread modelinin en buyuk dezavantaji nedir?",
+      "options": [
+        "A) Cok fazla cekirdek thread'i olusturur",
+        "B) Bir thread bloklarsa tum thread'ler bloklanir",
+        "C) Her kullanici thread'i icin ayri proses gerekir",
+        "D) Thread olusturma maliyeti cok yuksektir"
+      ],
+      "answer": "B",
+      "explanation": "Coktan-Bire modelinde tum kullanici thread'leri tek bir cekirdek thread'ine eslenir. Bir kullanici thread'i bloklayici bir sistem cagrisi yaparsa, cekirdek thread'i bloklanir ve dolayisiyla TUM kullanici thread'leri bloklanir. Ayrica cok cekirdekli sistemde paralel calisma yapilamaz.",
+      "difficulty": "easy"
+    },
+    {
+      "id": "q6",
+      "question": "Asagidaki isletim sistemlerinden hangisi Bire-Bir (One-to-One) thread modelini kullanir?",
+      "options": [
+        "A) Solaris Green Threads",
+        "B) GNU Portable Threads",
+        "C) Windows ve Linux",
+        "D) Hicbiri"
+      ],
+      "answer": "C",
+      "explanation": "Windows ve Linux, Bire-Bir (One-to-One) modelini kullanir. Her kullanici thread'i icin bir cekirdek thread'i olusturulur. Solaris Green Threads ve GNU Portable Threads ise Coktan-Bire (Many-to-One) modeli ornekleridir.",
+      "difficulty": "easy"
+    },
+    {
+      "id": "q7",
+      "question": "Pthreads'te asagidaki fonksiyonlardan hangisi bir thread'in bitmesini beklemek icin kullanilir?",
+      "options": [
+        "A) pthread_create()",
+        "B) pthread_exit()",
+        "C) pthread_join()",
+        "D) pthread_attr_init()"
+      ],
+      "answer": "C",
+      "explanation": "pthread_join(tid, NULL) fonksiyonu, belirtilen thread (tid) bitene kadar cagiran thread'i bekletir. pthread_create() thread olusturur, pthread_exit() thread'i sonlandirir, pthread_attr_init() thread ozelliklerini baslatir.",
+      "difficulty": "easy"
+    },
+    {
+      "id": "q8",
+      "question": "Java'da thread olusturmak icin standart pratik asagidakilerden hangisidir?",
+      "options": [
+        "A) Thread sinifini genisletmek (extend)",
+        "B) Runnable arayuzunu uygulamak (implement)",
+        "C) Process sinifini kullanmak",
+        "D) Executor sinifini dogrudan instantiate etmek"
+      ],
+      "answer": "B",
+      "explanation": "Java'da thread olusturmanin iki yolu vardir: Thread sinifini genisletmek veya Runnable arayuzunu uygulamak. Standart pratik Runnable arayuzunu uygulamaktir, cunku Java coklu kaslitimi (multiple inheritance) desteklemedigi icin Runnable daha esnektir.",
+      "difficulty": "medium"
+    },
+    {
+      "id": "q9",
+      "question": "Thread Havuzu (Thread Pool) kullanmanin avantajlarindan hangisi DEGILDIR?",
+      "options": [
+        "A) Mevcut thread'i kullanmak yeni olusturmaktan daha hizlidir",
+        "B) Thread sayisini sinirlar",
+        "C) Her gorev icin yeni bir proses olusturur",
+        "D) Gorev olusturma stratejisini calistirma stratejisinden ayirir"
+      ],
+      "answer": "C",
+      "explanation": "Thread Havuzu, her gorev icin yeni proses OLUSTURMAZ - tam tersine, onceden olusturulmus thread'leri yeniden kullanir. Avantajlari: hiz (mevcut thread kullanimi), sinirli thread sayisi ve gorev yonetimi esnekligi.",
+      "difficulty": "medium"
+    },
+    {
+      "id": "q10",
+      "question": "OpenMP'de '#pragma omp parallel' direktifi ne yapar?",
+      "options": [
+        "A) Programi seri modda calistirir",
+        "B) Tek bir thread olusturur",
+        "C) Cekirdek sayisi kadar thread olusturarak paralel bolge olusturur",
+        "D) Thread'leri senkronize eder"
+      ],
+      "answer": "C",
+      "explanation": "#pragma omp parallel direktifi, sistemdeki cekirdek sayisi kadar thread olusturur ve bloktaki kodu paralel olarak calistirir. Bu bir paralel bolge (parallel region) olusturur. #pragma omp parallel for ise bir for dongusunu otomatik olarak thread'lere dagitir.",
+      "difficulty": "medium"
+    },
+    {
+      "id": "q11",
+      "question": "Cok thread'li bir programda exec() sistem cagrisi ne yapar?",
+      "options": [
+        "A) Sadece cagiran thread'i degistirir",
+        "B) Tum thread'ler dahil sureci yeni programla degistirir",
+        "C) Tum thread'leri kopyalar",
+        "D) Hicbir sey yapmaz"
+      ],
+      "answer": "B",
+      "explanation": "exec() her zamanki gibi calisir - calistirilan sureci TUM THREAD'LER DAHIL yeni programla degistirir. Dolayisiyla exec() cagrisidan sonra sadece yeni programin kodu calisir. fork() ise sadece cagiran thread'i mi yoksa tum thread'leri mi kopyalayacagi konusunda farkli davranabilir.",
+      "difficulty": "medium"
+    },
+    {
+      "id": "q12",
+      "question": "Ertelenmiis iptal (Deferred Cancellation) ile ilgili asagidakilerden hangisi DOGRUDUR?",
+      "options": [
+        "A) Hedef thread hemen sonlandirilir",
+        "B) Pthreads'te varsayilan iptal turudur",
+        "C) Iptal noktasi (cancellation point) gerektirmez",
+        "D) Yalnizca Java'da kullanilir"
+      ],
+      "answer": "B",
+      "explanation": "Ertelenmiis iptal (Deferred Cancellation), Pthreads'te VARSAYILAN iptal turudur. Hedef thread, iptal edilip edilmeyecegini PERIYODIK olarak kontrol eder ve iptal ancak iptal noktasinda (cancellation point - pthread_testcancel()) gerceklesir. Bu, asenkron iptalden daha guvenlidir.",
+      "difficulty": "medium"
+    },
+    {
+      "id": "q13",
+      "question": "Thread-Yerel Depolama (TLS) ile ilgili asagidakilerden hangisi YANLISTIR?",
+      "options": [
+        "A) Her thread'in kendi veri kopyasi olmasini saglar",
+        "B) Fonksiyon cagrilari boyunca gorunur kalir",
+        "C) Tum thread'ler tarafindan paylasilan bir depolama alanidir",
+        "D) static veriye benzer ancak her thread'e ozgudur"
+      ],
+      "answer": "C",
+      "explanation": "TLS, tum thread'ler tarafindan paylasilan bir depolama DEGILDIR - tam tersine, her thread'in kendi OZEL kopyasini saglar. TLS static veriye benzer (fonksiyon cagrilari boyunca kalici) ancak her thread'e ozgu (unique) olmasiyla ayrilir.",
+      "difficulty": "medium"
+    },
+    {
+      "id": "q14",
+      "question": "Linux'ta thread olusturmak icin hangi sistem cagrisi kullanilir?",
+      "options": [
+        "A) fork()",
+        "B) exec()",
+        "C) clone()",
+        "D) CreateThread()"
+      ],
+      "answer": "C",
+      "explanation": "Linux'ta thread olusturma clone() sistem cagrisi ile yapilir. clone(), cocuk gorev'in (child task) ebeveyn gorev'in (parent task) adres alanini paylasimasina olanak tanir. Bayraklar (CLONE_FS, CLONE_VM, CLONE_SIGHAND, CLONE_FILES) paylasimin derecesini belirler. Linux, thread'lere 'task' der.",
+      "difficulty": "medium"
+    },
+    {
+      "id": "q15",
+      "question": "Amdahl Yasasi'na gore, bir uygulama %75 paralel, %25 seri ise ve 1'den 2 cekirdege gecilirse hizlanma ne kadardir?",
+      "options": [
+        "A) 1.0 kat",
+        "B) 1.6 kat",
+        "C) 2.0 kat",
+        "D) 4.0 kat"
+      ],
+      "answer": "B",
+      "explanation": "speedup <= 1 / (S + (1-S)/N) = 1 / (0.25 + (1-0.25)/2) = 1 / (0.25 + 0.375) = 1 / 0.625 = 1.6 kat. %25 seri kisim, 2 cekirdekle bile hizlanmayi 1.6 kat ile sinirlar.",
+      "difficulty": "hard"
+    },
+    {
+      "id": "q16",
+      "question": "Windows'ta thread veri yapilarindan hangisi KULLANICI alaninda (user space) bulunur?",
+      "options": [
+        "A) ETHREAD",
+        "B) KTHREAD",
+        "C) TEB",
+        "D) ETHREAD ve KTHREAD"
+      ],
+      "answer": "C",
+      "explanation": "TEB (Thread Environment Block) kullanici alaninda bulunur ve thread ID, kullanici modu yigini ve thread-yerel depolamayi icerir. ETHREAD (Executive Thread Block) ve KTHREAD (Kernel Thread Block) ise cekirdek alaninda (kernel space) bulunur.",
+      "difficulty": "hard"
+    },
+    {
+      "id": "q17",
+      "question": "8 thread ayni degiskeni 10,000 kez artirirsa ve senkronizasyon YOKSA, beklenen sonuc 80,000 iken gercek sonuc neden farkli olabilir?",
+      "options": [
+        "A) Thread'ler farkli hizlarda calisir",
+        "B) Artirma islemi atomik degildir ve race condition olusur",
+        "C) Isletim sistemi bazi thread'leri sonlandirir",
+        "D) Bellek yetersizdir"
+      ],
+      "answer": "B",
+      "explanation": "Artirma islemi (++counter) atomik degildir - oku, artir, yaz adimlari arasinda baska bir thread araya girebilir. Bu bir yaris durumu (race condition) olusturur. Sonuc her seferinde farkli olabilir (ornegin 68820, 61506, 42251). Cozum: senkronizasyon mekanizmalari (mutex, semaphore vb.) kullanmaktir.",
+      "difficulty": "hard"
+    },
+    {
+      "id": "q18",
+      "question": "Java'da Fork-Join Framework'te RecursiveTask ile RecursiveAction arasindaki fark nedir?",
+      "options": [
+        "A) RecursiveTask paralel calisir, RecursiveAction seri calisir",
+        "B) RecursiveTask sonuc dondurur, RecursiveAction dondurmez",
+        "C) RecursiveAction daha hizlidir",
+        "D) Aralarinda fark yoktur"
+      ],
+      "answer": "B",
+      "explanation": "Her ikisi de ForkJoinTask soyut sinifini genisletir. RecursiveTask<V>, compute() metodu uzerinden bir sonuc DONDURUR (V tipinde). RecursiveAction ise void compute() metoduna sahiptir ve sonuc DONDURMEZ. Hesaplama sonucu gerekiyorsa RecursiveTask, gerekmiyorsa RecursiveAction kullanilir.",
+      "difficulty": "hard"
+    },
+    {
+      "id": "q19",
+      "question": "Asagidaki Linux clone() bayraklarindan hangisi kullanilirsa, ebeveyn ve cocuk gorevler AYNI BELLEK ALANINI paylasir?",
+      "options": [
+        "A) CLONE_FS",
+        "B) CLONE_VM",
+        "C) CLONE_SIGHAND",
+        "D) CLONE_FILES"
+      ],
+      "answer": "B",
+      "explanation": "CLONE_VM bayragi kullanildiginda, cocuk gorev ebeveynin bellek alanini (address space) paylasir. CLONE_FS dosya sistemi bilgisini, CLONE_SIGHAND sinyal isleyicilerini, CLONE_FILES acik dosyalari paylasir. Tum bayraklar birlikte kullanildiginda gercek bir thread olusur.",
+      "difficulty": "hard"
+    },
+    {
+      "id": "q20",
+      "question": "Asagidakilerden hangisi ortuk threading (implicit threading) yontemi DEGILDIR?",
+      "options": [
+        "A) Thread Pools",
+        "B) OpenMP",
+        "C) Pthreads",
+        "D) Grand Central Dispatch (GCD)"
+      ],
+      "answer": "C",
+      "explanation": "Pthreads bir ACIK (explicit) threading kutuphanesidir - programci thread olusturma ve yonetimi dogrudan kontrol eder. Ortuk threading'de (implicit threading) thread yonetimi derleyiciler ve calisma zamani kutuphaneleri tarafindan yapilir. Thread Pools, Fork-Join, OpenMP, GCD ve Intel TBB ortuk threading yontemleridir."
+    }
+  ],
+  "fillBlanks": [
+    {
+      "id": "fb1",
+      "text": "Thread, bir prosesin icinde calisabilen temel _____ kullanim birimidir. Her thread kendi thread ID'si, _____, register seti ve stack'ine sahiptir.",
+      "blanks": [
+        "CPU",
+        "program sayaci (PC)"
+      ],
+      "explanation": "Thread, CPU'nun temel kullanim birimidir. Her thread'in kendine ait program sayaci (PC - program counter), register seti ve stack'i vardir. Kod, veri ve dosyalar ise ayni prosesin thread'leri arasinda paylasilan kaynaklardir."
+    },
+    {
+      "id": "fb2",
+      "text": "_____ birden fazla gorevin ayni anda gerceklestirilmesini ifade ederken, _____ birden fazla gorevin ilerleme kaydetmesini ifade eder ve ayni anda calismak zorunda degildir.",
+      "blanks": [
+        "Paralellik (Parallelism)",
+        "Eszamanlilik (Concurrency)"
+      ],
+      "explanation": "Paralellik gercekten ayni anda birden fazla islem yapmaktir (cok cekirdek gerektirir). Eszamanlilik ise gorevlerin ilerleme kaydetmesidir, tek cekirdekli bir sistemde zamanlayici ile de saglanabilir."
+    },
+    {
+      "id": "fb3",
+      "text": "Amdahl Yasasi formulunde speedup <= 1 / (S + (1-S)/N), S _____ kisminin oranini, N ise _____ sayisini temsil eder.",
+      "blanks": [
+        "seri (serial)",
+        "islemci cekirdek (processing cores)"
+      ],
+      "explanation": "Amdahl Yasasi, seri ve paralel bilesenlere sahip bir uygulamada ek cekirdek eklemenin performans kazancini modellar. S seri kismin orani, N cekirdek sayisidir. N sonsuza giderken hizlanma 1/S'ye yaklasir."
+    },
+    {
+      "id": "fb4",
+      "text": "Coktan-Bire (Many-to-One) modelinde bircok kullanici thread'i _____ cekirdek thread'ine eslenir. Bu modelin dezavantaji, bir thread bloklarsa _____ bloklanmasidir.",
+      "blanks": [
+        "tek bir (single)",
+        "tum thread'lerin (all threads)"
+      ],
+      "explanation": "Many-to-One modelinde tum kullanici thread'leri tek bir cekirdek thread'ine eslenir. Cekirdek thread'i bloke olursa, tum kullanici thread'leri de bloke olur. Ornek: Solaris Green Threads."
+    },
+    {
+      "id": "fb5",
+      "text": "Pthreads'te thread olusturmak icin _____ fonksiyonu, thread'in bitmesini beklemek icin ise _____ fonksiyonu kullanilir.",
+      "blanks": [
+        "pthread_create()",
+        "pthread_join()"
+      ],
+      "explanation": "pthread_create(&tid, &attr, runner, arg) yeni bir thread olusturur. pthread_join(tid, NULL) belirtilen thread (tid) tamamlanana kadar cagiran thread'i bekletir."
+    },
+    {
+      "id": "fb6",
+      "text": "Java'da thread olusturmanin standart yolu _____ arayuzunu uygulamaktir. Thread baslatmak icin _____ metodu cagirilir.",
+      "blanks": [
+        "Runnable",
+        "start()"
+      ],
+      "explanation": "Java'da Runnable arayuzunu uygulamak standart pratiktir. Thread nesnesi olusturulduktan sonra (new Thread(new Task())), start() metodu cagirilarak thread baslatilir. run() metodu dogrudan cagirilmaz - start() onu yeni bir thread'de calistirir."
+    },
+    {
+      "id": "fb7",
+      "text": "OpenMP'de paralel bolge olusturmak icin _____ direktifi kullanilir. Bu direktif, sistemdeki _____ sayisi kadar thread olusturur.",
+      "blanks": [
+        "#pragma omp parallel",
+        "cekirdek (core)"
+      ],
+      "explanation": "#pragma omp parallel direktifi, C/C++/FORTRAN kodunda paralel bolge olusturur. Cekirdek sayisi kadar thread otomatik olarak olusturulur ve bloktaki kod paralel calistirilir."
+    },
+    {
+      "id": "fb8",
+      "text": "Thread iptali iki turludur: _____ iptal hedef thread'i hemen sonlandirirken, _____ iptal hedef thread'in periyodik olarak kontrol etmesine izin verir.",
+      "blanks": [
+        "Asenkron (Asynchronous)",
+        "Ertelenmiis (Deferred)"
+      ],
+      "explanation": "Asenkron iptal hedef thread'i hemen sonlandirir (kaynak sizintisi riski vardir). Ertelenmiis iptal varsayilan turdur ve thread ancak iptal noktasinda (cancellation point) sonlanir, bu daha guvenlidir."
+    },
+    {
+      "id": "fb9",
+      "text": "Linux'ta thread olusturma _____ sistem cagrisi ile yapilir. Linux, thread'lere thread yerine _____ olarak atifta bulunur.",
+      "blanks": [
+        "clone()",
+        "task (gorev)"
+      ],
+      "explanation": "Linux'ta clone() sistem cagrisi thread olusturur. Linux terminolojisinde thread yerine 'task' (gorev) terimi kullanilir. struct task_struct, proses/thread veri yapisini temsil eder."
+    },
+    {
+      "id": "fb10",
+      "text": "Thread-Yerel Depolama (TLS), her thread'in kendi verisinin bir _____ sahip olmasini saglar. TLS, _____ veriye benzer ancak her thread'e ozgudur.",
+      "blanks": [
+        "kopyasina (copy)",
+        "static"
+      ],
+      "explanation": "TLS, her thread'e ozel veri kopyasi saglar. static degiskenler gibi fonksiyon cagrilari boyunca kalicidir, ancak static'ten farki her thread'in kendine ait bir kopyaya sahip olmasidir."
+    },
+    {
+      "id": "fb11",
+      "text": "Windows'ta thread bağlamini (context) oluşturan üc bilesen _____, _____ ve özel veri depolama alanıdır.",
+      "blanks": [
+        "register seti",
+        "yiginlar (stacks)"
+      ],
+      "explanation": "Windows'ta bir thread'in baglami (context) register seti, yiginlar (kullanici ve cekirdek modunda ayri) ve ozel veri depolama alanindan olusur. Bu bilgiler ETHREAD, KTHREAD ve TEB veri yapilarinda tutulur."
+    },
+    {
+      "id": "fb12",
+      "text": "Zamanlayici aktivasyonlari, cekirdekten thread kutuphanesine _____ adi verilen bir iletisim mekanizmasi saglar. Bu iletisimde kullanici ve cekirdek thread'leri arasinda ara yapi olarak _____ kullanilir.",
+      "blanks": [
+        "yukariya cagrilar (upcalls)",
+        "Hafif Surec (LWP - Lightweight Process)"
+      ],
+      "explanation": "Zamanlayici aktivasyonlari, cekirdek ile kullanici seviyesi thread kutuphanesi arasinda upcall mekanizmasi saglar. LWP (Lightweight Process), kullanici thread'i ile cekirdek thread'i arasinda sanal islemci gorevi goren ara yapidir."
+    }
+  ],
+  "examQuestions": [
+    {
+      "id": "ch4-ex1",
+      "type": "shortanswer",
+      "points": 2,
+      "question": "pthread_join() fonksiyonu ne yapar? Neden gereklidir?",
+      "solution": "pthread_join(thread_id, retval) fonksiyonu, belirtilen thread'in tamamlanmasini bekler (blocks the calling thread). Main thread, child thread'lerin isini bitirmesini beklemek icin kullanir.\n\nGerekli cunku: Eger main thread, child thread bitmeden cikis yaparsa, child thread de sonlandirilir ve isi tamamlanamaz. pthread_join ile senkronizasyon saglanir.",
+      "steps": [
+        "pthread_join calling thread'i bloklar",
+        "Belirtilen thread tamamlaninca devam eder",
+        "Thread'in return degerini alabilir (retval)",
+        "join yapilmazsa thread detached olabilir veya main erken cikabilir"
+      ]
+    },
+    {
+      "id": "ch4-ex2",
+      "type": "shortanswer",
+      "points": 4,
+      "question": "Thread Control Block (TCB) icerisinde hangi bilgiler tutulur? PCB ile farki nedir?",
+      "solution": "TCB icerigi:\n1. Thread ID\n2. Program Counter (PC)\n3. Register Set (CPU registers)\n4. Stack Pointer\n5. Thread State (running, ready, blocked)\n6. Priority\n\nFark: TCB sadece thread'e ozel bilgileri tutar. Bellek bilgileri, acik dosyalar, accounting gibi bilgiler ayni process'in PCB'sinde paylasimli tutulur. TCB, PCB'den cok daha kucuktur.",
+      "steps": [
+        "TCB = thread-specific info (PC, registers, stack, state)",
+        "PCB = process-wide info (memory, files, I/O)",
+        "Ayni process altindaki thread'ler PCB'yi paylasiyor",
+        "Bu yuzden thread olusturma process olusturmadan daha hizli"
+      ]
+    },
+    {
+      "id": "ch4-ex3",
+      "type": "truefalse",
+      "points": 2,
+      "question": "Ayni process icerisindeki thread'ler stack alanini paylasir.",
+      "solution": "YANLIS (False). Thread'ler code section, data section ve OS kaynaklarini (acik dosyalar) paylasir ancak her thread'in KENDINE AIT stack'i vardir. Her thread farkli fonksiyonlari cagirabilir ve farkli local degiskenlere sahip olabilir."
+    },
+    {
+      "id": "ch4-ex4",
+      "type": "truefalse",
+      "points": 2,
+      "question": "Many-to-one thread modelinde bir thread blocking system call yaparsa, ayni process'teki tum thread'ler bloklanir.",
+      "solution": "DOGRU (True). Many-to-one modelde tum user thread'ler tek bir kernel thread'e eslesir. Bir user thread block olursa, kernel thread da block olur ve diger user thread'ler de calisamaz. Bu modelin en buyuk dezavantajidir."
+    },
+    {
+      "id": "ch4-ex5",
+      "type": "shortanswer",
+      "points": 4,
+      "question": "Multithreaded bir programda fork() cagrildiginda ne olur? Iki farkli yaklasimi aciklayin.",
+      "solution": "Iki yaklasim:\n\n1. Tum thread'leri kopyala: Child process, parent'daki TUM thread'lerin kopyasini alir. Exec() cagirilmayacaksa uygun.\n\n2. Sadece cagirani kopyala: Child process sadece fork() cagiran thread'in kopyasini alir. Diger thread'ler kopyalanmaz. Hemen exec() cagirilacaksa uygun (cunku exec tum adres alanini degistirecek, diger thread'leri kopyalamak gereksiz).\n\nLinux varsayilan: sadece cagirani kopyalar.",
+      "steps": [
+        "fork() in multithreaded: iki secenek var",
+        "Option 1: Tum thread'leri kopyala (exec yok ise)",
+        "Option 2: Sadece caller thread'i kopyala (exec yapilacaksa)",
+        "POSIX: fork() sadece calling thread'i kopyalar"
+      ]
+    }
+  ]
+}

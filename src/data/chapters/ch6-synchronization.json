@@ -1,0 +1,900 @@
+{
+  "id": "ch6",
+  "title": "Senkronizasyon Araclari (Synchronization Tools)",
+  "titleEn": "Synchronization Tools",
+  "sections": [
+    {
+      "id": "s1",
+      "title": "Arka Plan ve Yaris Durumu (Background & Race Condition)",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "Surecler (processes) esanli olarak (concurrently) calisabilir ve herhangi bir anda kesintiye ugrayabilir (interrupted). Paylasilan verilere esanli erisim, veri tutarsizligina (data inconsistency) yol acabilir. Veri tutarliligini korumak icin, isbirligi yapan sureclerin (cooperating processes) duzgun bir sira ile calismasini saglayan mekanizmalara ihtiyac vardir."
+        },
+        {
+          "type": "keypoint",
+          "text": "Yaris durumu (Race Condition): Birden fazla surecin ayni anda paylasilan bir veriye erisip degistirmeye calismasi ve sonucun erisimlerin gerceklesme sirasina bagli olmasi durumudur. Ornegin iki surecin ayni anda fork() ile cocuk surec olusturmasi ve ayni PID numarasini almasi."
+        },
+        {
+          "type": "analogy",
+          "text": "Yaris durumunu su sekilde dusunebilirsiniz: Iki kisi ayni anda bir ATM'den ayni hesaptan para cekmeye calisiyor. Ikisi de bakiyeyi 1000 TL olarak goruyor ve 500 TL cekiyor. Sistem dogru calissaydi bakiye 0 TL olmalidir, ama yaris durumu yuzunden her ikisi de 500 TL ceker ve bakiye -500 TL'ye duser veya yanlis hesaplanir."
+        },
+        {
+          "type": "diagram",
+          "title": "Yaris Durumu Ornegi (Race Condition - PID Atamasi)",
+          "ascii": "    P0                          P1\n    |                           |\n    pid_t child = fork();       pid_t child = fork();\n    |                           |\n    request pid ----+           |\n    |               |           request pid\n    |        next_available_pid = 2615\n    |               |           |\n    return 2615     |           return 2615\n    |               |           |\n    child = 2615    +-------->  child = 2615\n\n    SORUN: Iki farkli surec ayni PID'yi aliyor!"
+        },
+        {
+          "type": "warning",
+          "text": "Yaris durumu her zaman ortaya cikmaz - bu durumu tespit etmeyi zorlastiran sey budur. Bazen program dogru calisir, bazen yanlis. Bu tur hatalar (bug) 'non-deterministic' olduklari icin debug etmesi cok zordur."
+        }
+      ]
+    },
+    {
+      "id": "s2",
+      "title": "Kritik Bolum Problemi (Critical-Section Problem)",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "n tane surecten olusan bir sistem dusunelim: {P0, P1, ..., Pn-1}. Her surecin bir kritik bolum (critical section) kod parcasi vardir. Bu bolumde surecler ortak degiskenleri degistirebilir, tablolari guncelleyebilir veya dosyalara yazabilir. Bir surec kritik bolumde calisirken, baska hicbir surec kendi kritik bolumunde calisamaz."
+        },
+        {
+          "type": "diagram",
+          "title": "Surec Pi'nin Genel Yapisi",
+          "ascii": "while (true) {\n    +------------------+\n    | entry section    |  <-- Kritik bolume girme izni iste\n    +------------------+\n\n       critical section   <-- Paylasilan veriye erisim\n\n    +------------------+\n    | exit section     |  <-- Kritik bolumden cikisi bildir\n    +------------------+\n\n       remainder section  <-- Geri kalan kod\n}"
+        },
+        {
+          "type": "keypoint",
+          "text": "Kritik bolum probleminin cozumu uc gereksinimi karsilamalidir:\n1. Karsilikli Dislamama (Mutual Exclusion): Pi kritik bolumde ise, baska hicbir surec kritik bolumde olamaz.\n2. Ilerleme (Progress): Hicbir surec kritik bolumde degilse ve bazi surecler girmek istiyorsa, hangi surecin girecegi sonsuza kadar ertelenemez.\n3. Sinirli Bekleme (Bounded Waiting): Bir surec kritik bolume girmek icin istekte bulunduktan sonra, diger sureclerin kritik bolume giris sayisina bir ust sinir (bound) konmalidir."
+        },
+        {
+          "type": "list",
+          "title": "Kritik Bolum Cozum Gereksinimleri",
+          "items": [
+            "Karsilikli Dislamama (Mutual Exclusion): Ayni anda sadece bir surec kritik bolumde olabilir",
+            "Ilerleme (Progress): Kritik bolum bossa ve girmek isteyen surecler varsa, secim sonsuza kadar ertelenemez",
+            "Sinirli Bekleme (Bounded Waiting): Bir surec istekte bulunduktan sonra, diger sureclerin giris sayisina bir sinir konmalidir",
+            "Her surecin sifirdan buyuk bir hizda calistigi varsayilir",
+            "Sureclerin goreceli (relative) hizlari hakkinda varsayim yapilmaz"
+          ]
+        },
+        {
+          "type": "analogy",
+          "text": "Kritik bolumu tek kisilik bir banyo olarak dusunun. Giris bolumu (entry section) kapinin kilidini kontrol etmektir. Kritik bolum banyoyu kullanmaktir. Cikis bolumu (exit section) kapinin kilidini acmaktir. Karsilikli dislamama: Ayni anda sadece bir kisi banyoda olabilir. Ilerleme: Banyo bossa, bekleyen birisinin iceri girmesi engellenmemelidir. Sinirli bekleme: Bir kisi sonsuza kadar sirada bekletilmemelidir."
+        },
+        {
+          "type": "paragraph",
+          "text": "Kesinti tabanli cozum (Interrupt-based Solution): Giris bolumunde kesintiler devre disi birakilir, cikista tekrar etkinlestirilir. Ancak bu cozum sorunludur - kritik bolum bir saat surerse ne olur? Bazi surecler acliktan olebilir (starvation). Cok islemcili sistemlerde calismaz."
+        }
+      ]
+    },
+    {
+      "id": "s3",
+      "title": "Peterson Cozumu (Peterson's Solution)",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "Peterson cozumu, iki surecli bir yazilim cozumudur. load ve store makine dili komutlarinin atomik oldugu varsayilir (yani kesilemez). Iki surecin paylastigi iki degisken vardir: 'int turn' (sira kimin) ve 'boolean flag[2]' (hangi surec hazir). flag[i] = true ise Pi sureci kritik bolume girmeye hazirdir."
+        },
+        {
+          "type": "code",
+          "language": "c",
+          "title": "Peterson Cozumu - Surec Pi icin Algoritma",
+          "code": "// Paylasilan degiskenler\nint turn;           // Sira kimde\nboolean flag[2];    // Hangi surec hazir\n\n// Surec Pi icin algoritma (j = 1 - i)\nwhile (true) {\n    flag[i] = true;              // Ben hazirim\n    turn = j;                    // Sirayi diger surece ver\n    while (flag[j] && turn == j) // Diger surec hazir VE\n        ;                        // sira ondeyse bekle\n\n    /* kritik bolum (critical section) */\n\n    flag[i] = false;             // Artik hazir degilim\n\n    /* kalan bolum (remainder section) */\n}"
+        },
+        {
+          "type": "keypoint",
+          "text": "Peterson cozumunun dogrulugu:\n1. Karsilikli Dislamama: Pi kritik bolume ancak flag[j]==false VEYA turn==i ise girer. Iki surec ayni anda giremez cunku turn ayni anda hem 0 hem 1 olamaz.\n2. Ilerleme gereksinimi karsilanir.\n3. Sinirli bekleme gereksinimi karsilanir (en fazla 1 tur beklenir)."
+        },
+        {
+          "type": "diagram",
+          "title": "Peterson Cozumunun Calismasi",
+          "ascii": "P0: flag[0]=true, turn=1        P1: flag[1]=true, turn=0\n |                               |\n turn=1 (son yazan P0)           turn=0 (son yazan P1)\n |                               |\n Kontrol: flag[1]&&turn==1?      Kontrol: flag[0]&&turn==0?\n   -> Eger P1 flag[1]=true       -> turn en son 0 veya 1\n      ve turn==1 ise BEKLE          olacak, birisi girecek\n   -> Degilse KRiTiK BOLUME GiR\n\n NOT: turn degiskeni son yazan\n surec tarafindan belirlenir,\n bu yuzden en az bir surec\n her zaman girebilir."
+        },
+        {
+          "type": "warning",
+          "text": "Peterson cozumu modern mimarilerde garanti edilmez! Islemciler ve derleyiciler performans icin bagimsiz komutlarin sirasini degistirebilir (instruction reordering). Tek threadli programlarda sorun yoktur ama cok threadli programlarda tutarsiz sonuclar olusabilir. Modern mimarilerde Peterson cozumunun dogru calismasi icin Bellek Bariyeri (Memory Barrier) kullanilmalidir."
+        },
+        {
+          "type": "code",
+          "language": "c",
+          "title": "Modern Mimaride Komut Yeniden Siralama Problemi",
+          "code": "// Iki thread paylasilan veriyi kullaniyor:\nboolean flag = false;\nint x = 0;\n\n// Thread 1:               // Thread 2:\nwhile (!flag)              x = 100;\n    ;                      flag = true;\nprint x;\n\n// Beklenen cikti: 100\n// ANCAK derleyici Thread 2'nin komutlarini\n// yeniden siralayabilir:\n//   flag = true;   (once flag atanir)\n//   x = 100;       (sonra x atanir)\n// Bu durumda cikti 0 olabilir!"
+        }
+      ]
+    },
+    {
+      "id": "s4",
+      "title": "Senkronizasyon icin Donanim Destegi (Hardware Support for Synchronization)",
+      "content": [
+        {
+          "type": "heading",
+          "text": "Bellek Bariyeri (Memory Barrier)"
+        },
+        {
+          "type": "paragraph",
+          "text": "Bellek modeli (Memory model), bilgisayar mimarisinin uygulama programlarina sundugu bellek garantileridir. Iki tur bellek modeli vardir: Guclu sirali (Strongly ordered) - bir islemcinin bellek degisikligi diger tum islemcilere aninda gorulur. Zayif sirali (Weakly ordered) - bir islemcinin bellek degisikligi diger islemcilere aninda gorunmeyebilir."
+        },
+        {
+          "type": "keypoint",
+          "text": "Bellek bariyeri (Memory barrier/fence), bellekteki herhangi bir degisikligin diger tum islemcilere yayilmasini (gorunur hale gelmesini) zorlayan bir komuttur. Komutlar yeniden siralansa bile, bellek bariyeri store islemlerinin tamamlanip diger islemcilere gorunur olmasini garanti eder."
+        },
+        {
+          "type": "code",
+          "language": "c",
+          "title": "Bellek Bariyeri Kullanim Ornegi",
+          "code": "// Thread 1:                    // Thread 2:\nwhile (!flag)                   x = 100;\n    memory_barrier();           memory_barrier();\nprint x;                        flag = true;\n\n// Thread 1: flag degeri x'ten once yuklenir\n// Thread 2: x'e atama flag'ten once yapilir\n// Sonuc: Her zaman 100 yazdirilir"
+        },
+        {
+          "type": "heading",
+          "text": "Donanim Komutlari (Hardware Instructions)"
+        },
+        {
+          "type": "paragraph",
+          "text": "Ozel donanim komutlari, bir kelimenin icerigini atomik olarak test-edip-degistirmeye (test-and-modify) veya iki kelimenin icerigini atomik olarak degis-tokus etmeye (swap) olanak tanir. Bu islemler kesilemez (uninterruptible) sekilde gerceklesir."
+        },
+        {
+          "type": "code",
+          "language": "c",
+          "title": "test_and_set Komutu",
+          "code": "// Tanim - atomik olarak calistirilir\nboolean test_and_set(boolean *target) {\n    boolean rv = *target;  // Eski degeri kaydet\n    *target = true;        // Yeni degeri true yap\n    return rv;             // Eski degeri dondur\n}\n\n// Kullanim - lock baslangicta false\ndo {\n    while (test_and_set(&lock))\n        ; /* hicbir sey yapma - bekle */\n\n    /* kritik bolum */\n\n    lock = false;\n\n    /* kalan bolum */\n} while (true);"
+        },
+        {
+          "type": "code",
+          "language": "c",
+          "title": "compare_and_swap (CAS) Komutu",
+          "code": "// Tanim - atomik olarak calistirilir\nint compare_and_swap(int *value, int expected, int new_value) {\n    int temp = *value;\n    if (*value == expected)\n        *value = new_value;  // Sadece beklenen degerdeyse degistir\n    return temp;              // Eski degeri dondur\n}\n\n// Kullanim - lock baslangicta 0\nwhile (true) {\n    while (compare_and_swap(&lock, 0, 1) != 0)\n        ; /* hicbir sey yapma - bekle */\n\n    /* kritik bolum */\n\n    lock = 0;\n\n    /* kalan bolum */\n}"
+        },
+        {
+          "type": "code",
+          "language": "c",
+          "title": "Sinirli Bekleme ile compare_and_swap Cozumu",
+          "code": "while (true) {\n    waiting[i] = true;\n    key = 1;\n    while (waiting[i] && key == 1)\n        key = compare_and_swap(&lock, 0, 1);\n    waiting[i] = false;\n\n    /* kritik bolum */\n\n    j = (i + 1) % n;\n    while ((j != i) && !waiting[j])\n        j = (j + 1) % n;\n    if (j == i)\n        lock = 0;           // Bekleyen yok, kilidi birak\n    else\n        waiting[j] = false; // Siradaki sureci iceri al\n\n    /* kalan bolum */\n}"
+        },
+        {
+          "type": "warning",
+          "text": "test_and_set ve basit compare_and_swap cozumleri karsilikli dislammayi saglar ancak sinirli bekleme (bounded waiting) gereksinimini tek baslarina karsilamaz! Sinirli bekleme icin waiting[] dizisi ile birlikte kullanilmalidir."
+        },
+        {
+          "type": "heading",
+          "text": "Atomik Degiskenler (Atomic Variables)"
+        },
+        {
+          "type": "paragraph",
+          "text": "Atomik degiskenler, tamsayilar ve boolean gibi temel veri tipleri uzerinde atomik (kesilemez) guncellemeler saglayan araclardir. Genellikle compare_and_swap gibi komutlar kullanilarak uygulanir."
+        },
+        {
+          "type": "code",
+          "language": "c",
+          "title": "Atomik Degisken - increment() Fonksiyonu",
+          "code": "void increment(atomic_int *v) {\n    int temp;\n    do {\n        temp = *v;\n    } while (temp != compare_and_swap(v, temp, temp + 1));\n}\n\n// Kullanim:\n// atomic_int sequence;\n// increment(&sequence);\n// sequence kesintisiz olarak arttirilir"
+        }
+      ]
+    },
+    {
+      "id": "s5",
+      "title": "Mutex Kilitleri (Mutex Locks)",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "Onceki donanim cozumleri karmasik ve uygulama programcilari icin genellikle erisilemezdir. Isletim sistemi tasarimcilari kritik bolum problemini cozmek icin yazilim araclari gelistirir. En basit arac mutex (mutual exclusion) kilididir. Kilidin mevcut olup olmadigini gosteren bir boolean degiskenidir."
+        },
+        {
+          "type": "keypoint",
+          "text": "Mutex kilidi iki temel isleme sahiptir: acquire() - kilidi al, release() - kilidi birak. Bu islemler atomik olmalidir ve genellikle compare-and-swap gibi donanim atomik komutlari ile uygulanir."
+        },
+        {
+          "type": "code",
+          "language": "c",
+          "title": "Mutex Kilidi ile Kritik Bolum Cozumu",
+          "code": "// acquire() ve release() tanimlari\nvoid acquire() {\n    while (!available)    // Kilit mevcut degil mi?\n        ;                // Mesgul bekleme (busy wait)\n    available = false;   // Kilidi al\n}\n\nvoid release() {\n    available = true;    // Kilidi birak\n}\n\n// Kullanim:\nwhile (true) {\n    acquire(lock);       // Kilidi al\n\n    /* kritik bolum */\n\n    release(lock);       // Kilidi birak\n\n    /* kalan bolum */\n}"
+        },
+        {
+          "type": "analogy",
+          "text": "Mutex kilidi bir banyo kilidi gibidir. Banyoya giren kisi kapiya kilitler (acquire). Icerideyken baska kimse giremez. Cikarken kilidi acar (release). Kapida bekleyen bir sonraki kisi iceri girebilir. Mesgul bekleme (busy waiting) ise kapinin onunde surekli 'Acik mi? Acik mi? Acik mi?' diye sormak gibidir - CPU zamanini bosuna harcar!"
+        },
+        {
+          "type": "diagram",
+          "title": "Mutex Kilidi Calismasi",
+          "ascii": "Surec A            Mutex (Kilit)           Surec B\n   |                   |                      |\n   |-- acquire() ----->|                      |\n   |   (kilit AL)      | [KILITLI]            |\n   |                   |                      |\n   | KRITIK BOLUM      |<----- acquire() -----|  \n   |                   |       BEKLE...       |\n   |                   |       (spin)         |\n   |-- release() ----->|                      |\n   |   (kilidi BIRAK)  | [ACIK]               |\n   |                   |-----> devam et ------|\n   |                   | [KILITLI]            |\n   |                   |     KRITIK BOLUM     |"
+        },
+        {
+          "type": "warning",
+          "text": "Mutex kilidi mesgul bekleme (busy waiting) gerektirir - surecler kilit bosalana kadar dongude bekler. Bu nedenle spinlock (donen kilit) olarak da adlandirilir. Tek islemcili sistemlerde CPU zamanini bosuna harcar, ancak cok islemcili sistemlerde kisa sureli kritik bolumler icin context switch maliyetinden daha verimli olabilir."
+        }
+      ]
+    },
+    {
+      "id": "s6",
+      "title": "Semaforlar (Semaphores)",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "Semafor, mutex kilitlerinden daha sofistike yollarla sureclerin faaliyetlerini senkronize etmeye olanak taniyan bir senkronizasyon aracidir. Semafor S bir tam sayi (integer) degiskenidir ve yalnizca iki bolunmez (atomik) islemle erislebilir: wait() ve signal(). Bunlarin orijinal adlari P() (Proberen/test) ve V() (Verhogen/artir) seklindedir."
+        },
+        {
+          "type": "code",
+          "language": "c",
+          "title": "Semafor wait() ve signal() Tanimlari",
+          "code": "// wait() islemi (P islemi)\nwait(S) {\n    while (S <= 0)\n        ; // mesgul bekleme (busy wait)\n    S--;\n}\n\n// signal() islemi (V islemi)\nsignal(S) {\n    S++;\n}"
+        },
+        {
+          "type": "list",
+          "title": "Semafor Turleri",
+          "items": [
+            "Sayma Semaforu (Counting Semaphore): Tam sayi degeri sinirsiz bir aralikta degisebilir. Birden fazla kaynak erisimini yonetmek icin kullanilir.",
+            "Ikili Semafor (Binary Semaphore): Tam sayi degeri yalnizca 0 ve 1 arasinda degisebilir. Mutex kilidi ile ayni islevi gorur.",
+            "Sayma semaforu, ikili semafor kullanilarak da uygulanabilir."
+          ]
+        },
+        {
+          "type": "analogy",
+          "text": "Semaforu bir otopark gibi dusunun. Sayma semaforu: Otoparkta 5 yer vardir (S=5). Her araba girdiginde S azalir (wait). Her araba ciktiginda S artar (signal). S=0 oldugunda otopark dolu, yeni araba beklemek zorunda. Ikili semafor: Tek arablik garaj - ya dolu (S=0) ya da bos (S=1)."
+        },
+        {
+          "type": "code",
+          "language": "c",
+          "title": "Semafor Kullanim Ornekleri",
+          "code": "// Ornek 1: Kritik Bolum Cozumu (mutex semaforu = 1)\nsemaphore mutex = 1;\n\nwait(mutex);    // Kritik bolume gir\n  /* CS */\nsignal(mutex);  // Kritik bolumden cik\n\n// Ornek 2: Surec Siralamasi\n// S1'in S2'den once calismasi gereken durum\nsemaphore synch = 0;\n\n// P1:              // P2:\nS1;                 wait(synch);  // S1 bitene kadar bekle\nsignal(synch);      S2;           // Simdi S2'yi calistir"
+        },
+        {
+          "type": "keypoint",
+          "text": "Semafor kullanim hatalari cok ciddi sorunlara yol acar:\n- signal(mutex) ... wait(mutex) seklinde yanlis sira: Karsilikli dislamama ihlal edilir\n- wait(mutex) ... wait(mutex) seklinde tekrar wait: Deadlock olusur\n- wait() veya signal() unutulmasi: Karsilikli dislamama ihlali veya deadlock"
+        }
+      ]
+    },
+    {
+      "id": "s7",
+      "title": "Mesgul Beklemesiz Semafor Uygulamasi (Semaphore Implementation without Busy Waiting)",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "Her semaforla iliskilendirilmis bir bekleme kuyrugu (waiting queue) vardir. Bekleme kuyrugundaki her eleman iki veri icerir: bir tam sayi deger (value) ve listedeki bir sonraki kayda isaret eden bir isaretci (pointer). Iki temel islem vardir: block() - sureci bekleme kuyruguna yerlestirir, wakeup() - bekleme kuyrugundaki bir sureci cikarip hazir kuyruguna (ready queue) yerlestirir."
+        },
+        {
+          "type": "code",
+          "language": "c",
+          "title": "Mesgul Beklemesiz Semafor Yapisi ve Islemleri",
+          "code": "// Semafor veri yapisi\ntypedef struct {\n    int value;\n    struct process *list;  // Bekleme kuyrugu\n} semaphore;\n\n// wait() - mesgul beklemesiz\nwait(semaphore *S) {\n    S->value--;\n    if (S->value < 0) {\n        add this process to S->list;\n        block();   // Sureci bekleme durumuna al\n    }\n}\n\n// signal() - mesgul beklemesiz\nsignal(semaphore *S) {\n    S->value++;\n    if (S->value <= 0) {\n        remove a process P from S->list;\n        wakeup(P); // Sureci hazir durumuna al\n    }\n}"
+        },
+        {
+          "type": "keypoint",
+          "text": "Mesgul beklemesiz uygulamada S->value negatif bir deger alabilir. Negatif degerin mutlak degeri, o semafor uzerinde bekleyen surec sayisini gosterir. Ornegin S->value = -3 ise 3 surec beklemektedir."
+        },
+        {
+          "type": "warning",
+          "text": "wait() ve signal() islemlerinin kendileri de atomik olmalidir! Yani iki surec ayni anda ayni semafor uzerinde wait() ve signal() calistiramaz. Bu, semaforun kendi uygulamasinda da kritik bolum problemini olusturur. Ancak bu kritik bolum kisa oldugu icin mesgul bekleme kabul edilebilir."
+        }
+      ]
+    },
+    {
+      "id": "s8",
+      "title": "Monitorler (Monitors)",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "Monitor, surec senkronizasyonu icin kullanisli ve etkili bir mekanizma saglayan ust duzey bir soyutlamadir (high-level abstraction). Soyut veri tipi (Abstract Data Type) olarak, ic degiskenlere yalnizca prosedur icindeki koddan erisilebilir. Bir monitorde ayni anda yalnizca bir surec aktif olabilir."
+        },
+        {
+          "type": "code",
+          "language": "pseudocode",
+          "title": "Monitor Pseudokodu",
+          "code": "monitor monitor-adi\n{\n    // paylasilan degisken bildirimleri\n    // (shared variable declarations)\n\n    procedure P1(...) { ... }\n    procedure P2(...) { ... }\n    ...\n    procedure Pn(...) { ... }\n\n    initialization code (...) { ... }\n}"
+        },
+        {
+          "type": "diagram",
+          "title": "Monitor Sematik Gorunumu",
+          "ascii": "                          giris kuyrugu\n                          (entry queue)\n                     +--+  +--+  +--+\n                     |P3|->|P2|->|P1|--+\n                     +--+  +--+  +--+  |\n                                       v\n            +-----------------------------+\n            |       paylasilan veri        |\n            |       (shared data)         |\n            |                             |\n            |  +------+ +------+ +------+ |\n            |  | P1() | | P2() | | Pn() | |\n            |  +------+ +------+ +------+ |\n            |       islemler              |\n            |       (operations)          |\n            |                             |\n            |   baslangic kodu            |\n            |   (initialization code)     |\n            +-----------------------------+"
+        },
+        {
+          "type": "analogy",
+          "text": "Monitor, icinde ozel kurallar olan bir ofis gibidir. Ofisin icinde paylasilan dosyalar (degiskenler) ve islemler (prosedurler) vardir. Bir seferde yalnizca bir calisan (surec) ofise girebilir. Diger calisanlar kapida sira bekler (entry queue). Calisan icerdeyken belirli bir kosula ihtiyac duyarsa, ofisten cikar ve kosul odasinda bekler (condition variable). Kosul saglandiginda tekrar ofise alinir."
+        }
+      ]
+    },
+    {
+      "id": "s9",
+      "title": "Kosul Degiskenleri (Condition Variables)",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "Monitor icinde kosul degiskenleri (condition variables) tanimlanabilir: 'condition x, y;'. Kosul degiskenleri uzerinde iki islem yapilabilir: x.wait() - islemi cagiran surec, x.signal() cagirilana kadar askiya alinir. x.signal() - x.wait() cagirmis sureclerden birini devam ettirir. Eger bekleyen surec yoksa, signal() isleminin bir etkisi yoktur."
+        },
+        {
+          "type": "diagram",
+          "title": "Kosul Degiskenli Monitor",
+          "ascii": "                     giris kuyrugu (entry queue)\n                     +--+  +--+  +--+\n                     |  |->|  |->|  |--+\n                     +--+  +--+  +--+  |\n                                       v\n        +----------------------------------+\n        |        paylasilan veri            |\n        |                                  |\n        |  x --> [kuyruk: P2 -> P5 -> ...]  |\n        |  y --> [kuyruk: P4 -> ...]        |\n        |  (kosul degiskeni kuyruklari)     |\n        |                                  |\n        |  +------+ +------+ +------+      |\n        |  | P1() | | P2() | | Pn() |      |\n        |  +------+ +------+ +------+      |\n        |                                  |\n        |   baslangic kodu                 |\n        +----------------------------------+"
+        },
+        {
+          "type": "code",
+          "language": "c",
+          "title": "Monitor Uygulamasi - Semafor Kullanarak",
+          "code": "// Monitor degiskenleri\nsemaphore mutex;      // (baslangic = 1)\nsemaphore next;       // (baslangic = 0)\nint next_count = 0;   // Monitor icinde bekleyen surec sayisi\n\n// Her prosedur P su sekilde sarmalanir:\nwait(mutex);          // Monitore gir\n    ...\n    body of P;        // Prosedurun govdesi\n    ...\nif (next_count > 0)\n    signal(next);     // Bekleyen sureci devam ettir\nelse\n    signal(mutex);    // Monitorden cik\n\n// x.wait() uygulamasi:\nx_count++;\nif (next_count > 0)\n    signal(next);\nelse\n    signal(mutex);\nwait(x_sem);\nx_count--;\n\n// x.signal() uygulamasi:\nif (x_count > 0) {\n    next_count++;\n    signal(x_sem);\n    wait(next);\n    next_count--;\n}"
+        },
+        {
+          "type": "keypoint",
+          "text": "Birden fazla surec kosul degiskeni x uzerinde bekliyorsa ve x.signal() calistirilirsa, hangi surec devam edecek? FCFS (ilk gelen ilk cikar) her zaman yeterli degildir. Kosullu bekleme (conditional-wait) x.wait(c) yapisi kullanilabilir; burada c bir oncelik numarasidir ve en dusuk numarali surec (en yuksek oncelik) sonraki olarak zamanlanir."
+        }
+      ]
+    },
+    {
+      "id": "s10",
+      "title": "Canlilik ve Kilitlenme (Liveness & Deadlock)",
+      "content": [
+        {
+          "type": "paragraph",
+          "text": "Canlilik (Liveness), bir surecin calisma suresi boyunca ilerleme kaydetmesini gerektiren bir ozellikler kumesidir. Canlilik basarisizligi, bir surecin sonsuza kadar beklemesi anlamina gelir. Temel canlilik sorunlari: kilitlenme (deadlock), aclik (starvation) ve oncelik tersine cevrilmesi (priority inversion)."
+        },
+        {
+          "type": "keypoint",
+          "text": "Kilitlenme (Deadlock): Iki veya daha fazla surecin, yalnizca bekleyen sureclerden birinin neden olabilecegi bir olayi sonsuza kadar beklemesidir. Ornegin P0, S'yi tutar ve Q'yu bekler; P1, Q'yu tutar ve S'yi bekler - her iki surec de sonsuza kadar bekler."
+        },
+        {
+          "type": "code",
+          "language": "c",
+          "title": "Deadlock (Kilitlenme) Ornegi",
+          "code": "// S ve Q: baslangic degeri 1 olan iki semafor\n\n// P0:                  // P1:\nwait(S);                wait(Q);\nwait(Q);                wait(S);\n...                     ...\nsignal(S);              signal(Q);\nsignal(Q);              signal(S);\n\n// P0, wait(S) calistirir -> S=0\n// P1, wait(Q) calistirir -> Q=0\n// P0, wait(Q) calistirir -> Q=0, BEKLE! (P1'in signal(Q) yapmasini bekler)\n// P1, wait(S) calistirir -> S=0, BEKLE! (P0'in signal(S) yapmasini bekler)\n// --> DEADLOCK! Her iki surec de sonsuza kadar bekler"
+        },
+        {
+          "type": "diagram",
+          "title": "Kilitlenme (Deadlock) Durumu",
+          "ascii": "    P0                    P1\n    |                     |\n    | wait(S) -> S=0      |\n    |                     | wait(Q) -> Q=0\n    |                     |\n    | wait(Q) -> BEKLE!   |\n    | (Q=0, P1 tutuyor)   | wait(S) -> BEKLE!\n    |                     | (S=0, P0 tutuyor)\n    v                     v\n  BLOCKED              BLOCKED\n    \\                   /\n     +--- DEADLOCK! ---+\n\n  P0, Q'yu bekliyor <- P1 tutuyor\n  P1, S'yi bekliyor <- P0 tutuyor\n  ==> Dairesel bekleme (circular wait)"
+        },
+        {
+          "type": "list",
+          "title": "Diger Canlilik Sorunlari",
+          "items": [
+            "Aclik (Starvation / Indefinite Blocking): Bir surecin semafor kuyrugunda sonsuza kadar beklemesi ve hic cikarilmamasi durumudur.",
+            "Oncelik Tersine Cevrilmesi (Priority Inversion): Dusuk oncelikli bir surecin, yuksek oncelikli bir surecin ihtiyac duydugu kilidi tutmasiyla olusan zamanlama sorunudur.",
+            "Oncelik Miras Protokolu (Priority Inheritance Protocol): Oncelik tersine cevrilmesinin cozumudur. Dusuk oncelikli surec, yuksek oncelikli surecin onceligi ile gecici olarak calistirilir."
+          ]
+        },
+        {
+          "type": "analogy",
+          "text": "Kilitlenme (Deadlock): Iki araba dar bir koprunun iki ucundan girmis ve ortada karsilasmus. Ikisi de geri gitmeyi reddediyor ve ikisi de ilerlemiyor. Aclik (Starvation): Bir kuyrukta bekleyen kisi, surekli baskalarinin onune gecirilmesiyle hicbir zaman sirasi gelmiyor. Oncelik Tersine Cevrilmesi: Bir ambulans (yuksek oncelik), onu gecirmesi gereken bir otobusten (dusuk oncelik) dolayi trafige takilmis, cunku otobus baska bir aracin (orta oncelik) gecmesini bekliyor."
+        },
+        {
+          "type": "warning",
+          "text": "Oncelik Tersine Cevrilmesi gercek dunyada ciddi sorunlara yol acmistir. NASA'nin Mars Pathfinder gorevinde (1997) bu sorun nedeniyle uzay araci tekrar tekrar sifirlanmistir. Cozum olarak oncelik miras protokolu (priority inheritance protocol) uygulanmistir."
+        }
+      ]
+    }
+  ],
+  "flashcards": [
+    {
+      "id": "f1",
+      "front": "Yaris Durumu (Race Condition) nedir?",
+      "back": "Birden fazla surecin ayni anda paylasilan bir veriye erisip degistirmeye calismasi ve sonucun erisimlerin gerceklesme sirasina bagli olmasi durumudur. Sonuc tahmin edilemez (non-deterministic) hale gelir."
+    },
+    {
+      "id": "f2",
+      "front": "Kritik Bolum (Critical Section) nedir?",
+      "back": "Her surecin icinde ortak degiskenleri degistirebildigi, tablolari guncelleyebildigi veya dosyalara yazabildigi kod parcasidir. Bir surec kritik bolumde iken, baska hicbir surec kendi kritik bolumunde calisamaz."
+    },
+    {
+      "id": "f3",
+      "front": "Kritik bolum cozumunun 3 gereksinimi nedir?",
+      "back": "1. Karsilikli Dislamama (Mutual Exclusion): Ayni anda tek surec\n2. Ilerleme (Progress): Secim sonsuza kadar ertelenemez\n3. Sinirli Bekleme (Bounded Waiting): Bekleme suresine ust sinir"
+    },
+    {
+      "id": "f4",
+      "front": "Peterson Cozumunde hangi degiskenler kullanilir?",
+      "back": "Iki degisken: 'int turn' (sira kimde) ve 'boolean flag[2]' (hangi surec hazir). flag[i]=true ise Pi kritik bolume girmeye hazirdir. turn degiskeni sira hakkini belirler."
+    },
+    {
+      "id": "f5",
+      "front": "Peterson Cozumu neden modern mimarilerde calismayabilir?",
+      "back": "Islemciler ve derleyiciler performans icin bagimsiz komutlarin sirasini degistirebilir (instruction reordering). Bu yeniden siralama cok threadli programlarda tutarsiz sonuclara yol acar. Cozum: Memory Barrier (bellek bariyeri) kullanmak."
+    },
+    {
+      "id": "f6",
+      "front": "Bellek Bariyeri (Memory Barrier) nedir?",
+      "back": "Bellekteki herhangi bir degisikligin diger tum islemcilere yayilmasini (gorunur hale gelmesini) zorlayan bir komuttur. Tum load ve store islemlerinin tamamlanmasini, sonraki islemler baslamadan once garanti eder."
+    },
+    {
+      "id": "f7",
+      "front": "Guclu Sirali (Strongly Ordered) vs Zayif Sirali (Weakly Ordered) bellek modeli nedir?",
+      "back": "Guclu Sirali: Bir islemcinin bellek degisikligi diger tum islemcilere aninda gorulur.\nZayif Sirali: Bir islemcinin bellek degisikligi diger islemcilere aninda gorunmeyebilir."
+    },
+    {
+      "id": "f8",
+      "front": "test_and_set komutu nasil calisir?",
+      "back": "Atomik olarak calisir: Hedef degiskenin mevcut degerini kaydeder, degiskeni true yapar ve eski degeri dondurur. Eger eski deger false ise surec kilidi almistir, true ise baskasi kilidi tutuyordur."
+    },
+    {
+      "id": "f9",
+      "front": "compare_and_swap (CAS) komutu nasil calisir?",
+      "back": "Atomik olarak calisir: Degiskenin mevcut degerini kontrol eder. Eger beklenen degere (expected) esitse, yeni deger (new_value) ile degistirir. Her zaman eski degeri dondurur. Swap sadece *value == expected ise gerceklesir."
+    },
+    {
+      "id": "f10",
+      "front": "Mutex kilidi (Mutex Lock) nedir?",
+      "back": "Kritik bolumu korumak icin kullanilan en basit senkronizasyon aracidir. Boolean degisken olarak kilidin mevcut olup olmadigini gosterir. acquire() ile kilit alinir, release() ile birakilir. Mesgul bekleme gerektirdigi icin spinlock olarak da adlandirilir."
+    },
+    {
+      "id": "f11",
+      "front": "Spinlock nedir ve ne zaman faydalidir?",
+      "back": "Mesgul bekleme (busy waiting) yapan mutex kilididir - surec kilidi alana kadar dongude doner. Tek islemcili sistemlerde verimsizdir. Ancak cok islemcili sistemlerde, kritik bolum kisa ise context switch maliyetinden daha verimli olabilir."
+    },
+    {
+      "id": "f12",
+      "front": "Semafor (Semaphore) nedir?",
+      "back": "Bir tam sayi (integer) degiskenidir ve yalnizca iki atomik islemle erisilebilir: wait() (P islemi) degeri azaltir, signal() (V islemi) degeri arttirir. Mutex kilitlerinden daha sofistike senkronizasyon saglar."
+    },
+    {
+      "id": "f13",
+      "front": "Sayma Semaforu (Counting) ile Ikili Semafor (Binary) arasindaki fark nedir?",
+      "back": "Sayma Semaforu: Degeri sinirsiz aralikta degisir, birden fazla kaynak erisimini yonetir (orn. 5 yazici).\nIkili Semafor: Degeri sadece 0 ve 1 olabilir, mutex kilidi ile ayni islevi gorur."
+    },
+    {
+      "id": "f14",
+      "front": "Semafor wait() ve signal() islemleri nasil tanimlanir?",
+      "back": "wait(S): while(S<=0); S--; (deger 0 veya negatifse bekle, sonra azalt)\nsignal(S): S++; (degeri artir)\nHer iki islem de atomik olmalidir."
+    },
+    {
+      "id": "f15",
+      "front": "Mesgul beklemesiz semafor nasil uygulanir?",
+      "back": "Her semaforun bir bekleme kuyrugu (waiting queue) vardir. wait() - deger negatifse surec kuyruga eklenir ve block() ile askiya alinir. signal() - deger 0 veya negatifse kuyruktan bir surec cikarilir ve wakeup() ile uyandililir."
+    },
+    {
+      "id": "f16",
+      "front": "Semafor hatalari nelerdir?",
+      "back": "1. signal(mutex) ... wait(mutex): Karsilikli dislamama ihlali\n2. wait(mutex) ... wait(mutex): Deadlock\n3. wait() veya signal() unutulmasi: Karsilikli dislamama ihlali veya deadlock"
+    },
+    {
+      "id": "f17",
+      "front": "Monitor nedir?",
+      "back": "Surec senkronizasyonu icin ust duzey bir soyutlamadir. Soyut veri tipi olup, ic degiskenlere yalnizca monitor icindeki koddan erisilebilir. Ayni anda yalnizca bir surec monitor icinde aktif olabilir. Programcinin hatasini en aza indirger."
+    },
+    {
+      "id": "f18",
+      "front": "Kosul Degiskeni (Condition Variable) nedir?",
+      "back": "Monitor icinde tanimlanan ozel degiskenlerdir. x.wait() - sureci x.signal() cagirilana kadar askiya alir. x.signal() - x.wait() ile askiya alinmis sureclerden birini devam ettirir. Bekleyen surec yoksa signal() etkisizdir."
+    },
+    {
+      "id": "f19",
+      "front": "Monitor ve Semafor arasindaki temel fark nedir?",
+      "back": "Monitor ust duzey bir soyutlamadir ve karsilikli dislammayi otomatik saglar. Semafor ise dusuk duzey bir aragtir ve programcinin wait/signal ciftlerini dogru yerlestirmesi gerekir. Monitorde hata yapma olasiligi daha azdir."
+    },
+    {
+      "id": "f20",
+      "front": "Kilitlenme (Deadlock) nedir?",
+      "back": "Iki veya daha fazla surecin, yalnizca bekleyen sureclerden birinin neden olabilecegi bir olayi sonsuza kadar beklemesidir. Ornegin: P0 kaynak S'yi tutar Q'yu bekler, P1 kaynak Q'yu tutar S'yi bekler -> dairesel bekleme."
+    },
+    {
+      "id": "f21",
+      "front": "Aclik (Starvation) nedir?",
+      "back": "Belirsiz engelleme (indefinite blocking) olarak da bilinir. Bir surecin semafor kuyrugunda sonsuza kadar kalip hic cikarilmamasi durumudur. Surecin hicbir zaman calisma firsati bulamamasidir."
+    },
+    {
+      "id": "f22",
+      "front": "Oncelik Tersine Cevrilmesi (Priority Inversion) nedir ve nasil cozulur?",
+      "back": "Dusuk oncelikli bir surecin, yuksek oncelikli bir surecin ihtiyac duydugu kilidi tutmasiyla olusan zamanlama sorunudur. Cozum: Oncelik Miras Protokolu (Priority Inheritance) - dusuk oncelikli surec gecici olarak yuksek oncelikli surecin onceligi ile calistirilir."
+    },
+    {
+      "id": "f23",
+      "front": "Atomik degisken (Atomic Variable) nedir?",
+      "back": "Tamsayilar ve boolean gibi temel veri tipleri uzerinde atomik (kesilemez) guncellemeler saglayan bir aractir. Genellikle compare_and_swap kullanilarak uygulanir. Ornegin increment(&sequence) komutu sequence degerini kesintisiz arttirir."
+    },
+    {
+      "id": "f24",
+      "front": "Semaforlarla surec siralamasi nasil saglanir?",
+      "back": "0'a baslatilan bir synch semaforu kullanilir:\nP1: S1; signal(synch);  -- S1'i calistir ve sinyal ver\nP2: wait(synch); S2;    -- S1 bitene kadar bekle, sonra S2'yi calistir\nBoylece S1 her zaman S2'den once calisir."
+    },
+    {
+      "id": "f25",
+      "front": "Neden kesintileri devre disi birakmak (disable interrupts) cok islemcili sistemlerde yeterli degildir?",
+      "back": "Kesintileri devre disi birakmak yalnizca o islemcideki kesintileri engeller. Diger islemcilerdeki surecler hala paylasilan veriye erisebilir. Ayrica kritik bolum uzun surerse sistem yanit veremez hale gelir ve olceklenebilir (scalable) degildir."
+    },
+    {
+      "id": "f26",
+      "front": "Mesgul bekleme (Busy Waiting) nedir ve neden sorunludur?",
+      "back": "Bir surecin kilit acilana kadar surekli dongude kontrol etmesidir (while loop). CPU zamanini bosuna harcar ve diger sureclerin calismasini engeller. Tek islemcili sistemlerde ozellikle verimsizdir. Alternatif: Sureci bekleme kuyruguna alip bloke etmek."
+    },
+    {
+      "id": "f27",
+      "front": "Kosullu bekleme (conditional-wait) x.wait(c) ne ise yarar?",
+      "back": "Monitorde birden fazla surec ayni kosul degiskeninde bekliyorsa, x.wait(c) ile her surece bir oncelik numarasi (c) atanir. x.signal() cagirildiginda en dusuk c degerine sahip (en yuksek oncelikli) surec devam ettirilir."
+    }
+  ],
+  "quiz": [
+    {
+      "id": "q1",
+      "question": "Yaris durumu (race condition) ne zaman olusur?",
+      "options": [
+        "A) Surecler sirayla calistiginda",
+        "B) Birden fazla surec ayni anda paylasilan veriye erisip degistirmeye calistiginda",
+        "C) Sadece tek islemcili sistemlerde",
+        "D) Surecler farkli verilere eristiginde"
+      ],
+      "answer": "B",
+      "explanation": "Yaris durumu, birden fazla surecin ayni anda paylasilan veriye erisip degistirmesi ve sonucun erisimlerin sirasina bagli olmasidir.",
+      "difficulty": "easy"
+    },
+    {
+      "id": "q2",
+      "question": "Kritik bolum probleminin uc gereksinimi hangileridir?",
+      "options": [
+        "A) Atomiklik, Tutarlilik, Izolasyon",
+        "B) Karsilikli Dislamama, Ilerleme, Sinirli Bekleme",
+        "C) Gizlilik, Butunluk, Erisilebilirlik",
+        "D) Engelleme, Uyandirma, Zamanlama"
+      ],
+      "answer": "B",
+      "explanation": "Kritik bolum cozumu uc gereksinimi karsilamalidir: Mutual Exclusion (ayni anda tek surec), Progress (secim ertelenemez), Bounded Waiting (beklemeye ust sinir).",
+      "difficulty": "easy"
+    },
+    {
+      "id": "q3",
+      "question": "Peterson cozumunde, Pi sureci kritik bolume ne zaman girer?",
+      "options": [
+        "A) flag[i] = true oldugunda",
+        "B) turn = i oldugunda",
+        "C) flag[j] = false VEYA turn = i oldugunda",
+        "D) flag[j] = true VE turn = j oldugunda"
+      ],
+      "answer": "C",
+      "explanation": "Pi, while(flag[j] && turn==j) dongusu bittikten sonra girer. Bu dongu flag[j]=false VEYA turn=i oldugunda sona erer.",
+      "difficulty": "medium"
+    },
+    {
+      "id": "q4",
+      "question": "test_and_set(&lock) komutu lock=false oldugunda ne dondurur?",
+      "options": [
+        "A) true",
+        "B) false",
+        "C) 0",
+        "D) 1"
+      ],
+      "answer": "B",
+      "explanation": "test_and_set mevcut degeri (false) dondurur ve degiskeni true yapar. false donmesi surecin kilidi basariyla aldigini gosterir.",
+      "difficulty": "medium"
+    },
+    {
+      "id": "q5",
+      "question": "Asagidakilerden hangisi spinlock'un bir avantajidir?",
+      "options": [
+        "A) CPU zamanini verimli kullanir",
+        "B) Tek islemcili sistemlerde idealdir",
+        "C) Cok islemcili sistemlerde kisa kritik bolumler icin context switch maliyetinden kacinir",
+        "D) Deadlock'u onler"
+      ],
+      "answer": "C",
+      "explanation": "Spinlock cok islemcili sistemlerde, kritik bolum kisa oldugunda context switch maliyetinden daha verimli olabilir cunku surec baska islemcide donmeye devam eder.",
+      "difficulty": "medium"
+    },
+    {
+      "id": "q6",
+      "question": "Sayma semaforu (counting semaphore) S=5 olarak baslatildi. 3 surec wait(S) calistirdiktan sonra S'nin degeri nedir?",
+      "options": [
+        "A) 0",
+        "B) 2",
+        "C) 3",
+        "D) 5"
+      ],
+      "answer": "B",
+      "explanation": "Her wait(S) islemi S'yi 1 azaltir. 5 - 3 = 2. Hala 2 surec daha kaynaklara erisebilir.",
+      "difficulty": "easy"
+    },
+    {
+      "id": "q7",
+      "question": "Ikili semafor (binary semaphore) ile mutex kilidi arasindaki iliski nedir?",
+      "options": [
+        "A) Tamamen farkli yapilardir",
+        "B) Ikili semafor mutex kilidi ile ayni islevi gorur",
+        "C) Mutex kilidi daha gucludur",
+        "D) Ikili semafor yalnizca donanim duzeninde calisir"
+      ],
+      "answer": "B",
+      "explanation": "Ikili semaforun degeri sadece 0 ve 1 olabilir, bu da mutex kilidi ile ayni islevi gorur - karsilikli dislamayi saglar.",
+      "difficulty": "easy"
+    },
+    {
+      "id": "q8",
+      "question": "Asagidaki semafor kullanimlarindan hangisi deadlock'a neden olur?",
+      "options": [
+        "A) wait(mutex); CS; signal(mutex);",
+        "B) signal(mutex); CS; wait(mutex);",
+        "C) wait(mutex); CS; wait(mutex);",
+        "D) signal(mutex); CS; signal(mutex);"
+      ],
+      "answer": "C",
+      "explanation": "wait(mutex) iki kez cagrilirsa, ikinci wait sureci sonsuza kadar bloke eder cunku ilk wait mutex'i zaten 0'a dusurmustur. Bu deadlock olusturur.",
+      "difficulty": "medium"
+    },
+    {
+      "id": "q9",
+      "question": "signal(mutex); CS; wait(mutex); seklinde yanlis siralama ne soruna yol acar?",
+      "options": [
+        "A) Deadlock",
+        "B) Karsilikli dislamama ihlali",
+        "C) Sinirli bekleme ihlali",
+        "D) Bellek sizintisi"
+      ],
+      "answer": "B",
+      "explanation": "Once signal cagirilirsa semafor degeri artar ve baska surecler de kritik bolume girebilir. Bu karsilikli dislammayi (mutual exclusion) ihlal eder.",
+      "difficulty": "medium"
+    },
+    {
+      "id": "q10",
+      "question": "Monitorde ayni anda kac surec aktif olabilir?",
+      "options": [
+        "A) Islemci sayisi kadar",
+        "B) Sinirsiz",
+        "C) Yalnizca bir",
+        "D) Prosedur sayisi kadar"
+      ],
+      "answer": "C",
+      "explanation": "Monitor yapisi geregi ayni anda yalnizca bir surec monitor icinde aktif olabilir. Bu otomatik karsilikli dislamami saglar.",
+      "difficulty": "easy"
+    },
+    {
+      "id": "q11",
+      "question": "Kosul degiskeni x uzerinde x.signal() calistirildiginda bekleyen surec yoksa ne olur?",
+      "options": [
+        "A) Hata olusur",
+        "B) Sinyal kaybolur, hicbir etkisi olmaz",
+        "C) Tum surecler uyandililir",
+        "D) Surec bloke olur"
+      ],
+      "answer": "B",
+      "explanation": "Monitordeki kosul degiskenlerinde, x.wait() ile bekleyen surec yoksa x.signal() isleminin hicbir etkisi yoktur - sinyal kaybolur. Bu semafordan farklidir.",
+      "difficulty": "medium"
+    },
+    {
+      "id": "q12",
+      "question": "compare_and_swap(&lock, 0, 1) islemi lock=1 oldugunda ne dondurur ve lock'un degeri ne olur?",
+      "options": [
+        "A) 0 dondurur, lock=1 olur",
+        "B) 1 dondurur, lock=1 kalir",
+        "C) 1 dondurur, lock=0 olur",
+        "D) 0 dondurur, lock=0 olur"
+      ],
+      "answer": "B",
+      "explanation": "CAS, *value (1) != expected (0) oldugu icin swap yapmaz, lock=1 kalir. Eski deger 1 dondurulur. Surec kilidi alamaz ve beklemeye devam eder.",
+      "difficulty": "hard"
+    },
+    {
+      "id": "q13",
+      "question": "Mesgul beklemesiz semafor uygulamasinda S->value = -3 ne anlama gelir?",
+      "options": [
+        "A) 3 kaynak mevcut",
+        "B) Semafor hatali",
+        "C) 3 surec semafor uzerinde bekliyor",
+        "D) Semafor 3 kez kullanilmis"
+      ],
+      "answer": "C",
+      "explanation": "Mesgul beklemesiz uygulamada, value once azaltilir sonra kontrol edilir. Negatif degerin mutlak degeri (|-3| = 3) bekleyen surec sayisini gosterir.",
+      "difficulty": "hard"
+    },
+    {
+      "id": "q14",
+      "question": "Oncelik tersine cevrilmesi (priority inversion) sorununda hangi cozum kullanilir?",
+      "options": [
+        "A) Semafor",
+        "B) Monitor",
+        "C) Oncelik miras protokolu (Priority Inheritance)",
+        "D) Mutex kilidi"
+      ],
+      "answer": "C",
+      "explanation": "Oncelik miras protokolunde, dusuk oncelikli surec gecici olarak yuksek oncelikli surecin onceligi ile calistirilir. Boylece dusuk oncelikli surec hizla isini bitirip kilidi birakir.",
+      "difficulty": "medium"
+    },
+    {
+      "id": "q15",
+      "question": "Asagidakilerden hangisi dogrudur?\nP0: wait(S); wait(Q); signal(S); signal(Q);\nP1: wait(Q); wait(S); signal(Q); signal(S);",
+      "options": [
+        "A) Her zaman dogru calisir",
+        "B) Deadlock olusabilir",
+        "C) Karsilikli dislamama ihlali olusur",
+        "D) Starvation olusur ama deadlock olusaamz"
+      ],
+      "answer": "B",
+      "explanation": "P0 wait(S) ve P1 wait(Q) calistirirsa, P0 Q'yu, P1 S'yi bekler. Her iki surec de diger surecin tuttugu kaynagi bekledigi icin deadlock (dairesel bekleme) olusur.",
+      "difficulty": "hard"
+    },
+    {
+      "id": "q16",
+      "question": "Peterson cozumunde 'turn = j;' satiri neden onemlidir?",
+      "options": [
+        "A) Sadece performans icin",
+        "B) Sirayi diger surece vererek karsilikli dislamayi saglar ve ilerleme gereksinimini karsilar",
+        "C) Bellegi temizlemek icin",
+        "D) Islemciyi uyandirmak icin"
+      ],
+      "answer": "B",
+      "explanation": "turn = j ile surec kibar davranarak sirayi diger surece verir. Bu sayede iki surec ayni anda flag[]=true yapsa bile, turn degiskeni hangisinin once girecegini belirler ve deadlock'u onler.",
+      "difficulty": "hard"
+    },
+    {
+      "id": "q17",
+      "question": "Monitor, semafora gore ne avantaj saglar?",
+      "options": [
+        "A) Daha hizli calisir",
+        "B) Daha az bellek kullanir",
+        "C) Karsilikli dislamayi otomatik saglar, programci hatasini azaltir",
+        "D) Daha fazla sureci destekler"
+      ],
+      "answer": "C",
+      "explanation": "Monitorde karsilikli dislamama otomatik saglanir - programcinin wait/signal ciftlerini dogru yerlestirme zorunlulugu yoktur. Bu, senkronizasyon hatalarini onemli olcude azaltir.",
+      "difficulty": "medium"
+    },
+    {
+      "id": "q18",
+      "question": "Sinirli bekleme (bounded waiting) saglanmazsa ne olabilir?",
+      "options": [
+        "A) Deadlock",
+        "B) Race condition",
+        "C) Starvation (aclik) - bir surec sonsuza kadar bekleyebilir",
+        "D) Buffer overflow"
+      ],
+      "answer": "C",
+      "explanation": "Sinirli bekleme saglanmazsa, bir surec kritik bolume girmek icin istekte bulunmasina ragmen diger surecler surekli once girebilir ve bu surec sonsuza kadar bekleyebilir (starvation/aclik).",
+      "difficulty": "medium"
+    },
+    {
+      "id": "q19",
+      "question": "Asagidaki kodda Thread 1'in ciktisi ne olabilir (memory barrier OLMADAN)?\nThread 2: x = 100; flag = true;\nThread 1: while(!flag); print x;",
+      "options": [
+        "A) Her zaman 100",
+        "B) Her zaman 0",
+        "C) 100 veya 0 (belirsiz)",
+        "D) Hata verir"
+      ],
+      "answer": "C",
+      "explanation": "Derleyici veya islemci, bagimsiz olan x=100 ve flag=true komutlarinin sirasini degistirebilir. flag=true once calisirsa, Thread 1 henuz x atanmadan x'i okuyabilir ve 0 yazdirilabilir.",
+      "difficulty": "hard"
+    },
+    {
+      "id": "q20",
+      "question": "Mesgul beklemesiz semafor uygulamasinda wait() islemi sureci ne zaman bloke eder?",
+      "options": [
+        "A) S->value > 0 oldugunda",
+        "B) S->value < 0 oldugunda (azaltma isleminden sonra)",
+        "C) S->value == 0 oldugunda",
+        "D) Her zaman bloke eder"
+      ],
+      "answer": "B",
+      "explanation": "wait() islemi once S->value'yu azaltir. Azaltma sonrasi S->value < 0 ise surec bekleme kuyruguna eklenir ve block() ile askiya alinir.",
+      "difficulty": "hard"
+    }
+  ],
+  "fillBlanks": [
+    {
+      "id": "fb1",
+      "textWithBlanks": "Birden fazla surecin ayni anda paylasilan veriye erisip degistirmesi ve sonucun erisimlerin sirasina bagli olmasi durumuna _____ denir.",
+      "answer": "yaris durumu (race condition)",
+      "hint": "Surecler arasinda bir 'yaris' olusur"
+    },
+    {
+      "id": "fb2",
+      "textWithBlanks": "Kritik bolum cozumunun uc gereksinimi: _____, Ilerleme (Progress) ve Sinirli Bekleme (Bounded Waiting) dir.",
+      "answer": "Karsilikli Dislamama (Mutual Exclusion)",
+      "hint": "Ayni anda sadece bir surec kritik bolumde olabilir"
+    },
+    {
+      "id": "fb3",
+      "textWithBlanks": "Peterson cozumunde iki paylasilan degisken kullanilir: sirayi gosteren _____ ve sureclerin hazir olup olmadigini gosteren flag[] dizisi.",
+      "answer": "turn",
+      "hint": "Hangi surecin sirasi oldugunu belirleyen tam sayi degisken"
+    },
+    {
+      "id": "fb4",
+      "textWithBlanks": "Bellek degisikliklerinin diger islemcilere yayilmasini zorlayan donanim komutuna _____ denir.",
+      "answer": "bellek bariyeri (memory barrier/fence)",
+      "hint": "Komut yeniden siralamasi sorununu cozer"
+    },
+    {
+      "id": "fb5",
+      "textWithBlanks": "Mutex kilidi mesgul bekleme gerektirdigi icin _____ olarak da adlandirilir.",
+      "answer": "spinlock (donen kilit)",
+      "hint": "Surec kilit acilana kadar 'doner'"
+    },
+    {
+      "id": "fb6",
+      "textWithBlanks": "Semafor uzerindeki iki atomik islem _____ ve _____ dir. Bunlarin orijinal adlari P() ve V() seklindedir.",
+      "answer": "wait() ve signal()",
+      "hint": "Biri degeri azaltir (bekle), digeri arttirir (sinyal ver)"
+    },
+    {
+      "id": "fb7",
+      "textWithBlanks": "Degeri yalnizca 0 ve 1 arasinda degisebilen semafora _____ denir ve mutex kilidi ile ayni islevi gorur.",
+      "answer": "ikili semafor (binary semaphore)",
+      "hint": "Iki degerli semafor"
+    },
+    {
+      "id": "fb8",
+      "textWithBlanks": "Iki veya daha fazla surecin, birbirlerinin tuttugu kaynaklari karsilikli olarak beklemesi durumuna _____ denir.",
+      "answer": "kilitlenme (deadlock)",
+      "hint": "Dairesel bekleme durumu"
+    },
+    {
+      "id": "fb9",
+      "textWithBlanks": "Dusuk oncelikli surecin yuksek oncelikli surecin kilidi tutmasi sorununa _____ denir ve _____ ile cozulur.",
+      "answer": "oncelik tersine cevrilmesi (priority inversion) ve oncelik miras protokolu (priority inheritance protocol)",
+      "hint": "Mars Pathfinder gorevinde yasanan sorun"
+    },
+    {
+      "id": "fb10",
+      "textWithBlanks": "Monitor icinde tanimlanan ve x.wait() ile x.signal() islemlerini destekleyen ozel degiskenlere _____ denir.",
+      "answer": "kosul degiskenleri (condition variables)",
+      "hint": "Belirli bir kosulun gerceklesmesini beklemeyi saglar"
+    },
+    {
+      "id": "fb11",
+      "textWithBlanks": "compare_and_swap komutu degiskeni sadece mevcut deger _____ degerine esit oldugunda degistirir.",
+      "answer": "beklenen (expected)",
+      "hint": "CAS'in ikinci parametresi"
+    },
+    {
+      "id": "fb12",
+      "textWithBlanks": "Mesgul beklemesiz semafor uygulamasinda, sureci bekleme kuyruguna yerlestiren islem _____ ve kuyruktan cikarip hazir kuyruguna yerlestiren islem _____ dir.",
+      "answer": "block() ve wakeup()",
+      "hint": "Surecin durumunu degistiren iki islem"
+    }
+  ],
+  "examQuestions": [
+    {
+      "id": "ch6-ex1",
+      "type": "algorithm",
+      "points": 4,
+      "question": "Iki surec P0 ve P1, iki semafor S1 ve S2 kullanarak critical section (CS) uzerinde mutual exclusion saglamak istiyor. Asagidaki algoritmada bosluklar ne olmali?\n\nS1 = ???, S2 = ???\n\nP0: wait(??); wait(??); CS; signal(??); signal(??)\nP1: wait(??); wait(??); CS; signal(??); signal(??)",
+      "context": "Initial values: S1=??, S2=??\n\nAlg for P0:          Alg for P1:\nwait(??);            wait(??);  \nwait(??);            wait(??);  \nCS;                  CS;\nsignal(??);          signal(??);  \nsignal(??);          signal(??);",
+      "solution": "S1 = 1, S2 = 1\n\nP0: wait(S1); wait(S2); CS; signal(S2); signal(S1)\nP1: wait(S1); wait(S2); CS; signal(S2); signal(S1)\n\nONEMLI: Her iki surec de semafollari AYNI SIRADA alip birakmali (S1 once, S2 sonra). Aksi halde deadlock olusur!\n\nYanlis cozum (DEADLOCK): P0: wait(S1);wait(S2) ve P1: wait(S2);wait(S1) -> circular wait!",
+      "steps": [
+        "S1=1, S2=1 (binary semaphore, baslangicta ikisi de acik)",
+        "Her iki surec once S1 sonra S2 alir (ayni sira = no deadlock)",
+        "CS tamamlaninca once S2 sonra S1 serbest birakilir (LIFO sira)",
+        "Ayni sira kullanilmazsa circular wait -> deadlock olur"
+      ]
+    },
+    {
+      "id": "ch6-ex2",
+      "type": "calculation",
+      "points": 4,
+      "question": "Iki thread T1 ve T2 paylasimli degisken X=5 uzerinde calisiyor.\nT1: X = X + 3\nT2: X = X * 2\n\nHer islem 3 adimdan olusur: (1) load X, (2) compute, (3) store X\nOlasi tum sonuclari (interleaving) bulun.",
+      "solution": "Olasi sonuclar: 16, 13, 10\n\n1. T1 once, T2 sonra: X=5 -> X=5+3=8 -> X=8*2=16\n2. T2 once, T1 sonra: X=5 -> X=5*2=10 -> X=10+3=13\n3. T1 load(5), T2 load(5), T1 store(8), T2 store(10): X=10\n4. T1 load(5), T2 load(5), T2 store(10), T1 store(8): X=8\n5. T2 load(5), T1 tamamla(8), T2 store(10): X=10\n\nToplam olasi degerler: {8, 10, 13, 16}",
+      "steps": [
+        "Sequential T1->T2: 5+3=8, 8*2=16",
+        "Sequential T2->T1: 5*2=10, 10+3=13",
+        "Interleaved: T1 load(5), T2 load(5), compute, store sirasi degisir",
+        "T1 store son olursa: X=8 (T2 sonucu kaybolur)",
+        "T2 store son olursa: X=10 (T1 sonucu kaybolur)",
+        "Race condition! Sonuc: {8, 10, 13, 16}"
+      ]
+    },
+    {
+      "id": "ch6-ex3",
+      "type": "shortanswer",
+      "points": 4,
+      "question": "Critical section probleminin 3 gereksinimini (requirement) yazin ve her birini kisa aciklayin.",
+      "solution": "1. Mutual Exclusion (Karsilikli Dislanma): Bir surec CS'deyse, baska hicbir surec CS'ye giremez.\n\n2. Progress (Ilerleme): CS'de hicbir surec yoksa ve giris yapmak isteyen surecler varsa, giris yapacak surec sonlu zamanda secilmelidir. Remainder section'daki surecler bu karara katilmaz.\n\n3. Bounded Waiting (Sinirli Bekleme): Bir surec CS'ye girme istegi yaptiktan sonra, diger sureclerin CS'ye girebilecegi sayida bir ust sinir olmalidir. Starvation olmamalidi.",
+      "steps": [
+        "Mutual Exclusion: ayni anda sadece 1 surec CS'de",
+        "Progress: karar vermekten kacinilmaz, secim sonlu zamanda olur",
+        "Bounded Waiting: starvation yok, bekleme sinirli"
+      ]
+    },
+    {
+      "id": "ch6-ex4",
+      "type": "truefalse",
+      "points": 2,
+      "question": "Mutex lock ile binary semaphore tamamen ayni seydir.",
+      "solution": "YANLIS (False). Benzer olsalar da farklari vardir:\n1. Mutex: sadece kilidi alan thread acabilir (ownership var). Semaphore: herhangi bir thread signal yapabilir.\n2. Mutex: sadece 0 veya 1. Counting semaphore: 0'dan buyuk deger alabilir.\n3. Mutex: oncelikli ters cevrilme (priority inversion) icin priority inheritance destekleyebilir."
+    },
+    {
+      "id": "ch6-ex5",
+      "type": "truefalse",
+      "points": 2,
+      "question": "Peterson's solution, modern multiprocessor sistemlerde dogru calismasi garanti degildir.",
+      "solution": "DOGRU (True). Modern islemciler performans icin instruction reordering yapar. Peterson's solution'daki flag ve turn degiskenlerine yapilan yazmalarin sirasiDegistirilirse, mutual exclusion bozulabilir. Bu nedenle memory barriers/fences kullanilmasi gerekir."
+    },
+    {
+      "id": "ch6-ex6",
+      "type": "shortanswer",
+      "points": 4,
+      "question": "Mutual exclusion (karsilikli dislanma) nedir? Neden gereklidir? Olmaz ise ne olur?",
+      "solution": "Mutual exclusion, paylasimli kaynaklara (shared resources) ayni anda sadece bir surecin/threadin erisebilmesini saglayan mekanizmadir.\n\nGerekliligi: Birden fazla surec/thread ayni anda paylasimli verileri okuyup yazarsa race condition olusur. Veri tutarsizligi (data inconsistency) meydana gelir.\n\nOrnek: Iki thread ayni banka hesabindan para cekerse, bakiye yanlis guncellenebilir. Mutual exclusion olmadan sonuc non-deterministic olur."
+    }
+  ]
+}
