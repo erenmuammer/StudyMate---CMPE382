@@ -39,8 +39,8 @@ export function ProgressProvider({ children }) {
       let chProgress = 0
       if (p.summaryRead) chProgress += 25
       if (p.flashcardsCompleted > 0) chProgress += 25
-      if (p.quizScores.length > 0) chProgress += 25
-      if (p.fillBlankScores.length > 0) chProgress += 25
+      if (p.quizScores?.length > 0) chProgress += 25
+      if (p.fillBlankScores?.length > 0) chProgress += 25
       total += chProgress
     })
     return Math.round(total / chapters.length)
