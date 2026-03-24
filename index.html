@@ -10,7 +10,21 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   </head>
   <body class="bg-slate-950 text-slate-100" style="background-color:#0F172A;color:#f1f5f9;margin:0">
-    <div id="root" style="min-height:100vh"></div>
+    <div id="root" style="min-height:100vh">
+      <div style="display:flex;align-items:center;justify-content:center;height:100vh;color:#94a3b8;font-family:sans-serif">Yukleniyor...</div>
+    </div>
     <script type="module" src="/src/main.jsx"></script>
+    <script>
+      window.addEventListener('error', function(e) {
+        document.getElementById('root').innerHTML =
+          '<div style="padding:40px;color:#f87171;font-family:monospace;max-width:600px;margin:auto;margin-top:100px">' +
+          '<h2 style="color:#f1f5f9">Bir hata olustu</h2>' +
+          '<p>' + e.message + '</p>' +
+          '<p style="color:#64748b;font-size:12px">' + (e.filename || '') + ':' + (e.lineno || '') + '</p>' +
+          '<p style="color:#64748b;font-size:12px;margin-top:16px">Tarayici: ' + navigator.userAgent + '</p>' +
+          '<button onclick="location.reload()" style="margin-top:16px;padding:8px 16px;background:#06B6D4;color:white;border:none;border-radius:8px;cursor:pointer">Yeniden Dene</button>' +
+          '</div>';
+      });
+    </script>
   </body>
 </html>
