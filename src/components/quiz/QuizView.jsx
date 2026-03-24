@@ -20,7 +20,7 @@ export default function QuizView() {
   const { addXp } = useGameState()
 
   useEffect(() => {
-    const map = { ch1: 'ch1-introduction', ch2: 'ch2-os-structures', ch3: 'ch3-processes', ch4: 'ch4-threads', ch5: 'ch5-scheduling', ch6: 'ch6-synchronization', ch7: 'ch7-deadlock', ch8: 'ch8-memory' }
+    const map = { ch1: 'ch1-introduction', ch2: 'ch2-os-structures', ch3: 'ch3-processes', ch4: 'ch4-threads', ch6: 'ch6-synchronization', sup1: 'supplement-linux-cli' }
     import(`../../data/chapters/${map[chapterId] || chapterId}.json`)
       .then(mod => {
         setChapter(mod.default)

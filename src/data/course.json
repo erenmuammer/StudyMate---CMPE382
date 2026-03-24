@@ -37,14 +37,6 @@
       "dataFile": "ch4-threads"
     },
     {
-      "id": "ch5",
-      "title": "CPU Zamanlama",
-      "titleEn": "CPU Scheduling",
-      "subtitle": "FCFS, SJF, RR, Priority Scheduling",
-      "color": "#06B6D4",
-      "dataFile": "ch5-scheduling"
-    },
-    {
       "id": "ch6",
       "title": "Senkronizasyon",
       "titleEn": "Synchronization",
@@ -53,20 +45,12 @@
       "dataFile": "ch6-synchronization"
     },
     {
-      "id": "ch7",
-      "title": "Kilitlenme",
-      "titleEn": "Deadlock",
-      "subtitle": "Deadlock Onleme ve Banker's Algorithm",
-      "color": "#EF4444",
-      "dataFile": "ch7-deadlock"
-    },
-    {
-      "id": "ch8",
-      "title": "Bellek Yonetimi",
-      "titleEn": "Memory Management",
-      "subtitle": "Paging, Fragmentation, EAT",
+      "id": "sup1",
+      "title": "Linux Komut Satiri",
+      "titleEn": "Linux CLI (Supplement 1)",
+      "subtitle": "Temel Linux Komutlari",
       "color": "#14B8A6",
-      "dataFile": "ch8-memory"
+      "dataFile": "supplement-linux-cli"
     }
   ]
 }

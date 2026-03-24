@@ -1,0 +1,532 @@
+{
+  "id": "sup1",
+  "title": "Linux Komut Satiri (Linux CLI)",
+  "titleEn": "Linux CLI (Supplement 1)",
+  "sections": [
+    {
+      "id": "sup1-s1",
+      "title": "CLI'ye Giris (Introduction to Command Line Interface)",
+      "content": [
+        { "type": "paragraph", "text": "Linux, genis bir isletim sistemi ailesine verilen ortak isimdir. Ubuntu, Mint, Debian, Open-SUSE, Fedora gibi 100'den fazla Linux tabanli isletim sistemi (Linux-based operating system) bulunmaktadir." },
+        { "type": "paragraph", "text": "Komut Satiri Arayuzu (Command Line Interface - CLI), Linux uzerinde cesitli gorevleri gerceklestirmek icin kullanilan guclu bir aractir. Kullanici klavyeden bir komut (command) girer, bilgisayar bu komutu yurutur ve cikti (output) goruntulenir veya ek girdi (input) istenir." },
+        { "type": "keypoint", "text": "CLI'ye 'Console' veya 'Terminal' uygulamasi uzerinden erisilebilir. KDE masaustunde 'Konsole' uygulamasini arayarak acabilirsiniz." },
+        { "type": "paragraph", "text": "Terminali actiginizda siyah bir ekran ve bir 'prompt line' (komut istemi satiri) gorursunuz. Komutlarinizi bu satira yazabilirsiniz." },
+        { "type": "warning", "text": "Eger bir komut calistirdiktan sonra komut istemi (prompt) geri gelmezse (program donguye girmis olabilir), Ctrl-C tusuna basarak mevcut programi durdurabilir ve komut istemine geri donebilirsiniz." },
+        { "type": "analogy", "text": "CLI, bilgisayarla dogrudan konusmak gibidir. GUI (Graphical User Interface) resimlerle iletisim kurarken, CLI yaziyla iletisim kurar - daha hizli ve daha gucludur." }
+      ]
+    },
+    {
+      "id": "sup1-s2",
+      "title": "Temel Komutlar (Basic Commands)",
+      "content": [
+        { "type": "paragraph", "text": "Linux CLI'de kullanabileceginiz temel komutlar (basic commands) sunlardir:" },
+        { "type": "list", "items": [
+          "date - Guncel tarih ve saati (current date and time) goruntular",
+          "whoami - Mevcut kullanici adini (current username) goruntular",
+          "cal - Bir takvim (calendar) goruntular",
+          "uptime - Sistemin ne kadar suredir calistigini (system uptime) goruntular",
+          "echo - Belirtilen metni ekrana yazdirir (prints text to screen)"
+        ]},
+        { "type": "code", "language": "bash", "code": "date\nwhoami\ncal\nuptime", "caption": "Temel bilgi komutlari (Basic information commands)" },
+        { "type": "code", "language": "bash", "code": "echo Hello World\necho $USER\necho Hello $USER\necho Two plus five is $((2+5))", "caption": "echo komutu ornekleri - $USER degiskeni kullanici adini gosterir, $(()) ile matematik islemi yapilabilir" },
+        { "type": "keypoint", "text": "echo komutu sadece metin yazdirmaz, ayni zamanda degiskenler ($USER) ve matematik islemleri ($((2+5))) ile de kullanilabilir." }
+      ]
+    },
+    {
+      "id": "sup1-s3",
+      "title": "Dosyalarla Calisma (Working With Files)",
+      "content": [
+        { "type": "paragraph", "text": "echo komutu metin dosyalari (text files) olusturmak icin de kullanilabilir. Yonlendirme operatorleri (redirection operators) olan > ve >> ile ciktiyi dosyaya yonlendirebilirsiniz." },
+        { "type": "code", "language": "bash", "code": "echo file fopen stdio.h > list.txt\necho int pipe unistd.h >> list.txt\necho void malloc stdlib.h >> list.txt", "caption": "Dosya olusturma ve ekleme - > yeni dosya olusturur, >> mevcut dosyaya ekler" },
+        { "type": "keypoint", "text": "'>' operatoru dosyanin tum icerigini siler ve bastan yazar (overwrite). '>>' operatoru ise mevcut icerigi koruyarak dosyanin sonuna ekler (append). Bu, C dilindeki fopen() fonksiyonunun 'w' ve 'a' modlarina benzer." },
+        { "type": "paragraph", "text": "Dosyalarla calismak icin kullanilan temel komutlar:" },
+        { "type": "list", "items": [
+          "ls - Mevcut dizindeki dosya ve dizinleri listeler (list files and directories)",
+          "cat dosya.txt - Dosyanin icerigini goruntular (display file contents)",
+          "wc dosya.txt - Kelime, satir ve karakter sayisini gosterir (word, line, character count)",
+          "grep kelime dosya.txt - Dosyada belirtilen kelimeyi arar (search for a word in file)",
+          "sort dosya.txt - Dosyayi alfabetik siralar (sort alphabetically)",
+          "cp kaynak.txt hedef.txt - Dosyayi kopyalar (copy file)",
+          "mv eski.txt yeni.txt - Dosyayi yeniden adlandirir veya tasir (rename/move file)"
+        ]},
+        { "type": "code", "language": "bash", "code": "wc list.txt\ngrep stdio list.txt\nsort list.txt\nsort list.txt > sorted.txt\ncp list.txt os.txt\nmv os.txt fun.txt", "caption": "Dosya islemleri ornekleri (File operations examples)" },
+        { "type": "analogy", "text": "Yonlendirme operatorleri su sekilde dusunulebilir: '>' bir bardagi bosaltip yeniden doldurur, '>>' ise bardaga uzerine ekleme yapar." }
+      ]
+    },
+    {
+      "id": "sup1-s4",
+      "title": "Dizinlerle Calisma (Working With Directories)",
+      "content": [
+        { "type": "paragraph", "text": "Linux tabanli isletim sistemlerinde dosyalar ve dizinler (files and directories) hiyerarsik bir yapida (hierarchical structure) saklanir. Kok dizin (root directory) '/' ile gosterilir ve altinda bin, boot, home, usr, var gibi dizinler bulunur." },
+        { "type": "keypoint", "text": "Terminali ilk actiginizda genellikle ev dizininizde (home directory) baslarsiniz. Bu dizin '/home/' altinda yer alir (ornegin /home/abc/, /home/student/). Hesabiniza ait tum dosyalar burada saklanir." },
+        { "type": "code", "language": "bash", "code": "pwd\nls\ncd Desktop\nmkdir lab1\nls\ncd lab1\npwd\ncd ..", "caption": "Dizin gezinme komutlari (Directory navigation commands)" },
+        { "type": "list", "items": [
+          "pwd - Mevcut calisma dizinini gosterir (print working directory)",
+          "ls - Dizin icerigini listeler (list directory contents)",
+          "cd dizin - Belirtilen dizine gecer (change directory)",
+          "cd .. - Ust dizine (parent directory) gecer",
+          "mkdir dizin - Yeni dizin olusturur (make directory)"
+        ]},
+        { "type": "code", "language": "bash", "code": "mv fun.txt Desktop/lab1/\nmv sorted.txt Desktop/lab1/", "caption": "Dosyalari baska dizinlere tasima (Moving files to other directories)" },
+        { "type": "analogy", "text": "Linux dosya sistemi bir agac gibidir: kok (root '/') en ustte, dallar (dizinler) asagiya dogru uzanir ve yapraklar (dosyalar) dallarin ucundadir." }
+      ]
+    },
+    {
+      "id": "sup1-s5",
+      "title": "Dosya ve Dizin Silme (Removing Files and Directories)",
+      "content": [
+        { "type": "paragraph", "text": "Dosya ve dizinleri silmek icin rm ve rmdir komutlari kullanilir." },
+        { "type": "code", "language": "bash", "code": "rm fun.txt\nrm sorted.txt\ncd ..\nrmdir lab1", "caption": "Dosya ve dizin silme ornekleri (Removing files and directories)" },
+        { "type": "list", "items": [
+          "rm dosya.txt - Dosyayi siler (remove file)",
+          "rmdir dizin - Bos dizini siler (remove empty directory)"
+        ]},
+        { "type": "warning", "text": "rmdir komutu yalnizca tamamen bos olan dizinleri silebilir. Dikkatli olun! rm ve rmdir komutlari dosya ve dizinleri ANINDA ve kalici olarak siler (permanently delete) - geri alamazsiniz!" },
+        { "type": "keypoint", "text": "Linux'ta GUI'deki gibi bir 'Cop Kutusu' (Recycle Bin) yoktur. rm ile silinen dosyalar geri getirilemez." }
+      ]
+    },
+    {
+      "id": "sup1-s6",
+      "title": "Yardim Alma (Getting Help)",
+      "content": [
+        { "type": "paragraph", "text": "Herhangi bir komut hakkinda detayli yardim belgesi (help document) almak icin man (manual) komutu kullanilir." },
+        { "type": "code", "language": "bash", "code": "man ls\nman 3 printf\nman 3 scanf\nman 3 strcpy", "caption": "man komutu ile yardim alma (Getting help with man command)" },
+        { "type": "keypoint", "text": "man sayfasinda ok tuslariyla yukari/asagi gezinebilirsiniz. Cikis icin 'q' tusuna basin. 'man 3 fonksiyon' ile C programlama fonksiyonlarinin belgelerine de erisebilirsiniz." },
+        { "type": "analogy", "text": "man komutu Linux'un dahili ansiklopedisidir - her komutun kullanim kilavuzunu (user manual) icerir." }
+      ]
+    },
+    {
+      "id": "sup1-s7",
+      "title": "Dosya Izinleri (File Permissions)",
+      "content": [
+        { "type": "paragraph", "text": "'ls -l' komutu dosya ve dizinler hakkinda detayli bilgi (detailed information) listeler: izinler (permissions), sahip (owner), grup (group), boyut (size), tarih (date) ve dosya adi (filename)." },
+        { "type": "code", "language": "bash", "code": "ls -l\n# Ornek cikti:\n# drwxr-xr-x 5 student student 20480 May 21 13:47 Desktop\n# -rw-r----- 1 student student   141 Feb 12 10:50 list.txt", "caption": "ls -l komutu ile detayli dosya listesi (Detailed file listing)" },
+        { "type": "paragraph", "text": "Izinler (permissions) 4 parcaya ayrilir:" },
+        { "type": "list", "items": [
+          "Ilk karakter: Dosya tipi (file type) - '-' normal dosya, 'd' dizin (directory)",
+          "Sonraki 3 karakter: Sahip (user/owner) izinleri - okuma (read=4), yazma (write=2), calistirma (execute=1)",
+          "Sonraki 3 karakter: Grup (group) izinleri",
+          "Son 3 karakter: Diger kullanicilar (others) izinleri"
+        ]},
+        { "type": "keypoint", "text": "Erisim Modu (Access Mode) sayisal olarak hesaplanir: r=4, w=2, x=1. Ornegin 'rw-r-----' icin: sahip=4+2+0=6, grup=4+0+0=4, diger=0+0+0=0, yani mod 640'tir." },
+        { "type": "code", "language": "bash", "code": "chmod 400 list.txt    # Sadece sahip icin okuma (read only for owner)\nchmod 644 list.txt    # Sahip: okuma+yazma, grup ve diger: okuma (owner: rw, group+others: r)\nchmod 000 list.txt    # Tum erisimi kaldir (remove all access)\nchmod +r list.txt     # Herkese okuma izni ver (give read to all)\nchmod u+w list.txt    # Sahibe yazma izni ver (give write to owner)\nchmod o-r list.txt    # Diger kullanicilardan okuma iznini kaldir (remove read from others)", "caption": "chmod komutu ile izin degistirme ornekleri (Changing permissions with chmod)" },
+        { "type": "analogy", "text": "Dosya izinleri bir binanin anahtar sistemi gibidir: sahip (owner) ana anahtara, grup (group) bolum anahtarina, digerler (others) ise misafir kartina sahiptir." }
+      ]
+    },
+    {
+      "id": "sup1-s8",
+      "title": "Komut Satiri Betikleri (Command Line Scripts)",
+      "content": [
+        { "type": "paragraph", "text": "Komutlari tek tek girmek yerine, bir betik dosyasina (script file) kaydedip topluca calistirabilirsiniz. Betik dosyalari .sh uzantisi ile kaydedilir." },
+        { "type": "code", "language": "bash", "code": "#!/bin/bash\n\n# Kullaniciyi selamlayan ve dizin/tarih gosteren betik\necho \"Hello $USER! You are now in:\"\npwd\necho \"The date and time is:\"\ndate", "caption": "Basit bir bash betigi ornegi (Simple bash script example) - hello.sh" },
+        { "type": "code", "language": "bash", "code": "cd Desktop\nchmod +x hello.sh\n./hello.sh", "caption": "Betigi calistirmak icin: dizine gec, calistirma izni ver, calistir (Execute script)" },
+        { "type": "keypoint", "text": "Her betik dosyasi '#!/bin/bash' satiri (shebang) ile baslamalidir. Bu satir, betigin hangi yorumlayici (interpreter) ile calistirilacagini belirtir." },
+        { "type": "paragraph", "text": "Betiklerde degisken (variable) tanimlayabilirsiniz:" },
+        { "type": "code", "language": "bash", "code": "#!/bin/bash\nCOURSE=\"CMPE 382\"\necho \"My favorite course is $COURSE\"", "caption": "Betiklerde degisken kullanimi (Using variables in scripts)" },
+        { "type": "code", "language": "bash", "code": "#!/bin/bash\n# 'cmpe' ile baslayan ama 'cmpe2' ile baslamayan dosyalari listele\nfor i in *; do\n  if [[ $i == cmpe* && $i != cmpe2* ]]; then echo $i;\n  fi\ndone", "caption": "Dongu ve kosul iceren betik ornegi (Script with loop and condition) - cmpelist.sh" },
+        { "type": "warning", "text": "Bir betik dosyasini calistirmadan once chmod +x ile calistirma izni (execute permission) vermeyi unutmayin!" }
+      ]
+    },
+    {
+      "id": "sup1-s9",
+      "title": "C/C++ Programlarini Derleme (Compiling C/C++ Programs)",
+      "content": [
+        { "type": "paragraph", "text": "Linux'ta C programlama dili ile program gelistirebilirsiniz. gcc komutu (GNU C Compiler), C kaynak kodunu (source code) calistirilabilir makine koduna (executable machine code) cevirir." },
+        { "type": "code", "language": "bash", "code": "gcc hello.c -o helloworld\n./helloworld", "caption": "C programi derleme ve calistirma (Compiling and running a C program)" },
+        { "type": "list", "items": [
+          "gcc kaynak.c -o program - C dosyasini derler ve 'program' adinda calistirilabilir dosya olusturur",
+          "g++ kaynak.cpp -o program - C++ dosyasini derler (C++ icin 'cc' veya 'cpp' uzantisi kullanilmali)",
+          "gcc source1.c source2.c -o program - Birden fazla kaynak dosyayi birlikte derler (compile multiple source files)"
+        ]},
+        { "type": "keypoint", "text": "gcc'den uyari mesaji (warning) alirseniz kodunuz derlenmis demektir ama duzgun calismayabilir. Hata mesaji (error message) alirseniz kodunuz derlenmemistir - hatalari duzeltmek zorunludur." },
+        { "type": "warning", "text": "C++ programlari icin gcc degil, g++ kullanmalisiniz. Kaynak dosyanin uzantisi '.cc' veya '.cpp' olmalidir." }
+      ]
+    },
+    {
+      "id": "sup1-s10",
+      "title": "Komut Satiri Argumlanlari (Command Line Arguments in C/C++)",
+      "content": [
+        { "type": "paragraph", "text": "Program calistirirken kullanilan ek anahtar kelimeler (keywords) Komut Satiri Argumanlari (Command Line Arguments) olarak adlandirilir. Ornegin 'ls -l' komutunda '-l' bir argumandir." },
+        { "type": "code", "language": "c", "code": "#include <stdio.h>\nint main(int argc, char** argv) {\n  int i;\n  for (i = 0; i < argc; ++i) {\n    printf(\"argv[%d] = %s\\n\", i, argv[i]);\n  }\n  return 0;\n}", "caption": "C'de komut satiri argumanlarini isleme ornegi (Handling command line arguments in C)" },
+        { "type": "code", "language": "bash", "code": "gcc arguments.c -o arguments\n./arguments\n./arguments hello world\n./arguments cmpe382 \"operating systems\"", "caption": "Programi farkli argumanlarla calistirma (Running with different arguments)" },
+        { "type": "keypoint", "text": "argc argueman sayisini (argument count), argv ise arguman dizisini (argument vector) tutar. argv[0] her zaman programin kendi adidir." },
+        { "type": "warning", "text": "Tum komut satiri argumanlari string (metin) olarak gelir. Sayi olarak kullanmak icin atoi() veya atof() fonksiyonlari ile donusum (conversion) yapmaniz gerekir." }
+      ]
+    }
+  ],
+  "flashcards": [
+    { "id": "sup1-fc1", "front": "Linux'ta Komut Satiri Arayuzu'ne (CLI) nasil erisilir?", "back": "'Console', 'Terminal' veya 'Konsole' uygulamalari araciligiyla erisilir.", "difficulty": "easy" },
+    { "id": "sup1-fc2", "front": "'date' komutu ne yapar?", "back": "Sistemin guncel tarih ve saatini (current date and time) goruntular.", "difficulty": "easy" },
+    { "id": "sup1-fc3", "front": "'whoami' komutu ne yapar?", "back": "Mevcut oturum acmis kullanicinin kullanici adini (username) goruntular.", "difficulty": "easy" },
+    { "id": "sup1-fc4", "front": "'echo' komutu ne ise yarar?", "back": "Belirtilen metni veya degiskenleri ekrana yazdirir. Ornegin: echo Hello $USER", "difficulty": "easy" },
+    { "id": "sup1-fc5", "front": "'>' ve '>>' yonlendirme operatorleri (redirection operators) arasindaki fark nedir?", "back": "'>' dosyanin icerigini siler ve bastan yazar (overwrite). '>>' mevcut icerigi koruyarak dosyanin sonuna ekler (append).", "difficulty": "medium" },
+    { "id": "sup1-fc6", "front": "'cat' komutu ne yapar?", "back": "Bir dosyanin icerigini ekranda goruntular (display file contents). Ornek: cat list.txt", "difficulty": "easy" },
+    { "id": "sup1-fc7", "front": "'wc' komutu ne yapar?", "back": "Bir dosyadaki kelime (word), satir (line) ve karakter (character) sayisini gosterir. Ornek: wc list.txt", "difficulty": "easy" },
+    { "id": "sup1-fc8", "front": "'grep' komutu ne yapar?", "back": "Bir dosyada belirtilen kelimeyi veya deseni (pattern) arar ve eslesen satirlari goruntular. Ornek: grep stdio list.txt", "difficulty": "easy" },
+    { "id": "sup1-fc9", "front": "'sort' komutu ne yapar?", "back": "Dosyanin satirlarini alfanumerik olarak siralar (sort alphanumerically). Ciktiyi dosyaya yonlendirmek icin: sort list.txt > sorted.txt", "difficulty": "easy" },
+    { "id": "sup1-fc10", "front": "'cp' ve 'mv' komutlari arasindaki fark nedir?", "back": "'cp' dosyayi kopyalar (copy) - orijinal dosya kalir. 'mv' dosyayi tasir (move) veya yeniden adlandirir (rename) - orijinal dosya kalmaz.", "difficulty": "medium" },
+    { "id": "sup1-fc11", "front": "'pwd' komutu ne yapar?", "back": "Mevcut calisma dizininin (current working directory) tam yolunu goruntular (print working directory).", "difficulty": "easy" },
+    { "id": "sup1-fc12", "front": "'cd ..' komutu ne yapar?", "back": "Bir ust dizine (parent directory) gecer.", "difficulty": "easy" },
+    { "id": "sup1-fc13", "front": "'mkdir' komutu ne yapar?", "back": "Yeni bir dizin (directory) olusturur. Ornek: mkdir lab1", "difficulty": "easy" },
+    { "id": "sup1-fc14", "front": "'rm' ve 'rmdir' komutlari arasindaki fark nedir?", "back": "'rm' dosyalari siler (remove files). 'rmdir' yalnizca bos dizinleri siler (remove empty directories). Her ikisi de kalici silme yapar!", "difficulty": "medium" },
+    { "id": "sup1-fc15", "front": "'man' komutu ne ise yarar?", "back": "Herhangi bir komutun detayli yardim belgesini (manual page) goruntular. Ornek: man ls. Cikis icin 'q' tusuna basilir.", "difficulty": "easy" },
+    { "id": "sup1-fc16", "front": "Linux dosya izinlerinde (permissions) r, w, x harflerinin sayisal degerleri nedir?", "back": "r (read/okuma) = 4, w (write/yazma) = 2, x (execute/calistirma) = 1. Ornegin chmod 755: sahip=7(rwx), grup=5(r-x), diger=5(r-x).", "difficulty": "medium" },
+    { "id": "sup1-fc17", "front": "'chmod 644 dosya.txt' komutu ne anlama gelir?", "back": "Sahip (owner): okuma+yazma (rw-=6), Grup (group): sadece okuma (r--=4), Diger (others): sadece okuma (r--=4).", "difficulty": "medium" },
+    { "id": "sup1-fc18", "front": "Bir bash betigi (script) dosyasinin ilk satiri ne olmalidir?", "back": "#!/bin/bash (shebang satiri). Bu satir betigin Bash yorumlayicisi (interpreter) ile calistirilacagini belirtir.", "difficulty": "medium" },
+    { "id": "sup1-fc19", "front": "gcc komutu ne yapar?", "back": "C kaynak kodunu (source code) derleyerek (compile) calistirilabilir makine koduna (executable) cevirir. Ornek: gcc hello.c -o helloworld", "difficulty": "easy" },
+    { "id": "sup1-fc20", "front": "C programinda argc ve argv ne anlama gelir?", "back": "argc: komut satiri arguman sayisi (argument count). argv: arguman dizisi (argument vector) - argv[0] her zaman program adidir.", "difficulty": "medium" },
+    { "id": "sup1-fc21", "front": "Ctrl-C kisayolu terminalde ne ise yarar?", "back": "Calistirilan programi/komutu zorla durdurur (forcefully terminate) ve komut istemine (prompt) geri doner.", "difficulty": "easy" },
+    { "id": "sup1-fc22", "front": "'ls -l' komutu hangi bilgileri gosterir?", "back": "Dosya izinleri (permissions), sahip (owner), grup (group), boyut (size), tarih (date) ve dosya adi (filename) bilgilerini detayli listeler.", "difficulty": "medium" },
+    { "id": "sup1-fc23", "front": "Linux'ta ev dizini (home directory) nerededir?", "back": "Ev dizini /home/ altindadir. Ornegin /home/student/ veya /home/abc/. Hesabiniza ait tum dosyalar burada saklanir.", "difficulty": "easy" },
+    { "id": "sup1-fc24", "front": "'chmod +x script.sh' komutu ne yapar?", "back": "script.sh dosyasina tum kullanicilar icin calistirma izni (execute permission) verir. Betik dosyalarini calistirmak icin gereklidir.", "difficulty": "medium" },
+    { "id": "sup1-fc25", "front": "C++ programlarini derlemek icin hangi komut kullanilir?", "back": "g++ komutu kullanilir (gcc degil). Kaynak dosya uzantisi '.cc' veya '.cpp' olmalidir. Ornek: g++ hello.cpp -o hello", "difficulty": "medium" }
+  ],
+  "quiz": [
+    {
+      "id": "sup1-q1",
+      "question": "Linux'ta terminalde calisan bir programi zorla durdurmak icin hangi tus kombinasyonu kullanilir?",
+      "options": ["Ctrl-C", "Ctrl-Z", "Ctrl-X", "Ctrl-D"],
+      "correctIndex": 0,
+      "explanation": "Ctrl-C, terminalde calisan bir programi zorla durdurarak (forcefully break) komut istemine geri donmeyi saglar.",
+      "difficulty": "easy"
+    },
+    {
+      "id": "sup1-q2",
+      "question": "'echo Hello World > dosya.txt' komutu ne yapar?",
+      "options": [
+        "dosya.txt dosyasinin icerigini siler ve 'Hello World' yazar (overwrite)",
+        "dosya.txt dosyasinin sonuna 'Hello World' ekler (append)",
+        "Ekrana 'Hello World > dosya.txt' yazar",
+        "dosya.txt dosyasini siler"
+      ],
+      "correctIndex": 0,
+      "explanation": "'>' operatoru ciktiyi dosyaya yonlendirir ve mevcut icerigi silerek bastan yazar (overwrite). '>>' ise sonuna ekler (append).",
+      "difficulty": "easy"
+    },
+    {
+      "id": "sup1-q3",
+      "question": "Asagidaki komutlardan hangisi mevcut calisma dizinini (current working directory) gosterir?",
+      "options": ["pwd", "cd", "ls", "dir"],
+      "correctIndex": 0,
+      "explanation": "pwd (print working directory) komutu mevcut calisma dizininin tam yolunu goruntular.",
+      "difficulty": "easy"
+    },
+    {
+      "id": "sup1-q4",
+      "question": "'chmod 750 dosya.txt' komutunda grup (group) icin hangi izinler verilmistir?",
+      "options": [
+        "Okuma ve calistirma (read and execute)",
+        "Okuma, yazma ve calistirma (read, write and execute)",
+        "Sadece okuma (read only)",
+        "Hicbir izin yok (no permission)"
+      ],
+      "correctIndex": 0,
+      "explanation": "750'de 5 grup iznini temsil eder: 5 = 4(r) + 0(w) + 1(x), yani okuma ve calistirma izni vardir.",
+      "difficulty": "medium"
+    },
+    {
+      "id": "sup1-q5",
+      "question": "Bos bir dizini silmek icin hangi komut kullanilir?",
+      "options": ["rmdir", "rm", "del", "remove"],
+      "correctIndex": 0,
+      "explanation": "rmdir komutu bos dizinleri siler. Dizin bos degilse hata verir. rm komutu ise dosyalari silmek icindir.",
+      "difficulty": "easy"
+    },
+    {
+      "id": "sup1-q6",
+      "question": "Asagidakilerden hangisi bir dosyanin icerigini goruntulemek icin kullanilir?",
+      "options": ["cat dosya.txt", "ls dosya.txt", "echo dosya.txt", "open dosya.txt"],
+      "correctIndex": 0,
+      "explanation": "cat (concatenate) komutu dosyanin icerigini terminale yazdirir.",
+      "difficulty": "easy"
+    },
+    {
+      "id": "sup1-q7",
+      "question": "Bir bash betik dosyasinin ilk satiri ne olmalidir?",
+      "options": ["#!/bin/bash", "#/bin/bash", "//bin/bash", "bash start"],
+      "correctIndex": 0,
+      "explanation": "#!/bin/bash (shebang) satiri, betigin Bash yorumlayicisi ile calistirilmasini saglar.",
+      "difficulty": "easy"
+    },
+    {
+      "id": "sup1-q8",
+      "question": "'grep stdio list.txt' komutu ne yapar?",
+      "options": [
+        "list.txt dosyasinda 'stdio' kelimesini arar ve iceren satirlari gosterir",
+        "list.txt dosyasinda 'stdio' kelimesini siler",
+        "stdio adinda yeni bir dosya olusturur",
+        "list.txt dosyasini stdio.txt olarak yeniden adlandirir"
+      ],
+      "correctIndex": 0,
+      "explanation": "grep komutu dosyalarda metin arar (search for pattern) ve eslesen satirlari goruntular.",
+      "difficulty": "easy"
+    },
+    {
+      "id": "sup1-q9",
+      "question": "C programinda komut satiri argumanlarini almak icin main fonksiyonunun parametreleri ne olmalidir?",
+      "options": [
+        "int argc, char** argv",
+        "int args, char* arg",
+        "string[] args",
+        "void"
+      ],
+      "correctIndex": 0,
+      "explanation": "argc arguman sayisini (argument count), argv ise arguman dizisini (argument vector - string array) tutar.",
+      "difficulty": "medium"
+    },
+    {
+      "id": "sup1-q10",
+      "question": "'ls -l' ciktisinda bir satir 'd' ile basliyorsa bu ne anlama gelir?",
+      "options": [
+        "Bir dizindir (directory)",
+        "Silinmis bir dosyadir (deleted file)",
+        "Bir aygit dosyasidir (device file)",
+        "Salt okunur dosyadir (read-only file)"
+      ],
+      "correctIndex": 0,
+      "explanation": "ls -l ciktisinda ilk karakter dosya tipini belirtir: 'd' dizin (directory), '-' normal dosya anlamina gelir.",
+      "difficulty": "medium"
+    },
+    {
+      "id": "sup1-q11",
+      "question": "Asagidaki komutlardan hangisi dosyayi kopyalar?",
+      "options": ["cp kaynak.txt hedef.txt", "mv kaynak.txt hedef.txt", "rm kaynak.txt hedef.txt", "cat kaynak.txt hedef.txt"],
+      "correctIndex": 0,
+      "explanation": "cp (copy) komutu dosyayi kopyalar ve orijinali korur. mv ise tasir/yeniden adlandirir.",
+      "difficulty": "easy"
+    },
+    {
+      "id": "sup1-q12",
+      "question": "gcc derleyicisinden (compiler) hata mesaji (error message) alindiginda ne olmustur?",
+      "options": [
+        "Kod derlenmemistir (code has not compiled) - hatalar duzeltilmelidir",
+        "Kod derlenmistir ama duzgun calismayabilir",
+        "Kod basariyla derlenmistir",
+        "Sadece bir uyaridir, goz ardi edilebilir"
+      ],
+      "correctIndex": 0,
+      "explanation": "Hata mesaji (error) kodun derlenmedigini gosterir ve duzeltme zorunludur. Uyari mesaji (warning) ise kod derlenmistir ama sorunlu olabilir.",
+      "difficulty": "medium"
+    },
+    {
+      "id": "sup1-q13",
+      "question": "'man 3 printf' komutu ne goruntular?",
+      "options": [
+        "C programlama dilindeki printf() fonksiyonunun belgelerini (documentation)",
+        "printf adindaki bir dosyanin 3. satirini",
+        "printf komutunun 3. versiyonunu",
+        "3 kez printf yardim sayfasini"
+      ],
+      "correctIndex": 0,
+      "explanation": "man komutunda '3' C kutuphanesi fonksiyonlarinin (library functions) bolum numarasidir. 'man 3 printf' C dilindeki printf fonksiyonunun belgelerini gosterir.",
+      "difficulty": "medium"
+    },
+    {
+      "id": "sup1-q14",
+      "question": "Linux dosya sisteminde kok dizin (root directory) nasil gosterilir?",
+      "options": ["/", "~", ".", "\\"],
+      "correctIndex": 0,
+      "explanation": "'/' (slash) Linux dosya sistemindeki kok dizini (root directory) temsil eder. Tum diger dizinler bunun altindadir.",
+      "difficulty": "easy"
+    },
+    {
+      "id": "sup1-q15",
+      "question": "Asagidakilerden hangisi bir betik dosyasina calistirma izni (execute permission) verir?",
+      "options": ["chmod +x script.sh", "chmod +r script.sh", "chmod -x script.sh", "run script.sh"],
+      "correctIndex": 0,
+      "explanation": "chmod +x komutu dosyaya calistirma izni (execute permission) ekler. Betik dosyalarini ./script.sh ile calistirmak icin bu izin gereklidir.",
+      "difficulty": "easy"
+    },
+    {
+      "id": "sup1-q16",
+      "question": "'>>' operatoru C dilindeki fopen() fonksiyonunun hangi moduna benzer?",
+      "options": [
+        "\"a\" (append) modu",
+        "\"w\" (write) modu",
+        "\"r\" (read) modu",
+        "\"r+\" (read+write) modu"
+      ],
+      "correctIndex": 0,
+      "explanation": "'>>' dosyaya ekleme yapar (append) ve C dilindeki fopen() fonksiyonunun 'a' moduna benzer. '>' ise 'w' moduna benzer.",
+      "difficulty": "medium"
+    },
+    {
+      "id": "sup1-q17",
+      "question": "Asagidaki izin bilgisinden dosyanin erisim modu (access mode) nedir? rw-r-----",
+      "options": ["640", "740", "644", "600"],
+      "correctIndex": 0,
+      "explanation": "rw- = 4+2+0 = 6 (sahip/owner), r-- = 4+0+0 = 4 (grup/group), --- = 0+0+0 = 0 (diger/others). Toplam: 640.",
+      "difficulty": "hard"
+    },
+    {
+      "id": "sup1-q18",
+      "question": "Birden fazla C kaynak dosyasini tek bir calistirilabilir dosyaya derlemek icin hangi komut kullanilir?",
+      "options": [
+        "gcc source1.c source2.c -o program",
+        "gcc source1.c -o program && gcc source2.c -o program",
+        "gcc -merge source1.c source2.c",
+        "gcc source1.c | gcc source2.c -o program"
+      ],
+      "correctIndex": 0,
+      "explanation": "Birden fazla kaynak dosyayi gcc komutuna ekleyerek tek bir calistirilabilir dosya (executable) olusturabilirsiniz.",
+      "difficulty": "medium"
+    }
+  ],
+  "fillBlanks": [
+    {
+      "id": "sup1-fb1",
+      "sentence": "Linux'ta mevcut calisma dizinini gormek icin ___ komutu kullanilir.",
+      "answer": "pwd",
+      "acceptableAnswers": ["pwd", "PWD"],
+      "hint": "Print Working Directory kelimelerinin kisaltmasidir",
+      "difficulty": "easy"
+    },
+    {
+      "id": "sup1-fb2",
+      "sentence": "'>' operatoru dosyanin icerigini siler ve bastan yazar, '___' operatoru ise dosyanin sonuna ekler.",
+      "answer": ">>",
+      "acceptableAnswers": [">>"],
+      "hint": "Iki tane buyuktur isareti kullanilir (append operator)",
+      "difficulty": "easy"
+    },
+    {
+      "id": "sup1-fb3",
+      "sentence": "Bir dosyada belirli bir kelimeyi aramak icin ___ komutu kullanilir.",
+      "answer": "grep",
+      "acceptableAnswers": ["grep", "GREP"],
+      "hint": "Global Regular Expression Print kelimelerinin kisaltmasidir",
+      "difficulty": "easy"
+    },
+    {
+      "id": "sup1-fb4",
+      "sentence": "Dosya izinlerinde okuma (read) izninin sayisal degeri ___ 'dir.",
+      "answer": "4",
+      "acceptableAnswers": ["4"],
+      "hint": "r=?, w=2, x=1",
+      "difficulty": "medium"
+    },
+    {
+      "id": "sup1-fb5",
+      "sentence": "Yeni bir dizin olusturmak icin ___ komutu kullanilir.",
+      "answer": "mkdir",
+      "acceptableAnswers": ["mkdir", "MKDIR"],
+      "hint": "Make Directory kelimelerinin kisaltmasidir",
+      "difficulty": "easy"
+    },
+    {
+      "id": "sup1-fb6",
+      "sentence": "Bash betik dosyalarinin ilk satiri ___ olmalidir.",
+      "answer": "#!/bin/bash",
+      "acceptableAnswers": ["#!/bin/bash"],
+      "hint": "Shebang satiri olarak bilinir ve yorumlayiciyi belirtir",
+      "difficulty": "medium"
+    },
+    {
+      "id": "sup1-fb7",
+      "sentence": "C kaynak kodunu derlemek icin ___ komutu kullanilir.",
+      "answer": "gcc",
+      "acceptableAnswers": ["gcc", "GCC"],
+      "hint": "GNU C Compiler'in kisaltmasidir",
+      "difficulty": "easy"
+    },
+    {
+      "id": "sup1-fb8",
+      "sentence": "Bir komutun detayli yardim sayfasini gormek icin ___ komutu kullanilir.",
+      "answer": "man",
+      "acceptableAnswers": ["man", "MAN"],
+      "hint": "Manual kelimesinin kisaltmasidir",
+      "difficulty": "easy"
+    },
+    {
+      "id": "sup1-fb9",
+      "sentence": "C programinda komut satiri arguman sayisini tutan degisken ___ olarak adlandirilir.",
+      "answer": "argc",
+      "acceptableAnswers": ["argc"],
+      "hint": "Argument Count kelimelerinin kisaltmasidir",
+      "difficulty": "medium"
+    },
+    {
+      "id": "sup1-fb10",
+      "sentence": "'chmod 755' komutunda diger kullanicilar (others) icin izin degeri ___ 'dir ve bu okuma+calistirma anlamina gelir.",
+      "answer": "5",
+      "acceptableAnswers": ["5"],
+      "hint": "r(4) + x(1) = ?",
+      "difficulty": "medium"
+    },
+    {
+      "id": "sup1-fb11",
+      "sentence": "Bir dosyayi silmek icin ___ komutu, bos bir dizini silmek icin ise rmdir komutu kullanilir.",
+      "answer": "rm",
+      "acceptableAnswers": ["rm", "RM"],
+      "hint": "Remove kelimesinin kisaltmasidir",
+      "difficulty": "easy"
+    },
+    {
+      "id": "sup1-fb12",
+      "sentence": "Mevcut kullanici adini gormek icin ___ komutu kullanilir.",
+      "answer": "whoami",
+      "acceptableAnswers": ["whoami", "WHOAMI"],
+      "hint": "'Ben kimim?' sorusunun Ingilizce karsiligini dusunun",
+      "difficulty": "easy"
+    }
+  ],
+  "examQuestions": [
+    {
+      "id": "sup1-ex1",
+      "type": "shortanswer",
+      "points": 6,
+      "question": "Asagidaki islemleri gerceklestiren Linux komutlarini sirasiyla yaziniz:\n(a) 'projeler' adinda bir dizin olusturun\n(b) Bu dizine gecin\n(c) Icine 'notlar.txt' adinda 'Merhaba Dunya' yazan bir dosya olusturun\n(d) Dosyanin icerigini goruntuley in\n(e) Ust dizine geri donun\n(f) 'projeler' dizinindeki notlar.txt dosyasini silin ve ardindan dizini silin",
+      "solution": "(a) mkdir projeler\n(b) cd projeler\n(c) echo Merhaba Dunya > notlar.txt\n(d) cat notlar.txt\n(e) cd ..\n(f) rm projeler/notlar.txt && rmdir projeler (veya: cd projeler && rm notlar.txt && cd .. && rmdir projeler)",
+      "steps": [
+        "mkdir komutu ile yeni dizin olusturulur",
+        "cd komutu ile dizine gecilir",
+        "echo ve > operatoru ile dosya olusturulur ve icerik yazilir",
+        "cat komutu ile dosya icerigi goruntulenir",
+        "cd .. ile ust dizine donulur",
+        "rmdir kullanmadan once dizinin bos olmasi gerekir, bu yuzden once rm ile dosya silinir, sonra rmdir ile dizin silinir"
+      ]
+    },
+    {
+      "id": "sup1-ex2",
+      "type": "shortanswer",
+      "points": 5,
+      "question": "Asagidaki dosya izni bilgisini yorumlayiniz:\n-rwxr-x--- 1 ali students 4096 Mar 15 10:30 program.sh\n\n(a) Bu bir dosya mi yoksa dizin mi?\n(b) Sahip (owner) kimdir ve hangi izinlere sahiptir?\n(c) Grup (group) nedir ve hangi izinlere sahiptir?\n(d) Diger kullanicilar (others) hangi izinlere sahiptir?\n(e) Bu dosyanin sayisal erisim modu (access mode) nedir?",
+      "solution": "(a) Normal bir dosyadir (ilk karakter '-' oldugu icin).\n(b) Sahip 'ali' dir ve okuma, yazma, calistirma (rwx) izinlerine sahiptir.\n(c) Grup 'students' dir ve okuma, calistirma (r-x) izinlerine sahiptir.\n(d) Diger kullanicilar hicbir izne sahip degildir (---).\n(e) Sayisal mod: sahip=4+2+1=7, grup=4+0+1=5, diger=0+0+0=0 => 750",
+      "steps": [
+        "Ilk karakter '-' oldugu icin normal dosyadir ('d' olsaydi dizin olurdu)",
+        "Sahip izinleri: rwx = 4+2+1 = 7",
+        "Grup izinleri: r-x = 4+0+1 = 5",
+        "Diger izinleri: --- = 0+0+0 = 0",
+        "Toplam erisim modu: 750"
+      ]
+    },
+    {
+      "id": "sup1-ex3",
+      "type": "shortanswer",
+      "points": 5,
+      "question": "Asagidaki gorevleri yerine getiren bir bash betigi (script) yaziniz:\n1. Kullaniciyi ismiyle selamlasin (echo $USER kullanarak)\n2. Mevcut tarih ve saati gostersin\n3. Mevcut dizindeki tum dosyalari listelesin\n\nBetigi 'bilgi.sh' olarak kaydettiginizi varsayarak, bu betigi calistirmak icin gerekli adimlari da yaziniz.",
+      "solution": "Betik icerigi:\n#!/bin/bash\necho \"Merhaba $USER!\"\necho \"Tarih ve saat:\"\ndate\necho \"Dizindeki dosyalar:\"\nls -l\n\nCalistirma adimlari:\n1. chmod +x bilgi.sh    (calistirma izni ver)\n2. ./bilgi.sh           (betigi calistir)",
+      "steps": [
+        "Betik #!/bin/bash satiri ile baslamalidir (shebang)",
+        "echo $USER ile kullanici adi yazdirilir",
+        "date komutu ile tarih ve saat gosterilir",
+        "ls veya ls -l ile dosyalar listelenir",
+        "Betigi calistirmak icin once chmod +x ile calistirma izni verilmelidir",
+        "Ardindan ./bilgi.sh ile betik calistirilir"
+      ]
+    },
+    {
+      "id": "sup1-ex4",
+      "type": "shortanswer",
+      "points": 4,
+      "question": "Asagidaki C programi 'toplam.c' olarak kaydedilmistir:\n\n#include <stdio.h>\nint main(int argc, char** argv) {\n  printf(\"Arguman sayisi: %d\\n\", argc);\n  return 0;\n}\n\n(a) Bu programi 'toplam' adinda derlemek icin hangi komut kullanilir?\n(b) './toplam 5 10 15' seklinde calistirildiginda argc degeri ne olur? Neden?\n(c) argv[0] degeri ne olur?",
+      "solution": "(a) gcc toplam.c -o toplam\n(b) argc = 4 olur. Cunku arguman olarak program adi (./toplam), '5', '10', '15' olmak uzere toplam 4 arguman vardir. Program adinin kendisi de bir arguman olarak sayilir.\n(c) argv[0] = \"./toplam\" olur (programin kendi adi her zaman argv[0]'da saklanir).",
+      "steps": [
+        "gcc komutu ile kaynak kod derlenir: gcc toplam.c -o toplam",
+        "argc, program adi dahil tum argumanlar sayar",
+        "./toplam 5 10 15 => 4 arguman (program adi + 3 parametre)",
+        "argv[0] her zaman programin calistirildigi adi icerir"
+      ]
+    }
+  ]
+}

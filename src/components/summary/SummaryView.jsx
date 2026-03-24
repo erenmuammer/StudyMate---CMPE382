@@ -26,10 +26,8 @@ export default function SummaryView() {
       ch2: 'ch2-os-structures',
       ch3: 'ch3-processes',
       ch4: 'ch4-threads',
-      ch5: 'ch5-scheduling',
       ch6: 'ch6-synchronization',
-      ch7: 'ch7-deadlock',
-      ch8: 'ch8-memory',
+      sup1: 'supplement-linux-cli',
     }
     return map[id] || id
   }

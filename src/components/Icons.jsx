@@ -334,10 +334,8 @@ export const CHAPTER_ICONS = {
   ch2: IconBuilding,
   ch3: IconCog,
   ch4: IconThread,
-  ch5: IconClock,
   ch6: IconLock,
-  ch7: IconUnlock,
-  ch8: IconMemory,
+  sup1: IconClipboard,
 }
 
 // Study mode icons
