@@ -13,6 +13,18 @@
   --color-bg-deep: #020617;
 }
 
+/* Fallback for browsers that don't support @theme */
+:root {
+  --color-primary: #06B6D4;
+  --color-primary-dark: #0891B2;
+  --color-primary-light: #22D3EE;
+  --color-xp-gold: #FBBF24;
+  --color-surface: #1E293B;
+  --color-surface-light: #334155;
+  --color-bg: #0F172A;
+  --color-bg-deep: #020617;
+}
+
 * {
   scrollbar-width: thin;
   scrollbar-color: #334155 transparent;
@@ -20,7 +32,14 @@
 
 body {
   margin: 0;
-  background: var(--color-bg);
+  background-color: #0F172A;
+  color: #f1f5f9;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+#root {
+  min-height: 100vh;
+  background-color: #0F172A;
 }
 
 /* 3D Flip Card */
@@ -31,6 +50,7 @@ body {
   transform-style: preserve-3d;
 }
 .backface-hidden {
+  -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
 }
 .rotate-y-180 {
@@ -46,19 +66,10 @@ body {
   animation: floatUp 1.5s ease-out forwards;
 }
 
-/* Confetti */
-@keyframes confetti-fall {
-  0% { transform: translateY(-10px) rotate(0deg); opacity: 1; }
-  100% { transform: translateY(100px) rotate(720deg); opacity: 0; }
-}
-.animate-confetti {
-  animation: confetti-fall 1.5s ease-out forwards;
-}
-
 /* Pulse glow for timer */
 @keyframes pulse-glow {
-  0%, 100% { box-shadow: 0 0 5px var(--color-primary), 0 0 10px var(--color-primary); }
-  50% { box-shadow: 0 0 15px var(--color-primary), 0 0 30px var(--color-primary); }
+  0%, 100% { box-shadow: 0 0 5px #06B6D4, 0 0 10px #06B6D4; }
+  50% { box-shadow: 0 0 15px #06B6D4, 0 0 30px #06B6D4; }
 }
 .animate-pulse-glow {
   animation: pulse-glow 2s ease-in-out infinite;
