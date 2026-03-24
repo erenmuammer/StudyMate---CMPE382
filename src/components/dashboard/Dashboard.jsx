@@ -50,6 +50,20 @@ export default function Dashboard() {
         </div>
       </div>
 
+      {/* Past Exams Banner */}
+      <NavLink
+        to="/past-exams"
+        className="block bg-gradient-to-r from-red-500/10 to-pink-500/10 border border-red-500/20 rounded-xl p-4 hover:border-red-500/40 transition-all group"
+      >
+        <div className="flex items-center gap-3">
+          <IconClipboard className="w-6 h-6 text-red-400 group-hover:scale-110 transition-transform" />
+          <div>
+            <h3 className="font-semibold text-slate-200">Cikmis Sinav Sorulari</h3>
+            <p className="text-xs text-slate-500">Gercek sinav sorulari ve cozumleri</p>
+          </div>
+        </div>
+      </NavLink>
+
       {/* Chapters Grid */}
       <div>
         <h2 className="text-xl font-semibold text-slate-200 mb-4">Bolumler (Chapters)</h2>

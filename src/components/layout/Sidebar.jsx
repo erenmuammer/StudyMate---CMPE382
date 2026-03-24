@@ -3,7 +3,7 @@ import { useState } from 'react'
 import courseData from '../../data/course.json'
 import { useProgress } from '../../hooks/useProgress'
 import { STUDY_MODES } from '../../utils/constants'
-import { CHAPTER_ICONS, MODE_ICONS } from '../Icons'
+import { CHAPTER_ICONS, MODE_ICONS, IconClipboard } from '../Icons'
 
 export default function Sidebar() {
   const { chapterId } = useParams()
@@ -94,6 +94,21 @@ export default function Sidebar() {
             </div>
           )
         })}
+        {/* Past Exams link */}
+        {!collapsed && <p className="text-xs text-slate-500 uppercase tracking-wider px-3 py-2 mt-4">Diger</p>}
+        <NavLink
+          to="/past-exams"
+          className={({ isActive }) =>
+            `flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 ${
+              isActive
+                ? 'bg-red-500/10 text-red-400'
+                : 'text-slate-400 hover:text-slate-200 hover:bg-surface/50'
+            }`
+          }
+        >
+          <IconClipboard className="w-5 h-5 flex-shrink-0" />
+          {!collapsed && <span className="text-sm font-medium">Cikmis Sorular</span>}
+        </NavLink>
       </nav>
 
       {!collapsed && (

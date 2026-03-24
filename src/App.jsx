@@ -8,6 +8,7 @@ import FlashcardView from './components/flashcards/FlashcardView'
 import QuizView from './components/quiz/QuizView'
 import FillBlankView from './components/fillblank/FillBlankView'
 import ExamPracticeView from './components/exam/ExamPracticeView'
+import PastExamsView from './components/pastexams/PastExamsView'
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
               <Route path="chapter/:chapterId/quiz" element={<QuizView />} />
               <Route path="chapter/:chapterId/fill" element={<FillBlankView />} />
               <Route path="chapter/:chapterId/exam" element={<ExamPracticeView />} />
+              <Route path="past-exams" element={<PastExamsView />} />
             </Route>
           </Routes>
         </BrowserRouter>

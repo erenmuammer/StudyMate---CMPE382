@@ -1,0 +1,173 @@
+{
+  "exams": [
+    {
+      "id": "exam1",
+      "title": "2022 Vize (Midterm)",
+      "date": "05 May 2022",
+      "duration": "90 dk",
+      "totalMarks": 40,
+      "note": "Open book. Her alt soru 2 puan.",
+      "sections": [
+        {
+          "title": "Question 1: Basic Concepts",
+          "points": 10,
+          "chapter": "Ch1",
+          "questions": [
+            {
+              "id": "e1-q1-1",
+              "question": "List down some of the basic services provided by the operating systems.",
+              "points": 2,
+              "type": "shortanswer",
+              "answer": "1. Process management - sureclerin olusturulmasi, zamanlanmasi, sonlandirilmasi\n2. Memory management - bellek tahsisi ve geri alinmasi\n3. File system management - dosya/dizin olusturma, okuma, yazma, silme\n4. Device management - I/O cihazlarinin yonetimi\n5. User interface - CLI, GUI, touchscreen\n6. Security & Protection - erisim kontrolu, kullanici dogrulama\n7. Networking - ag iletisimi\n8. Error detection - hata tespiti ve duzeltme"
+            },
+            {
+              "id": "e1-q1-2",
+              "question": "What is protection in the operating systems? Explain how operating system provide it.",
+              "points": 2,
+              "type": "shortanswer",
+              "answer": "Protection, isletim sisteminin kullanici programlarini ve sistem kaynaklarini yetkisiz eristen korumasidir.\n\nNasil saglanir:\n1. Dual-mode operation (user mode / kernel mode) - privileged instructions sadece kernel mode'da calisir\n2. Memory protection - base & limit register ile her surecin kendi adres alanina erisimi sinirlanir\n3. CPU protection - timer interrupt ile bir surecin CPU'yu surekli kullanmasi engellenir\n4. I/O protection - tum I/O islemleri privileged olarak tanimlanir, sadece OS uzerinden yapilabilir"
+            },
+            {
+              "id": "e1-q1-3",
+              "question": "Operating systems provide abstraction to various objects, explain how it is useful as an application developer.",
+              "points": 2,
+              "type": "shortanswer",
+              "answer": "Abstraction, karmasik donanim detaylarini gizleyerek gelistiricilere daha basit bir arayuz sunar.\n\nFaydalari:\n- Gelistirici fiziksel bellek adreslerini bilmek zorunda kalmaz (sanal bellek sayesinde)\n- Dosya sistemi disk sektorlerini soyutlar, gelistirici dosya adi ile calisir\n- Process abstraction ile programlar birbirinden bagimsiz calisir\n- System call API sayesinde donanim farkliliklari onemli olmaz\n- Ayni kod farkli donanim uzerinde calisabilir (portability)"
+            },
+            {
+              "id": "e1-q1-4",
+              "question": "What is an interrupt vector?",
+              "points": 2,
+              "type": "shortanswer",
+              "answer": "Interrupt vector, tum interrupt service routine (ISR) adreslerini iceren bir veri yapisidir (data structure). Her interrupt turune bir numara atanir. CPU bir interrupt aldiginda, bu numarayi kullanarak interrupt vector tablosundaki ilgili ISR adresini bulur ve o adrese dallanir.\n\nOrnek: Interrupt #14 geldiginde, interrupt vector[14] adresindeki handler calistirilir."
+            },
+            {
+              "id": "e1-q1-5",
+              "question": "Briefly explain simple base and bound address translation scheme.",
+              "points": 2,
+              "type": "shortanswer",
+              "answer": "Base and bound (limit), her surece ayri bir fiziksel bellek alani atayan basit bir bellek koruma yontemidir.\n\n- Base register: Surecin bellekteki baslangic adresini tutar\n- Bound (Limit) register: Surecin kullanabilecegi bellek boyutunu tutar\n\nAdres cevirme:\n1. CPU logical address uretir\n2. Logical address < limit mi kontrol edilir\n3. Evet ise: Physical address = base + logical address\n4. Hayir ise: Addressing error trap olusur (segmentation fault)\n\nOrnek: base=5000, limit=2000 -> logical 1500 -> physical 6500 (gecerli)\nlogical 2500 -> TRAP! (2500 >= 2000)"
+            }
+          ]
+        },
+        {
+          "title": "Question 2: Processes",
+          "points": 10,
+          "chapter": "Ch3",
+          "questions": [
+            {
+              "id": "e1-q2-1",
+              "question": "Briefly explain process control block and list down what information are stored in it.",
+              "points": 2,
+              "type": "shortanswer",
+              "answer": "Process Control Block (PCB), isletim sisteminin her surec hakkindaki bilgileri tuttugu veri yapisidir. Her surec olusturulduqunda bir PCB olusturulur.\n\nPCB'de tutulan bilgiler:\n1. Process ID (PID)\n2. Process State (new, ready, running, waiting, terminated)\n3. Program Counter (PC) - siradaki instruction adresi\n4. CPU Registers - accumulator, index register, stack pointer\n5. CPU Scheduling Info - priority, scheduling queue pointer\n6. Memory Management Info - base/limit registers, page table\n7. Accounting Info - CPU kullanim suresi, zaman limitleri\n8. I/O Status Info - acik dosyalar listesi, atanmis I/O cihazlari"
+            },
+            {
+              "id": "e1-q2-2",
+              "question": "What is a context switch? What operations are done in a context switch? How much time is spent in a context switch typically?",
+              "points": 2,
+              "type": "shortanswer",
+              "answer": "Context switch, CPU'nun bir sureci birakip baska bir sureci calistirmasina gecis islemidir.\n\nYapilan islemler:\n1. Mevcut surecin CPU state'ini (registers, PC, flags) PCB'ye kaydet\n2. Mevcut surecin durumunu guncelle (running -> ready/waiting)\n3. Yeni surecin PCB'sinden CPU state'ini yukle\n4. Yeni surecin durumunu guncelle (ready -> running)\n5. Program counter'i yeni surecin siradaki instruction'ina ayarla\n\nSure: Tipik olarak birkaç mikrosaniye (1-10 microseconds). Hardware destegi (ozel register setleri) ile daha hizli olabilir. Context switch pure overhead'dir - bu surede faydali is yapilmaz."
+            },
+            {
+              "id": "e1-q2-3",
+              "question": "Identify what mode will be switched upon these events:\na. Some system call issued\nb. Interrupt is generated\nc. Exception generated\nd. Returned from interrupt service",
+              "points": 2,
+              "type": "shortanswer",
+              "answer": "a. System call issued -> User mode'dan Kernel mode'a gecis (mode bit: 1 -> 0)\nb. Interrupt is generated -> User mode'dan Kernel mode'a gecis (mode bit: 1 -> 0)\nc. Exception generated -> User mode'dan Kernel mode'a gecis (mode bit: 1 -> 0)\nd. Returned from interrupt service -> Kernel mode'dan User mode'a gecis (mode bit: 0 -> 1)\n\nNot: a, b, c hepsinde CPU kernel mode'a gecer cunku OS kontrolu almalidir. d'de is bittigi icin kullanici programina geri donulur."
+            },
+            {
+              "id": "e1-q2-4",
+              "question": "How many new processes are created from the following code? Support your answer with arguments.",
+              "points": 2,
+              "type": "calculation",
+              "code": "int main(void) {\n  for (int i = 0; i < 3; i++)\n    pid_t pid = fork();\n  return 0;\n}",
+              "answer": "7 yeni surec olusturulur (toplam 8 surec, parent dahil).\n\nAdim adim:\ni=0: 1 surec fork yapar -> 2 surec (1 parent + 1 child)\ni=1: 2 surec fork yapar -> 4 surec\ni=2: 4 surec fork yapar -> 8 surec\n\nFormul: 2^n = 2^3 = 8 toplam surec\nYeni surec sayisi = 8 - 1 = 7\n\nSurec agaci:\n        P\n       / \\\n      P   C1\n     / \\ / \\\n    P C2 C1 C3\n   /| |  |  |\n  P C4C5 C6 C7"
+            },
+            {
+              "id": "e1-q2-5",
+              "question": "Answer True/False:\na. A process is a passive entity, while a thread is an active component.\nb. Timer interrupts doesn't go to priority encoder before they are received to CPU.\nc. A process creates other child processes, so a hierarchy of processes are formed in a system.\nd. If fork fails, it returns a positive value.",
+              "points": 2,
+              "type": "truefalse",
+              "answer": "a. FALSE - Bir program (disk uzerindeki dosya) passive entity'dir, process (calisan program) ise active entity'dir. Thread de active'dir ama soru process'in passive oldugunu iddia ediyor ki bu YANLIS.\n\nb. FALSE - Timer interrupt'lar da diger interrupt'lar gibi priority encoder'dan gecer. Priority encoder, birden fazla interrupt geldiginde hangisinin once islenmesi gerektigini belirler.\n\nc. TRUE - Evet, fork() ile parent surec child surecler olusturur. Bu surecler kendi child'larini da olusturabilir, boylece bir surec agaci (process tree/hierarchy) olusur.\n\nd. FALSE - fork() basarisiz olursa -1 dondurur (negatif deger). Basarili olursa parent'a child PID (pozitif), child'a 0 dondurur."
+            }
+          ]
+        },
+        {
+          "title": "Question 3: Threads",
+          "points": 10,
+          "chapter": "Ch4",
+          "questions": [
+            {
+              "id": "e1-q3-1",
+              "question": "Briefly explain pthread_join function. Explain why you would be using this function.",
+              "points": 2,
+              "type": "shortanswer",
+              "answer": "pthread_join(thread_id, retval), belirtilen thread'in tamamlanmasini bekleyen (blocking) bir fonksiyondur.\n\nNe yapar:\n- Calling thread'i bloklar ve belirtilen thread bitene kadar bekler\n- Thread'in return degerini retval uzerinden alabilir\n\nNeden kullanilir:\n1. Main thread, child thread'lerin islerini bitirmesini beklemek icin (senkronizasyon)\n2. Thread'in urettigi sonucu almak icin\n3. Main thread erken cikarsa tum child thread'ler de sonlanir - join ile bu onlenir\n4. Thread kaynaklarinin duzgun serbest birakilmasini saglar (memory leak onleme)"
+            },
+            {
+              "id": "e1-q3-2",
+              "question": "Consider the following code expressed as two threads, and list down possible values of X, Y when both threads finish the execution. Explain your answer as well.",
+              "points": 2,
+              "type": "calculation",
+              "code": "Thread A       Thread B\nX = 8          X = 2\nY = X*2        Y = X+4",
+              "answer": "Olasi sonuclar (X ve Y paylasimlii degiskenler):\n\n1. Thread A tamamen once calisirsa:\n   X=8, Y=16 -> sonra Thread B: X=2, Y=6\n   Sonuc: X=2, Y=6\n\n2. Thread B tamamen once calisirsa:\n   X=2, Y=6 -> sonra Thread A: X=8, Y=16\n   Sonuc: X=8, Y=16\n\n3. Interleaving - A: X=8, B: X=2, A: Y=X*2=4, B: Y=X+4 (X=2 oldugu icin):\n   Sonuc: X=2, Y=6 veya Y=4\n\n4. Interleaving - B: X=2, A: X=8, B: Y=X+4=12, A: Y=X*2 (X=8):\n   Sonuc: X=8, Y=16 veya Y=12\n\nOlasi degerler: (X=8,Y=16), (X=2,Y=6), (X=8,Y=12), (X=2,Y=4)\n\nNeden: X ve Y shared variable oldugundan, thread'lerin calisma sirasi non-deterministic'tir. Bu bir race condition ornegi."
+            },
+            {
+              "id": "e1-q3-3",
+              "question": "What are the information stored in a Thread Control Block (TCB)?",
+              "points": 2,
+              "type": "shortanswer",
+              "answer": "Thread Control Block (TCB) her thread icin tutulan bilgileri icerir:\n\n1. Thread ID - thread'in benzersiz tanimlayicisi\n2. Program Counter (PC) - thread'in siradaki instruction adresi\n3. Register Set - CPU register degerleri\n4. Stack Pointer - thread'in kendi stack'inin adresi\n5. Thread State - running, ready, blocked, terminated\n6. Priority - zamanlama onceligi\n7. Scheduling info - zamanlama bilgileri\n\nNot: TCB, PCB'den cok daha kucuktur. Bellek bilgileri, acik dosyalar, I/O durumu gibi bilgiler ayni process'in PCB'sinde paylasimli tutulur. Bu yuzden thread olusturmak process olusturmaktan daha hizlidir."
+            },
+            {
+              "id": "e1-q3-4",
+              "question": "Define mutual exclusion, and discuss why it's necessary in cooperating threads.",
+              "points": 2,
+              "type": "shortanswer",
+              "answer": "Mutual Exclusion (Karsilikli Disallama): Paylasimli bir kaynaga ayni anda sadece bir thread'in erisebilmesini saglayan senkronizasyon mekanizmasidir.\n\nNeden gerekli:\n1. Race condition onleme: Birden fazla thread ayni anda shared data'ya yazarsa tutarsiz sonuclar olusur\n2. Data consistency: Shared variable'larin tutarli kalmasini saglar\n3. Atomicity: Critical section'daki islemlerin bolunmeden tamamlanmasini garantiler\n\nOrnek: Iki thread ayni banka hesabindan para cekiyor. Mutual exclusion olmadan bakiye yanlis guncellenebilir (race condition). Mutex/semaphore ile sadece bir thread bakiyeyi gunceller, diger bekler."
+            },
+            {
+              "id": "e1-q3-5",
+              "question": "Answer True/False:\na. If a thread is waiting for an I/O to finish, the OS marks it as BLOCKED.\nb. Threads are light-weight as compared to processes.\nc. Threads do not share anything within a process.\nd. Each thread maintains its own stack.",
+              "points": 2,
+              "type": "truefalse",
+              "answer": "a. TRUE - I/O bekleyen thread BLOCKED (waiting) durumuna gecer. I/O tamamlandiginda ready durumuna doner.\n\nb. TRUE - Thread'ler process'lere gore lightweight'tir cunku:\n   - Thread olusturma daha hizli (adres alani kopyalanmaz)\n   - Context switch daha hizli (bellek bilgisi degismez)\n   - Thread'ler arasi iletisim daha kolay (shared memory zaten var)\n\nc. FALSE - Thread'ler ayni process icinde code section, data section, ve OS kaynaklarini (acik dosyalar, sinyaller) PAYLASIR. Sadece stack, register set ve program counter her thread'e ozeldir.\n\nd. TRUE - Her thread'in kendine ait stack'i vardir. Bu sayede her thread farkli fonksiyonlari cagirabilir ve farkli local degiskenlere sahip olabilir."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "exam2",
+      "title": "Diger Cikmis Sinav",
+      "date": "Tarih bilinmiyor",
+      "duration": "Bilinmiyor",
+      "totalMarks": 80,
+      "note": "Bu sinavin sadece Ch1-Ch4, Ch6 kapsamindaki sorulari dahil edilmistir.",
+      "sections": [
+        {
+          "title": "Question 1: General",
+          "points": 20,
+          "chapter": "Ch6",
+          "questions": [
+            {
+              "id": "e2-q1-1",
+              "question": "Assume in a computer system the processes fall into three priority levels, thus three ready queues. Write the steps of an aging algorithm that prevents starvation to happen in this system.",
+              "points": 4,
+              "type": "shortanswer",
+              "answer": "Aging algoritmasi adimlari:\n\n1. Sistem 3 ready queue tutar: Q0 (yuksek oncelik), Q1 (orta), Q2 (dusuk)\n2. Yeni surecler oncelik seviyelerine gore uygun kuyruga eklenir\n3. CPU her zaman en yuksek oncelikli kuyruktan (Q0) surec secer\n4. Her T zaman birimi sonunda (ornegin her 15 saniyede):\n   - Q2'de bekleyen surecler Q1'e yukeltilir\n   - Q1'de bekleyen surecler Q0'a yukselir\n5. Boylece uzun sure bekleyen dusuk oncelikli surecler zamanla en yuksek oncelik seviyesine ulasir\n6. Starvation onlenir cunku her surec sonunda Q0'a ulasacak ve calistirilacaktir\n\nOrnek:\n- P1 (Q2'de) 15s bekler -> Q1'e cikar\n- P1 (Q1'de) 15s daha bekler -> Q0'a cikar -> calistirilir"
+            },
+            {
+              "id": "e2-q1-2",
+              "question": "Assume two processes P0 and P1, each execute a critical section CS and need to use two semaphores S1 and S2 to implement mutual exclusion over the CS. Complete the following algorithms so that deadlock will be impossible.\n\nInitial values for S1 and S2: S1=___; S2=___;\n\nAlg for P0:          Alg for P1:\nwait(___);           wait(___);\nwait(___);           wait(___);\nCS;                  CS;\nsignal(___);         signal(___);\nsignal(___);         signal(___);",
+              "points": 4,
+              "type": "algorithm",
+              "answer": "Initial values: S1 = 1; S2 = 1;\n\nAlg for P0:          Alg for P1:\nwait(S1);            wait(S1);\nwait(S2);            wait(S2);\nCS;                  CS;\nsignal(S2);          signal(S2);\nsignal(S1);          signal(S1);\n\nAciklama:\n- S1 ve S2 binary semaphore (baslangic degeri 1)\n- HER IKI SUREC semafollari AYNI SIRADA alir: once S1, sonra S2\n- Ayni sira = circular wait olusmas! = deadlock imkansiz\n- Signal'lar ters sirada: once S2, sonra S1 (LIFO)\n\nDIKKAT - YANLIS COZUM (Deadlock olusur):\nP0: wait(S1);wait(S2) ve P1: wait(S2);wait(S1)\nBu durumda P0 S1'i alir, P1 S2'yi alir, ikisi de birbirini bekler -> DEADLOCK!"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
