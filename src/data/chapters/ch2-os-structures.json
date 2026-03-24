@@ -918,93 +918,138 @@
   "fillBlanks": [
     {
       "id": "fb1",
-      "text": "Sistem cagrilari genellikle dogrudan kullanilmaz; bunun yerine programcilar _______ araciligiyla isletim sistemi servislerine erisir.",
       "answer": "API (Application Programming Interface)",
-      "explanation": "Programcilar Win32 API, POSIX API veya Java API gibi ust seviye arayuzler kullanir. Bu API'ler arka planda gerekli sistem cagrilarini yapar."
+      "explanation": "Programcilar Win32 API, POSIX API veya Java API gibi ust seviye arayuzler kullanir. Bu API'ler arka planda gerekli sistem cagrilarini yapar.",
+      "sentence": "Sistem cagrilari genellikle dogrudan kullanilmaz; bunun yerine programcilar _______ araciligiyla isletim sistemi servislerine erisir.",
+      "acceptableAnswers": [
+        "API (Application Programming Interface)"
+      ]
     },
     {
       "id": "fb2",
-      "text": "Linux ve Solaris'te sistem cagrilarina parametre gecirmek icin _______ yontemi kullanilir; parametreler bellekteki bir tabloya yazilir ve tablonun adresi yazmac ile gonderilir.",
       "answer": "blok/tablo (block/table)",
-      "explanation": "Bu yontemde parametreler bellekteki bir blok veya tabloya yerlestirilir. Tablonun baslangic adresi bir yazmac (register) araciligiyla isletim sistemine iletilir. Bu yaklasim, parametre sayisinda sinir koymaz."
+      "explanation": "Bu yontemde parametreler bellekteki bir blok veya tabloya yerlestirilir. Tablonun baslangic adresi bir yazmac (register) araciligiyla isletim sistemine iletilir. Bu yaklasim, parametre sayisinda sinir koymaz.",
+      "sentence": "Linux ve Solaris'te sistem cagrilarina parametre gecirmek icin _______ yontemi kullanilir; parametreler bellekteki bir tabloya yazilir ve tablonun adresi yazmac ile gonderilir.",
+      "acceptableAnswers": [
+        "blok/tablo (block/table)"
+      ]
     },
     {
       "id": "fb3",
-      "text": "Unix'te yeni bir surec olusturmak icin _______ sistem cagrisi, olusturulan surece yeni program yuklemek icin _______ sistem cagrisi kullanilir.",
       "answer": "fork() / exec()",
-      "explanation": "fork() mevcut sureccin bir kopyasini (cocuk surec) olusturur. exec() ise sureccin bellek alanina yeni bir program yukler. Genellikle fork() ile surec olusturulur, ardindan cocuk surecte exec() ile istenilen program yuklenir."
+      "explanation": "fork() mevcut sureccin bir kopyasini (cocuk surec) olusturur. exec() ise sureccin bellek alanina yeni bir program yukler. Genellikle fork() ile surec olusturulur, ardindan cocuk surecte exec() ile istenilen program yuklenir.",
+      "sentence": "Unix'te yeni bir surec olusturmak icin _______ sistem cagrisi, olusturulan surece yeni program yuklemek icin _______ sistem cagrisi kullanilir.",
+      "acceptableAnswers": [
+        "fork() / exec()"
+      ]
     },
     {
       "id": "fb4",
-      "text": "Iletisim sistem cagrilarinda iki temel model vardir: _______ ve _______.",
       "answer": "mesaj gecirme modeli (message passing model) / paylasimli bellek modeli (shared-memory model)",
-      "explanation": "Mesaj gecirme modelinde surecler mesaj gonderip alarak iletisir (host/surec adina gore). Paylasimli bellek modelinde surecler ortak bellek bolgelerini olusturup eriiserek veri paylasir."
+      "explanation": "Mesaj gecirme modelinde surecler mesaj gonderip alarak iletisir (host/surec adina gore). Paylasimli bellek modelinde surecler ortak bellek bolgelerini olusturup eriiserek veri paylasir.",
+      "sentence": "Iletisim sistem cagrilarinda iki temel model vardir: _______ ve _______.",
+      "acceptableAnswers": [
+        "mesaj gecirme modeli (message passing model) / paylasimli bellek modeli (shared-memory model)"
+      ]
     },
     {
       "id": "fb5",
-      "text": "Nesne dosyalarini birlestirip tek bir calistirilabilir dosya olusturan araca _______, bu dosyayi bellige yukleyip calistirilmasini saglayan araca _______ denir.",
       "answer": "linker (baglayici) / loader (yukleyici)",
-      "explanation": "Linker, derleyicinin urettigi .o dosyalarini ve kutuphaneleri birlestirir. Loader, olusturulan calistirilabilir dosyayi diskten bellige yukler ve relocation islemiyle program adreslerini ayarlar."
+      "explanation": "Linker, derleyicinin urettigi .o dosyalarini ve kutuphaneleri birlestirir. Loader, olusturulan calistirilabilir dosyayi diskten bellige yukler ve relocation islemiyle program adreslerini ayarlar.",
+      "sentence": "Nesne dosyalarini birlestirip tek bir calistirilabilir dosya olusturan araca _______, bu dosyayi bellige yukleyip calistirilmasini saglayan araca _______ denir.",
+      "acceptableAnswers": [
+        "linker (baglayici) / loader (yukleyici)"
+      ]
     },
     {
       "id": "fb6",
-      "text": "Modern sistemlerde kutuphaneler calistirilabilir dosyaya gomulmez; bunun yerine _______ kullanilir ve bu kutuphaneler ihtiyac duyuldugunda yuklenir.",
       "answer": "dinamik olarak baglanan kutuphaneler (Dynamically Linked Libraries / DLLs)",
-      "explanation": "DLL'ler calisma zamaninda yuklenir ve ayni kutuphaneden yararlanan tum programlar tarafindan paylasilir (bellekte bir kez yuklu kalir). Windows'ta .dll, Linux'ta .so uzantili dosyalardir."
+      "explanation": "DLL'ler calisma zamaninda yuklenir ve ayni kutuphaneden yararlanan tum programlar tarafindan paylasilir (bellekte bir kez yuklu kalir). Windows'ta .dll, Linux'ta .so uzantili dosyalardir.",
+      "sentence": "Modern sistemlerde kutuphaneler calistirilabilir dosyaya gomulmez; bunun yerine _______ kullanilir ve bu kutuphaneler ihtiyac duyuldugunda yuklenir.",
+      "acceptableAnswers": [
+        "dinamik olarak baglanan kutuphaneler (Dynamically Linked Libraries / DLLs)"
+      ]
     },
     {
       "id": "fb7",
-      "text": "API'nin mimari seviyedeki karsiligi olan _______, farkli ikili kod bilesenlerinin belirli bir OS ve CPU mimarisinde nasil etkilesecegini tanimlar.",
       "answer": "ABI (Application Binary Interface)",
-      "explanation": "ABI, ikili (binary) seviyede uyumluluk saglar. Adres genisligi, fonksiyon cagrisi kurallari, sistem cagrisi yontemi gibi dusuk seviyeli detaylari belirler. Bu nedenle bir OS icin derlenmis program, farkli ABI'ye sahip baska bir OS'ta calismaz."
+      "explanation": "ABI, ikili (binary) seviyede uyumluluk saglar. Adres genisligi, fonksiyon cagrisi kurallari, sistem cagrisi yontemi gibi dusuk seviyeli detaylari belirler. Bu nedenle bir OS icin derlenmis program, farkli ABI'ye sahip baska bir OS'ta calismaz.",
+      "sentence": "API'nin mimari seviyedeki karsiligi olan _______, farkli ikili kod bilesenlerinin belirli bir OS ve CPU mimarisinde nasil etkilesecegini tanimlar.",
+      "acceptableAnswers": [
+        "ABI (Application Binary Interface)"
+      ]
     },
     {
       "id": "fb8",
-      "text": "'Ne yapilacagi' sorusuna cevap veren _______, 'nasil yapilacagi' sorusuna cevap veren _______ kavramindan ayrilmalidir; bu ayrim esneklik saglar.",
       "answer": "politika (policy) / mekanizma (mechanism)",
-      "explanation": "Politika: Her 100 ms'de bir kesme olustur (ne). Mekanizma: Timer (zamanlayici) kullan (nasil). Politika degistiginde (200 ms) mekanizmayi degistirmek gerekmez; sadece zamanlayicinin degeri guncellenir."
+      "explanation": "Politika: Her 100 ms'de bir kesme olustur (ne). Mekanizma: Timer (zamanlayici) kullan (nasil). Politika degistiginde (200 ms) mekanizmayi degistirmek gerekmez; sadece zamanlayicinin degeri guncellenir.",
+      "sentence": "'Ne yapilacagi' sorusuna cevap veren _______, 'nasil yapilacagi' sorusuna cevap veren _______ kavramindan ayrilmalidir; bu ayrim esneklik saglar.",
+      "acceptableAnswers": [
+        "politika (policy) / mekanizma (mechanism)"
+      ]
     },
     {
       "id": "fb9",
-      "text": "_______ cekirdek yapisinda tum OS islevleri tek bir buyuk cekirdekte calisir; _______ yapisinda ise mumkun oldugunca cok islev kullanici alanina tasinir.",
       "answer": "monolitik (monolithic) / mikrocekirdek (microkernel)",
-      "explanation": "Monolitik cekirdekte dosya sistemi, bellek yonetimi, cihaz surculeri hepsi tek cekirdekte calisir (hizli ama riskli). Mikrocekirdekte cekirdekte sadece IPC, bellek yonetimi ve CPU zamanlama kalir, diger servisler kullanici alaninda calisir (daha guvenli ama mesaj gecirme yuku var)."
+      "explanation": "Monolitik cekirdekte dosya sistemi, bellek yonetimi, cihaz surculeri hepsi tek cekirdekte calisir (hizli ama riskli). Mikrocekirdekte cekirdekte sadece IPC, bellek yonetimi ve CPU zamanlama kalir, diger servisler kullanici alaninda calisir (daha guvenli ama mesaj gecirme yuku var).",
+      "sentence": "_______ cekirdek yapisinda tum OS islevleri tek bir buyuk cekirdekte calisir; _______ yapisinda ise mumkun oldugunca cok islev kullanici alanina tasinir.",
+      "acceptableAnswers": [
+        "monolitik (monolithic) / mikrocekirdek (microkernel)"
+      ]
     },
     {
       "id": "fb10",
-      "text": "Bilgisayar acildiginda ROM veya EEPROM'da saklanan _______ cekirdegi bulur, bellige yukler ve baslatir. Modern sistemlerde bunun yerini _______ almistir.",
       "answer": "bootstrap loader (BIOS) / UEFI (Unified Extensible Firmware Interface)",
-      "explanation": "Bootstrap loader (BIOS), bilgisayar acildiginda sabit bellek konumundan calisarak cekirdegi baslatir. UEFI, BIOS'un modern yedegi olup daha buyuk disk destegi, daha hizli baslatma ve guvenlik ozellikleri (Secure Boot) sunar."
+      "explanation": "Bootstrap loader (BIOS), bilgisayar acildiginda sabit bellek konumundan calisarak cekirdegi baslatir. UEFI, BIOS'un modern yedegi olup daha buyuk disk destegi, daha hizli baslatma ve guvenlik ozellikleri (Secure Boot) sunar.",
+      "sentence": "Bilgisayar acildiginda ROM veya EEPROM'da saklanan _______ cekirdegi bulur, bellige yukler ve baslatir. Modern sistemlerde bunun yerini _______ almistir.",
+      "acceptableAnswers": [
+        "bootstrap loader (BIOS) / UEFI (Unified Extensible Firmware Interface)"
+      ]
     },
     {
       "id": "fb11",
-      "text": "Bir uygulama basarisiz oldugunda sureccin bellegini yakalayan dosyaya _______, isletim sistemi cokerse cekirdek bellegini kaydeden dosyaya _______ denir.",
       "answer": "core dump / crash dump",
-      "explanation": "Core dump, kullanici uygulamasinin cokme aninda surec belleginin diske yazilmasidir. Crash dump ise isletim sisteminin kendisinin cokmesi durumunda cekirdek belleginin kaydedilmesidir. Her ikisi de post-mortem hata ayiklama icin kullanilir."
+      "explanation": "Core dump, kullanici uygulamasinin cokme aninda surec belleginin diske yazilmasidir. Crash dump ise isletim sisteminin kendisinin cokmesi durumunda cekirdek belleginin kaydedilmesidir. Her ikisi de post-mortem hata ayiklama icin kullanilir.",
+      "sentence": "Bir uygulama basarisiz oldugunda sureccin bellegini yakalayan dosyaya _______, isletim sistemi cokerse cekirdek bellegini kaydeden dosyaya _______ denir.",
+      "acceptableAnswers": [
+        "core dump / crash dump"
+      ]
     },
     {
       "id": "fb12",
-      "text": "Bircogu modern OS, _______ adli yuklenebilir cekirdek modulleri kullanir; bu moduller nesne yonelimli yaklasimla gerektiginde cekirdege yuklenir ve cikarilir.",
       "answer": "LKM (Loadable Kernel Modules)",
-      "explanation": "LKM'ler, her cekirdek bilesenini ayri tutar ve bilinen arayuzler uzerinden iletisim saglar. Cekirdege calisma zamaninda yuklenip cikarilabilir. Linux, Solaris gibi sistemlerde kullanilir ve katmanli yapiya benzer ama daha esnektir."
+      "explanation": "LKM'ler, her cekirdek bilesenini ayri tutar ve bilinen arayuzler uzerinden iletisim saglar. Cekirdege calisma zamaninda yuklenip cikarilabilir. Linux, Solaris gibi sistemlerde kullanilir ve katmanli yapiya benzer ama daha esnektir.",
+      "sentence": "Bircogu modern OS, _______ adli yuklenebilir cekirdek modulleri kullanir; bu moduller nesne yonelimli yaklasimla gerektiginde cekirdege yuklenir ve cikarilir.",
+      "acceptableAnswers": [
+        "LKM (Loadable Kernel Modules)"
+      ]
     },
     {
       "id": "fb13",
-      "text": "Linux cekirdegi derlendiginde uretilen cekirdek imaj dosyasinin adi _______'dur.",
       "answer": "vmlinuz",
-      "explanation": "make komutu ile Linux cekirdegi derlendiginde vmlinuz adli sikistirilmis cekirdek imaji uretilir. Bu dosya, boot loader (ornegin GRUB) tarafindan bellige yuklenerek sistem baslatilir."
+      "explanation": "make komutu ile Linux cekirdegi derlendiginde vmlinuz adli sikistirilmis cekirdek imaji uretilir. Bu dosya, boot loader (ornegin GRUB) tarafindan bellige yuklenerek sistem baslatilir.",
+      "sentence": "Linux cekirdegi derlendiginde uretilen cekirdek imaj dosyasinin adi _______'dur.",
+      "acceptableAnswers": [
+        "vmlinuz"
+      ]
     },
     {
       "id": "fb14",
-      "text": "Apple macOS'un cekirdek ortami olan _______, Mach mikrocekirdegi ve BSD Unix parcalarini bir arada icerir.",
       "answer": "Darwin",
-      "explanation": "Darwin, macOS ve iOS'un acik kaynakli cekirdek ortamidir. Mach mikrocekirdegi (zamanlama, IPC, bellek yonetimi), BSD (POSIX) sistem cagrilari, I/O kit ve kernel extensions (kexts) icerir. Uygulamalar library interface uzerinden Mach traps veya BSD cagrilarina erisir."
+      "explanation": "Darwin, macOS ve iOS'un acik kaynakli cekirdek ortamidir. Mach mikrocekirdegi (zamanlama, IPC, bellek yonetimi), BSD (POSIX) sistem cagrilari, I/O kit ve kernel extensions (kexts) icerir. Uygulamalar library interface uzerinden Mach traps veya BSD cagrilarina erisir.",
+      "sentence": "Apple macOS'un cekirdek ortami olan _______, Mach mikrocekirdegi ve BSD Unix parcalarini bir arada icerir.",
+      "acceptableAnswers": [
+        "Darwin"
+      ]
     },
     {
       "id": "fb15",
-      "text": "Arka plan servisleri (background services) acilis zamaninda baslatilir ve _______, _______ veya _______ olarak da bilinir.",
       "answer": "services / subsystems / daemons",
-      "explanation": "Background services, sistem baslatildiginda calismaya baslayan ve arka planda calisan surecclerdir. Disk kontrolu, surec zamanlama, hata kaydi gibi gorevleri yapar. Kullanici baglaminda (user context) calisir, cekirdek baglaminda degil."
+      "explanation": "Background services, sistem baslatildiginda calismaya baslayan ve arka planda calisan surecclerdir. Disk kontrolu, surec zamanlama, hata kaydi gibi gorevleri yapar. Kullanici baglaminda (user context) calisir, cekirdek baglaminda degil.",
+      "sentence": "Arka plan servisleri (background services) acilis zamaninda baslatilir ve _______, _______ veya _______ olarak da bilinir.",
+      "acceptableAnswers": [
+        "services / subsystems / daemons"
+      ]
     }
   ]
 }

@@ -762,75 +762,111 @@
   "fillBlanks": [
     {
       "id": "fb1",
-      "textWithBlanks": "Birden fazla surecin ayni anda paylasilan veriye erisip degistirmesi ve sonucun erisimlerin sirasina bagli olmasi durumuna _____ denir.",
       "answer": "yaris durumu (race condition)",
-      "hint": "Surecler arasinda bir 'yaris' olusur"
+      "hint": "Surecler arasinda bir 'yaris' olusur",
+      "sentence": "Birden fazla surecin ayni anda paylasilan veriye erisip degistirmesi ve sonucun erisimlerin sirasina bagli olmasi durumuna _____ denir.",
+      "acceptableAnswers": [
+        "yaris durumu (race condition)"
+      ]
     },
     {
       "id": "fb2",
-      "textWithBlanks": "Kritik bolum cozumunun uc gereksinimi: _____, Ilerleme (Progress) ve Sinirli Bekleme (Bounded Waiting) dir.",
       "answer": "Karsilikli Dislamama (Mutual Exclusion)",
-      "hint": "Ayni anda sadece bir surec kritik bolumde olabilir"
+      "hint": "Ayni anda sadece bir surec kritik bolumde olabilir",
+      "sentence": "Kritik bolum cozumunun uc gereksinimi: _____, Ilerleme (Progress) ve Sinirli Bekleme (Bounded Waiting) dir.",
+      "acceptableAnswers": [
+        "Karsilikli Dislamama (Mutual Exclusion)"
+      ]
     },
     {
       "id": "fb3",
-      "textWithBlanks": "Peterson cozumunde iki paylasilan degisken kullanilir: sirayi gosteren _____ ve sureclerin hazir olup olmadigini gosteren flag[] dizisi.",
       "answer": "turn",
-      "hint": "Hangi surecin sirasi oldugunu belirleyen tam sayi degisken"
+      "hint": "Hangi surecin sirasi oldugunu belirleyen tam sayi degisken",
+      "sentence": "Peterson cozumunde iki paylasilan degisken kullanilir: sirayi gosteren _____ ve sureclerin hazir olup olmadigini gosteren flag[] dizisi.",
+      "acceptableAnswers": [
+        "turn"
+      ]
     },
     {
       "id": "fb4",
-      "textWithBlanks": "Bellek degisikliklerinin diger islemcilere yayilmasini zorlayan donanim komutuna _____ denir.",
       "answer": "bellek bariyeri (memory barrier/fence)",
-      "hint": "Komut yeniden siralamasi sorununu cozer"
+      "hint": "Komut yeniden siralamasi sorununu cozer",
+      "sentence": "Bellek degisikliklerinin diger islemcilere yayilmasini zorlayan donanim komutuna _____ denir.",
+      "acceptableAnswers": [
+        "bellek bariyeri (memory barrier/fence)"
+      ]
     },
     {
       "id": "fb5",
-      "textWithBlanks": "Mutex kilidi mesgul bekleme gerektirdigi icin _____ olarak da adlandirilir.",
       "answer": "spinlock (donen kilit)",
-      "hint": "Surec kilit acilana kadar 'doner'"
+      "hint": "Surec kilit acilana kadar 'doner'",
+      "sentence": "Mutex kilidi mesgul bekleme gerektirdigi icin _____ olarak da adlandirilir.",
+      "acceptableAnswers": [
+        "spinlock (donen kilit)"
+      ]
     },
     {
       "id": "fb6",
-      "textWithBlanks": "Semafor uzerindeki iki atomik islem _____ ve _____ dir. Bunlarin orijinal adlari P() ve V() seklindedir.",
       "answer": "wait() ve signal()",
-      "hint": "Biri degeri azaltir (bekle), digeri arttirir (sinyal ver)"
+      "hint": "Biri degeri azaltir (bekle), digeri arttirir (sinyal ver)",
+      "sentence": "Semafor uzerindeki iki atomik islem _____ ve _____ dir. Bunlarin orijinal adlari P() ve V() seklindedir.",
+      "acceptableAnswers": [
+        "wait() ve signal()"
+      ]
     },
     {
       "id": "fb7",
-      "textWithBlanks": "Degeri yalnizca 0 ve 1 arasinda degisebilen semafora _____ denir ve mutex kilidi ile ayni islevi gorur.",
       "answer": "ikili semafor (binary semaphore)",
-      "hint": "Iki degerli semafor"
+      "hint": "Iki degerli semafor",
+      "sentence": "Degeri yalnizca 0 ve 1 arasinda degisebilen semafora _____ denir ve mutex kilidi ile ayni islevi gorur.",
+      "acceptableAnswers": [
+        "ikili semafor (binary semaphore)"
+      ]
     },
     {
       "id": "fb8",
-      "textWithBlanks": "Iki veya daha fazla surecin, birbirlerinin tuttugu kaynaklari karsilikli olarak beklemesi durumuna _____ denir.",
       "answer": "kilitlenme (deadlock)",
-      "hint": "Dairesel bekleme durumu"
+      "hint": "Dairesel bekleme durumu",
+      "sentence": "Iki veya daha fazla surecin, birbirlerinin tuttugu kaynaklari karsilikli olarak beklemesi durumuna _____ denir.",
+      "acceptableAnswers": [
+        "kilitlenme (deadlock)"
+      ]
     },
     {
       "id": "fb9",
-      "textWithBlanks": "Dusuk oncelikli surecin yuksek oncelikli surecin kilidi tutmasi sorununa _____ denir ve _____ ile cozulur.",
       "answer": "oncelik tersine cevrilmesi (priority inversion) ve oncelik miras protokolu (priority inheritance protocol)",
-      "hint": "Mars Pathfinder gorevinde yasanan sorun"
+      "hint": "Mars Pathfinder gorevinde yasanan sorun",
+      "sentence": "Dusuk oncelikli surecin yuksek oncelikli surecin kilidi tutmasi sorununa _____ denir ve _____ ile cozulur.",
+      "acceptableAnswers": [
+        "oncelik tersine cevrilmesi (priority inversion) ve oncelik miras protokolu (priority inheritance protocol)"
+      ]
     },
     {
       "id": "fb10",
-      "textWithBlanks": "Monitor icinde tanimlanan ve x.wait() ile x.signal() islemlerini destekleyen ozel degiskenlere _____ denir.",
       "answer": "kosul degiskenleri (condition variables)",
-      "hint": "Belirli bir kosulun gerceklesmesini beklemeyi saglar"
+      "hint": "Belirli bir kosulun gerceklesmesini beklemeyi saglar",
+      "sentence": "Monitor icinde tanimlanan ve x.wait() ile x.signal() islemlerini destekleyen ozel degiskenlere _____ denir.",
+      "acceptableAnswers": [
+        "kosul degiskenleri (condition variables)"
+      ]
     },
     {
       "id": "fb11",
-      "textWithBlanks": "compare_and_swap komutu degiskeni sadece mevcut deger _____ degerine esit oldugunda degistirir.",
       "answer": "beklenen (expected)",
-      "hint": "CAS'in ikinci parametresi"
+      "hint": "CAS'in ikinci parametresi",
+      "sentence": "compare_and_swap komutu degiskeni sadece mevcut deger _____ degerine esit oldugunda degistirir.",
+      "acceptableAnswers": [
+        "beklenen (expected)"
+      ]
     },
     {
       "id": "fb12",
-      "textWithBlanks": "Mesgul beklemesiz semafor uygulamasinda, sureci bekleme kuyruguna yerlestiren islem _____ ve kuyruktan cikarip hazir kuyruguna yerlestiren islem _____ dir.",
       "answer": "block() ve wakeup()",
-      "hint": "Surecin durumunu degistiren iki islem"
+      "hint": "Surecin durumunu degistiren iki islem",
+      "sentence": "Mesgul beklemesiz semafor uygulamasinda, sureci bekleme kuyruguna yerlestiren islem _____ ve kuyruktan cikarip hazir kuyruguna yerlestiren islem _____ dir.",
+      "acceptableAnswers": [
+        "block() ve wakeup()"
+      ]
     }
   ],
   "examQuestions": [

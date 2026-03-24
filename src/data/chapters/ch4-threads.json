@@ -783,111 +783,123 @@
   "fillBlanks": [
     {
       "id": "fb1",
-      "text": "Thread, bir prosesin icinde calisabilen temel _____ kullanim birimidir. Her thread kendi thread ID'si, _____, register seti ve stack'ine sahiptir.",
-      "blanks": [
+      "explanation": "Thread, CPU'nun temel kullanim birimidir. Her thread'in kendine ait program sayaci (PC - program counter), register seti ve stack'i vardir. Kod, veri ve dosyalar ise ayni prosesin thread'leri arasinda paylasilan kaynaklardir.",
+      "sentence": "Thread, bir prosesin icinde calisabilen temel _____ kullanim birimidir. Her thread kendi thread ID'si, _____, register seti ve stack'ine sahiptir.",
+      "answer": "CPU",
+      "acceptableAnswers": [
         "CPU",
         "program sayaci (PC)"
-      ],
-      "explanation": "Thread, CPU'nun temel kullanim birimidir. Her thread'in kendine ait program sayaci (PC - program counter), register seti ve stack'i vardir. Kod, veri ve dosyalar ise ayni prosesin thread'leri arasinda paylasilan kaynaklardir."
+      ]
     },
     {
       "id": "fb2",
-      "text": "_____ birden fazla gorevin ayni anda gerceklestirilmesini ifade ederken, _____ birden fazla gorevin ilerleme kaydetmesini ifade eder ve ayni anda calismak zorunda degildir.",
-      "blanks": [
+      "explanation": "Paralellik gercekten ayni anda birden fazla islem yapmaktir (cok cekirdek gerektirir). Eszamanlilik ise gorevlerin ilerleme kaydetmesidir, tek cekirdekli bir sistemde zamanlayici ile de saglanabilir.",
+      "sentence": "_____ birden fazla gorevin ayni anda gerceklestirilmesini ifade ederken, _____ birden fazla gorevin ilerleme kaydetmesini ifade eder ve ayni anda calismak zorunda degildir.",
+      "answer": "Paralellik (Parallelism)",
+      "acceptableAnswers": [
         "Paralellik (Parallelism)",
         "Eszamanlilik (Concurrency)"
-      ],
-      "explanation": "Paralellik gercekten ayni anda birden fazla islem yapmaktir (cok cekirdek gerektirir). Eszamanlilik ise gorevlerin ilerleme kaydetmesidir, tek cekirdekli bir sistemde zamanlayici ile de saglanabilir."
+      ]
     },
     {
       "id": "fb3",
-      "text": "Amdahl Yasasi formulunde speedup <= 1 / (S + (1-S)/N), S _____ kisminin oranini, N ise _____ sayisini temsil eder.",
-      "blanks": [
+      "explanation": "Amdahl Yasasi, seri ve paralel bilesenlere sahip bir uygulamada ek cekirdek eklemenin performans kazancini modellar. S seri kismin orani, N cekirdek sayisidir. N sonsuza giderken hizlanma 1/S'ye yaklasir.",
+      "sentence": "Amdahl Yasasi formulunde speedup <= 1 / (S + (1-S)/N), S _____ kisminin oranini, N ise _____ sayisini temsil eder.",
+      "answer": "seri (serial)",
+      "acceptableAnswers": [
         "seri (serial)",
         "islemci cekirdek (processing cores)"
-      ],
-      "explanation": "Amdahl Yasasi, seri ve paralel bilesenlere sahip bir uygulamada ek cekirdek eklemenin performans kazancini modellar. S seri kismin orani, N cekirdek sayisidir. N sonsuza giderken hizlanma 1/S'ye yaklasir."
+      ]
     },
     {
       "id": "fb4",
-      "text": "Coktan-Bire (Many-to-One) modelinde bircok kullanici thread'i _____ cekirdek thread'ine eslenir. Bu modelin dezavantaji, bir thread bloklarsa _____ bloklanmasidir.",
-      "blanks": [
+      "explanation": "Many-to-One modelinde tum kullanici thread'leri tek bir cekirdek thread'ine eslenir. Cekirdek thread'i bloke olursa, tum kullanici thread'leri de bloke olur. Ornek: Solaris Green Threads.",
+      "sentence": "Coktan-Bire (Many-to-One) modelinde bircok kullanici thread'i _____ cekirdek thread'ine eslenir. Bu modelin dezavantaji, bir thread bloklarsa _____ bloklanmasidir.",
+      "answer": "tek bir (single)",
+      "acceptableAnswers": [
         "tek bir (single)",
         "tum thread'lerin (all threads)"
-      ],
-      "explanation": "Many-to-One modelinde tum kullanici thread'leri tek bir cekirdek thread'ine eslenir. Cekirdek thread'i bloke olursa, tum kullanici thread'leri de bloke olur. Ornek: Solaris Green Threads."
+      ]
     },
     {
       "id": "fb5",
-      "text": "Pthreads'te thread olusturmak icin _____ fonksiyonu, thread'in bitmesini beklemek icin ise _____ fonksiyonu kullanilir.",
-      "blanks": [
+      "explanation": "pthread_create(&tid, &attr, runner, arg) yeni bir thread olusturur. pthread_join(tid, NULL) belirtilen thread (tid) tamamlanana kadar cagiran thread'i bekletir.",
+      "sentence": "Pthreads'te thread olusturmak icin _____ fonksiyonu, thread'in bitmesini beklemek icin ise _____ fonksiyonu kullanilir.",
+      "answer": "pthread_create()",
+      "acceptableAnswers": [
         "pthread_create()",
         "pthread_join()"
-      ],
-      "explanation": "pthread_create(&tid, &attr, runner, arg) yeni bir thread olusturur. pthread_join(tid, NULL) belirtilen thread (tid) tamamlanana kadar cagiran thread'i bekletir."
+      ]
     },
     {
       "id": "fb6",
-      "text": "Java'da thread olusturmanin standart yolu _____ arayuzunu uygulamaktir. Thread baslatmak icin _____ metodu cagirilir.",
-      "blanks": [
+      "explanation": "Java'da Runnable arayuzunu uygulamak standart pratiktir. Thread nesnesi olusturulduktan sonra (new Thread(new Task())), start() metodu cagirilarak thread baslatilir. run() metodu dogrudan cagirilmaz - start() onu yeni bir thread'de calistirir.",
+      "sentence": "Java'da thread olusturmanin standart yolu _____ arayuzunu uygulamaktir. Thread baslatmak icin _____ metodu cagirilir.",
+      "answer": "Runnable",
+      "acceptableAnswers": [
         "Runnable",
         "start()"
-      ],
-      "explanation": "Java'da Runnable arayuzunu uygulamak standart pratiktir. Thread nesnesi olusturulduktan sonra (new Thread(new Task())), start() metodu cagirilarak thread baslatilir. run() metodu dogrudan cagirilmaz - start() onu yeni bir thread'de calistirir."
+      ]
     },
     {
       "id": "fb7",
-      "text": "OpenMP'de paralel bolge olusturmak icin _____ direktifi kullanilir. Bu direktif, sistemdeki _____ sayisi kadar thread olusturur.",
-      "blanks": [
+      "explanation": "#pragma omp parallel direktifi, C/C++/FORTRAN kodunda paralel bolge olusturur. Cekirdek sayisi kadar thread otomatik olarak olusturulur ve bloktaki kod paralel calistirilir.",
+      "sentence": "OpenMP'de paralel bolge olusturmak icin _____ direktifi kullanilir. Bu direktif, sistemdeki _____ sayisi kadar thread olusturur.",
+      "answer": "#pragma omp parallel",
+      "acceptableAnswers": [
         "#pragma omp parallel",
         "cekirdek (core)"
-      ],
-      "explanation": "#pragma omp parallel direktifi, C/C++/FORTRAN kodunda paralel bolge olusturur. Cekirdek sayisi kadar thread otomatik olarak olusturulur ve bloktaki kod paralel calistirilir."
+      ]
     },
     {
       "id": "fb8",
-      "text": "Thread iptali iki turludur: _____ iptal hedef thread'i hemen sonlandirirken, _____ iptal hedef thread'in periyodik olarak kontrol etmesine izin verir.",
-      "blanks": [
+      "explanation": "Asenkron iptal hedef thread'i hemen sonlandirir (kaynak sizintisi riski vardir). Ertelenmiis iptal varsayilan turdur ve thread ancak iptal noktasinda (cancellation point) sonlanir, bu daha guvenlidir.",
+      "sentence": "Thread iptali iki turludur: _____ iptal hedef thread'i hemen sonlandirirken, _____ iptal hedef thread'in periyodik olarak kontrol etmesine izin verir.",
+      "answer": "Asenkron (Asynchronous)",
+      "acceptableAnswers": [
         "Asenkron (Asynchronous)",
         "Ertelenmiis (Deferred)"
-      ],
-      "explanation": "Asenkron iptal hedef thread'i hemen sonlandirir (kaynak sizintisi riski vardir). Ertelenmiis iptal varsayilan turdur ve thread ancak iptal noktasinda (cancellation point) sonlanir, bu daha guvenlidir."
+      ]
     },
     {
       "id": "fb9",
-      "text": "Linux'ta thread olusturma _____ sistem cagrisi ile yapilir. Linux, thread'lere thread yerine _____ olarak atifta bulunur.",
-      "blanks": [
+      "explanation": "Linux'ta clone() sistem cagrisi thread olusturur. Linux terminolojisinde thread yerine 'task' (gorev) terimi kullanilir. struct task_struct, proses/thread veri yapisini temsil eder.",
+      "sentence": "Linux'ta thread olusturma _____ sistem cagrisi ile yapilir. Linux, thread'lere thread yerine _____ olarak atifta bulunur.",
+      "answer": "clone()",
+      "acceptableAnswers": [
         "clone()",
         "task (gorev)"
-      ],
-      "explanation": "Linux'ta clone() sistem cagrisi thread olusturur. Linux terminolojisinde thread yerine 'task' (gorev) terimi kullanilir. struct task_struct, proses/thread veri yapisini temsil eder."
+      ]
     },
     {
       "id": "fb10",
-      "text": "Thread-Yerel Depolama (TLS), her thread'in kendi verisinin bir _____ sahip olmasini saglar. TLS, _____ veriye benzer ancak her thread'e ozgudur.",
-      "blanks": [
+      "explanation": "TLS, her thread'e ozel veri kopyasi saglar. static degiskenler gibi fonksiyon cagrilari boyunca kalicidir, ancak static'ten farki her thread'in kendine ait bir kopyaya sahip olmasidir.",
+      "sentence": "Thread-Yerel Depolama (TLS), her thread'in kendi verisinin bir _____ sahip olmasini saglar. TLS, _____ veriye benzer ancak her thread'e ozgudur.",
+      "answer": "kopyasina (copy)",
+      "acceptableAnswers": [
         "kopyasina (copy)",
         "static"
-      ],
-      "explanation": "TLS, her thread'e ozel veri kopyasi saglar. static degiskenler gibi fonksiyon cagrilari boyunca kalicidir, ancak static'ten farki her thread'in kendine ait bir kopyaya sahip olmasidir."
+      ]
     },
     {
       "id": "fb11",
-      "text": "Windows'ta thread bağlamini (context) oluşturan üc bilesen _____, _____ ve özel veri depolama alanıdır.",
-      "blanks": [
+      "explanation": "Windows'ta bir thread'in baglami (context) register seti, yiginlar (kullanici ve cekirdek modunda ayri) ve ozel veri depolama alanindan olusur. Bu bilgiler ETHREAD, KTHREAD ve TEB veri yapilarinda tutulur.",
+      "sentence": "Windows'ta thread bağlamini (context) oluşturan üc bilesen _____, _____ ve özel veri depolama alanıdır.",
+      "answer": "register seti",
+      "acceptableAnswers": [
         "register seti",
         "yiginlar (stacks)"
-      ],
-      "explanation": "Windows'ta bir thread'in baglami (context) register seti, yiginlar (kullanici ve cekirdek modunda ayri) ve ozel veri depolama alanindan olusur. Bu bilgiler ETHREAD, KTHREAD ve TEB veri yapilarinda tutulur."
+      ]
     },
     {
       "id": "fb12",
-      "text": "Zamanlayici aktivasyonlari, cekirdekten thread kutuphanesine _____ adi verilen bir iletisim mekanizmasi saglar. Bu iletisimde kullanici ve cekirdek thread'leri arasinda ara yapi olarak _____ kullanilir.",
-      "blanks": [
+      "explanation": "Zamanlayici aktivasyonlari, cekirdek ile kullanici seviyesi thread kutuphanesi arasinda upcall mekanizmasi saglar. LWP (Lightweight Process), kullanici thread'i ile cekirdek thread'i arasinda sanal islemci gorevi goren ara yapidir.",
+      "sentence": "Zamanlayici aktivasyonlari, cekirdekten thread kutuphanesine _____ adi verilen bir iletisim mekanizmasi saglar. Bu iletisimde kullanici ve cekirdek thread'leri arasinda ara yapi olarak _____ kullanilir.",
+      "answer": "yukariya cagrilar (upcalls)",
+      "acceptableAnswers": [
         "yukariya cagrilar (upcalls)",
         "Hafif Surec (LWP - Lightweight Process)"
-      ],
-      "explanation": "Zamanlayici aktivasyonlari, cekirdek ile kullanici seviyesi thread kutuphanesi arasinda upcall mekanizmasi saglar. LWP (Lightweight Process), kullanici thread'i ile cekirdek thread'i arasinda sanal islemci gorevi goren ara yapidir."
+      ]
     }
   ],
   "examQuestions": [

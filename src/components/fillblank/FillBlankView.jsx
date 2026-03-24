@@ -39,8 +39,9 @@ export default function FillBlankView() {
 
   const handleSubmit = () => {
     if (!userAnswer.trim() || submitted) return
-    const acceptable = currentQ.acceptableAnswers || [currentQ.answer]
-    const correct = acceptable.some(a => a.toLowerCase().trim() === userAnswer.toLowerCase().trim())
+    const answer = currentQ.answer || (currentQ.blanks && currentQ.blanks[0]) || ''
+    const acceptable = currentQ.acceptableAnswers || [answer].filter(Boolean)
+    const correct = acceptable.some(a => a && a.toLowerCase().trim() === userAnswer.toLowerCase().trim())
     setIsCorrect(correct)
     setSubmitted(true)
     if (correct) {
@@ -111,7 +112,9 @@ export default function FillBlankView() {
     )
   }
 
-  const parts = currentQ.sentence.split('___')
+  const sentenceText = currentQ.sentence || currentQ.text || currentQ.textWithBlanks || ''
+  const answerText = currentQ.answer || (currentQ.blanks && currentQ.blanks[0]) || ''
+  const parts = sentenceText.split('___')
 
   return (
     <div className="max-w-2xl mx-auto space-y-6">
@@ -136,7 +139,7 @@ export default function FillBlankView() {
                 : 'border-red-500 bg-red-500/10 text-red-400'
               : 'border-primary bg-primary/5 text-primary'
           }`}>
-            {submitted ? (isCorrect ? userAnswer : `${userAnswer} \u2192 ${currentQ.answer}`) : userAnswer || '???'}
+            {submitted ? (isCorrect ? userAnswer : `${userAnswer} \u2192 ${answerText}`) : userAnswer || '???'}
           </span>
           {parts[1]}
         </div>
@@ -180,7 +183,7 @@ export default function FillBlankView() {
               </p>
               {!isCorrect && (
                 <p className="text-sm text-slate-400 mt-1">
-                  Dogru cevap: <span className="text-green-400 font-mono">{currentQ.answer}</span>
+                  Dogru cevap: <span className="text-green-400 font-mono">{answerText}</span>
                 </p>
               )}
             </div>
