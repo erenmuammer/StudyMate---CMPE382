@@ -574,8 +574,8 @@
         "C) Aging (Yaslandirma)",
         "D) Dairesel Bekleme (Circular Wait)"
       ],
-      "answer": "C",
-      "explanation": "Kilitlenme icin 4 kosul: Mutual Exclusion, Hold and Wait, No Preemption, Circular Wait. Aging, aclik (starvation) onleme teknigi olup kilitlenme kosulu degildir."
+      "explanation": "Kilitlenme icin 4 kosul: Mutual Exclusion, Hold and Wait, No Preemption, Circular Wait. Aging, aclik (starvation) onleme teknigi olup kilitlenme kosulu degildir.",
+      "correctIndex": 2
     },
     {
       "id": "ch7-q2",
@@ -586,8 +586,8 @@
         "C) Ucgen ile",
         "D) Ok ile"
       ],
-      "answer": "B",
-      "explanation": "Surecler daire (O) ile, kaynaklar kare ([]) ile gosterilir."
+      "explanation": "Surecler daire (O) ile, kaynaklar kare ([]) ile gosterilir.",
+      "correctIndex": 1
     },
     {
       "id": "ch7-q3",
@@ -598,8 +598,8 @@
         "C) Guvenli durum vardir",
         "D) Daha fazla bilgi gereklidir"
       ],
-      "answer": "B",
-      "explanation": "Her kaynagin tek ornegi oldugu durumda grafta dongu varsa KESINLIKLE kilitlenme vardir. Coklu orneklerde ise dongu gerekli ama yeterli degildir."
+      "explanation": "Her kaynagin tek ornegi oldugu durumda grafta dongu varsa KESINLIKLE kilitlenme vardir. Coklu orneklerde ise dongu gerekli ama yeterli degildir.",
+      "correctIndex": 1
     },
     {
       "id": "ch7-q4",
@@ -610,8 +610,8 @@
         "C) Need = Max - Allocation",
         "D) Need = Available - Allocation"
       ],
-      "answer": "C",
-      "explanation": "Need[i][j] = Max[i][j] - Allocation[i][j]. Her surecin isini bitirmek icin daha ne kadar kaynaga ihtiyaci oldugunu gosterir."
+      "explanation": "Need[i][j] = Max[i][j] - Allocation[i][j]. Her surecin isini bitirmek icin daha ne kadar kaynaga ihtiyaci oldugunu gosterir.",
+      "correctIndex": 2
     },
     {
       "id": "ch7-q5",
@@ -622,8 +622,8 @@
         "C) (4,2,1)",
         "D) (6,5,4)"
       ],
-      "answer": "A",
-      "explanation": "Need = Max - Allocation = (8,4,3) - (2,1,1) = (6,3,2)"
+      "explanation": "Need = Max - Allocation = (8,4,3) - (2,1,1) = (6,3,2)",
+      "correctIndex": 0
     },
     {
       "id": "ch7-q6",
@@ -634,8 +634,8 @@
         "C) (3,2,2)",
         "D) (1,1,0)"
       ],
-      "answer": "B",
-      "explanation": "Need = Max - Allocation = (3,2,2) - (1,1,0) = (2,1,2)"
+      "explanation": "Need = Max - Allocation = (3,2,2) - (1,1,0) = (2,1,2)",
+      "correctIndex": 1
     },
     {
       "id": "ch7-q7",
@@ -646,8 +646,8 @@
         "C) (5,1,0)",
         "D) (6,1,0)"
       ],
-      "answer": "C",
-      "explanation": "Need = Max - Allocation = (6,1,2) - (1,0,2) = (5,1,0)"
+      "explanation": "Need = Max - Allocation = (6,1,2) - (1,0,2) = (5,1,0)",
+      "correctIndex": 2
     },
     {
       "id": "ch7-q8",
@@ -658,8 +658,8 @@
         "C) P2",
         "D) Hicbiri calismaz"
       ],
-      "answer": "B",
-      "explanation": "P0: Need(6,3,2) <= Available(4,3,2)? 6>4 HAYIR.\nP1: Need(2,1,2) <= Available(4,3,2)? 2<=4, 1<=3, 2<=2 EVET!\nP1 ilk calisabilecek surecdir."
+      "explanation": "P0: Need(6,3,2) <= Available(4,3,2)? 6>4 HAYIR.\nP1: Need(2,1,2) <= Available(4,3,2)? 2<=4, 1<=3, 2<=2 EVET!\nP1 ilk calisabilecek surecdir.",
+      "correctIndex": 1
     },
     {
       "id": "ch7-q9",
@@ -670,8 +670,8 @@
         "C) (4,3,2)",
         "D) (5,3,2)"
       ],
-      "answer": "B",
-      "explanation": "Work = Work + Allocation[P1] = (4,3,2) + (1,1,0) = (5,4,2). P1 isini bitirdikten sonra tuttugu kaynaklari serbest birakir."
+      "explanation": "Work = Work + Allocation[P1] = (4,3,2) + (1,1,0) = (5,4,2). P1 isini bitirdikten sonra tuttugu kaynaklari serbest birakir.",
+      "correctIndex": 1
     },
     {
       "id": "ch7-q10",
@@ -682,8 +682,8 @@
         "C) < P1, P2, P0 >",
         "D) < P0, P2, P1 >"
       ],
-      "answer": "C",
-      "explanation": "P1 ilk calisir (Need 2,1,2 <= 4,3,2), sonra P2 (Need 5,1,0 <= 5,4,2), sonra P0 (Need 6,3,2 <= 6,4,4). Guvenli sira: < P1, P2, P0 >"
+      "explanation": "P1 ilk calisir (Need 2,1,2 <= 4,3,2), sonra P2 (Need 5,1,0 <= 5,4,2), sonra P0 (Need 6,3,2 <= 6,4,4). Guvenli sira: < P1, P2, P0 >",
+      "correctIndex": 2
     },
     {
       "id": "ch7-q11",
@@ -694,8 +694,8 @@
         "C) Sistem her zaman kurtarilabilir",
         "D) Guvenli durumla ayni anlama gelir"
       ],
-      "answer": "B",
-      "explanation": "Guvenli olmayan durum, kilitlenme olabilecegi anlamina gelir ama kesinlikle kilitlenme DEGILDIR. Kilitlenme durumlari, guvenli olmayan durumlarin alt kumesidir."
+      "explanation": "Guvenli olmayan durum, kilitlenme olabilecegi anlamina gelir ama kesinlikle kilitlenme DEGILDIR. Kilitlenme durumlari, guvenli olmayan durumlarin alt kumesidir.",
+      "correctIndex": 1
     },
     {
       "id": "ch7-q12",
@@ -706,8 +706,8 @@
         "C) Surec sonlandirma",
         "D) Bekleme grafi olusturma"
       ],
-      "answer": "B",
-      "explanation": "Kaynak siralama ile tum kaynaklara numara verilir ve surecler yalnizca artan siraya gore kaynak isteyebilir. Bu sekilde dairesel bekleme olusamaz."
+      "explanation": "Kaynak siralama ile tum kaynaklara numara verilir ve surecler yalnizca artan siraya gore kaynak isteyebilir. Bu sekilde dairesel bekleme olusamaz.",
+      "correctIndex": 1
     },
     {
       "id": "ch7-q13",
@@ -718,8 +718,8 @@
         "C) P0: wait(S1),signal(S1) / P1: wait(S2),signal(S2)",
         "D) P0: wait(S1) / P1: wait(S2)"
       ],
-      "answer": "B",
-      "explanation": "P0 once S1 sonra S2 isterken, P1 once S2 sonra S1 istiyor. P0 S1'i tutar S2'yi bekler, P1 S2'yi tutar S1'i bekler -> Dairesel bekleme -> Kilitlenme!"
+      "explanation": "P0 once S1 sonra S2 isterken, P1 once S2 sonra S1 istiyor. P0 S1'i tutar S2'yi bekler, P1 S2'yi tutar S1'i bekler -> Dairesel bekleme -> Kilitlenme!",
+      "correctIndex": 1
     },
     {
       "id": "ch7-q14",
@@ -730,8 +730,8 @@
         "C) Kilitlenme Tespiti (Deadlock Detection)",
         "D) Kilitlenme Kurtarma (Deadlock Recovery)"
       ],
-      "answer": "B",
-      "explanation": "Banker's Algorithm, kilitlenme kacinma (avoidance) yaklasimina aittir. Her kaynak isteginde guvenli durum kontrolu yaparak kilitlenmeden kacinir."
+      "explanation": "Banker's Algorithm, kilitlenme kacinma (avoidance) yaklasimina aittir. Her kaynak isteginde guvenli durum kontrolu yaparak kilitlenmeden kacinir.",
+      "correctIndex": 1
     },
     {
       "id": "ch7-q15",
@@ -742,8 +742,8 @@
         "C) Kilitlenme Tespiti",
         "D) Kilitlenme Kurtarma"
       ],
-      "answer": "C",
-      "explanation": "Bekleme Grafi, Kaynak Atama Grafindaki kaynaklari cikartarak olusturulur ve kilitlenme tespiti (detection) icin kullanilir. Grafta dongu = kilitlenme."
+      "explanation": "Bekleme Grafi, Kaynak Atama Grafindaki kaynaklari cikartarak olusturulur ve kilitlenme tespiti (detection) icin kullanilir. Grafta dongu = kilitlenme.",
+      "correctIndex": 2
     },
     {
       "id": "ch7-q16",
@@ -754,8 +754,8 @@
         "C) Tespit + Kurtarma",
         "D) Gormezden Gelme (Ostrich Algorithm)"
       ],
-      "answer": "D",
-      "explanation": "Cogu isletim sistemi gormezden gelme yaklasimini kullanir cunku kilitlenme nadiren olusur ve diger yaklasimlar fazla maliyet getirir."
+      "explanation": "Cogu isletim sistemi gormezden gelme yaklasimini kullanir cunku kilitlenme nadiren olusur ve diger yaklasimlar fazla maliyet getirir.",
+      "correctIndex": 3
     },
     {
       "id": "ch7-q17",
@@ -766,8 +766,8 @@
         "C) Surecin ismine gore (alfabetik)",
         "D) Surecin ne kadar suredir calistigina gore"
       ],
-      "answer": "C",
-      "explanation": "Surec sonlandirmada oncelik, kaynak kullanimi, calisma suresi, kalan ihtiyac ve surec tipi dikkate alinir. Surecin ismi bir kriter degildir."
+      "explanation": "Surec sonlandirmada oncelik, kaynak kullanimi, calisma suresi, kalan ihtiyac ve surec tipi dikkate alinir. Surecin ismi bir kriter degildir.",
+      "correctIndex": 2
     },
     {
       "id": "ch7-q18",
@@ -778,8 +778,8 @@
         "C) Semafor kullanma",
         "D) Kaynaklari paylasimli yapma"
       ],
-      "answer": "A",
-      "explanation": "Tutma ve Bekleme'yi kirmak icin surec ya baslamadan once TUM kaynaklari ister, ya da yeni kaynak istemeden once tum tuttugu kaynaklari serbest birakir."
+      "explanation": "Tutma ve Bekleme'yi kirmak icin surec ya baslamadan once TUM kaynaklari ister, ya da yeni kaynak istemeden once tum tuttugu kaynaklari serbest birakir.",
+      "correctIndex": 0
     },
     {
       "id": "ch7-q19",
@@ -790,8 +790,8 @@
         "C) Hayir, cunku 0 < 2",
         "D) Evet, ama sadece A kaynagi icin"
       ],
-      "answer": "A",
-      "explanation": "Need(5,1,0) <= Work(5,4,2) kontrolu: 5<=5 EVET, 1<=4 EVET, 0<=2 EVET. Tum kosullar saglanir, P2 calisabilir."
+      "explanation": "Need(5,1,0) <= Work(5,4,2) kontrolu: 5<=5 EVET, 1<=4 EVET, 0<=2 EVET. Tum kosullar saglanir, P2 calisabilir.",
+      "correctIndex": 0
     },
     {
       "id": "ch7-q20",
@@ -802,8 +802,8 @@
         "C) (5,4,2)",
         "D) (7,4,4)"
       ],
-      "answer": "A",
-      "explanation": "Work = Work + Allocation[P2] = (5,4,2) + (1,0,2) = (6,4,4). P2 isini bitirince tuttugu kaynaklari serbest birakir."
+      "explanation": "Work = Work + Allocation[P2] = (5,4,2) + (1,0,2) = (6,4,4). P2 isini bitirince tuttugu kaynaklari serbest birakir.",
+      "correctIndex": 0
     },
     {
       "id": "ch7-q21",
@@ -814,8 +814,8 @@
         "C) R2 tutarken R0 istemek",
         "D) R0 tutarken R2 istemek"
       ],
-      "answer": "C",
-      "explanation": "Kaynak siralama kuralina gore yalnizca artan siraya gore kaynak istenebilir. R2(2) tutarken R0(0) istemek gecersizdir cunku 0 < 2 (azalan siralama)."
+      "explanation": "Kaynak siralama kuralina gore yalnizca artan siraya gore kaynak istenebilir. R2(2) tutarken R0(0) istemek gecersizdir cunku 0 < 2 (azalan siralama).",
+      "correctIndex": 2
     },
     {
       "id": "ch7-q22",
@@ -826,8 +826,8 @@
         "C) Allocation matrisi ile",
         "D) Available vektoru ile"
       ],
-      "answer": "D",
-      "explanation": "Guvenlik algoritmasinin ilk adiminda Work = Available olarak baslatilir. Finish[i] = false (tum i icin) yapilir."
+      "explanation": "Guvenlik algoritmasinin ilk adiminda Work = Available olarak baslatilir. Finish[i] = false (tum i icin) yapilir.",
+      "correctIndex": 3
     }
   ],
   "fillBlanks": [

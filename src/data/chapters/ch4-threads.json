@@ -529,9 +529,9 @@
         "C) Stack",
         "D) Kod bolumu (Code Section)"
       ],
-      "answer": "D",
       "explanation": "Thread'ler kod bolumunu, veri bolumunu ve dosyalar gibi kaynaklari prosesin diger thread'leri ile PAYLASIRLAR. Ancak her thread'in kendine ait program sayaci (PC), register seti ve stack'i vardir.",
-      "difficulty": "easy"
+      "difficulty": "easy",
+      "correctIndex": 3
     },
     {
       "id": "q2",
@@ -542,9 +542,9 @@
         "C) Thread'ler kaynaklari paylasar",
         "D) Thread olusturma surec olusturmadan ucuzdur"
       ],
-      "answer": "B",
       "explanation": "Yanit verebilirlik, prosesin bir kismi bloke olsa bile (ornegin uzun bir I/O islemi) diger thread'lerin calismaya devam edebilmesidir. Bu ozellikle kullanici arayuzleri (UI) icin onemlidir - kullanici arayuzu thread'i bloke olmaz.",
-      "difficulty": "easy"
+      "difficulty": "easy",
+      "correctIndex": 1
     },
     {
       "id": "q3",
@@ -555,9 +555,9 @@
         "C) Yalnizca cok cekirdekli sistemlerde mumkundur",
         "D) Yalnizca paralel donanim ile saglanabilir"
       ],
-      "answer": "B",
       "explanation": "Eszamanlilik (concurrency), birden fazla gorevin ilerleme kaydetmesini destekler ancak ayni anda calismalari gerekmez. Tek islemcili/cekirdekli bir sistemde zamanlayici (scheduler) eszamanliligi saglayabilir. Paralellik ise gercekten ayni anda birden fazla gorev yurutmeyi gerektirir.",
-      "difficulty": "easy"
+      "difficulty": "easy",
+      "correctIndex": 1
     },
     {
       "id": "q4",
@@ -568,9 +568,9 @@
         "C) 4.0 kat",
         "D) 10.0 kat"
       ],
-      "answer": "B",
       "explanation": "Amdahl Yasasi: speedup <= 1 / (S + (1-S)/N). N sonsuza yaklasirken (1-S)/N -> 0 olur, dolayisiyla speedup -> 1/S. S = 0.40 icin: speedup = 1/0.40 = 2.5 kat. Seri kisim ne kadar buyukse, elde edilebilecek maksimum hizlanma o kadar dusuktur.",
-      "difficulty": "medium"
+      "difficulty": "medium",
+      "correctIndex": 1
     },
     {
       "id": "q5",
@@ -581,9 +581,9 @@
         "C) Her kullanici thread'i icin ayri proses gerekir",
         "D) Thread olusturma maliyeti cok yuksektir"
       ],
-      "answer": "B",
       "explanation": "Coktan-Bire modelinde tum kullanici thread'leri tek bir cekirdek thread'ine eslenir. Bir kullanici thread'i bloklayici bir sistem cagrisi yaparsa, cekirdek thread'i bloklanir ve dolayisiyla TUM kullanici thread'leri bloklanir. Ayrica cok cekirdekli sistemde paralel calisma yapilamaz.",
-      "difficulty": "easy"
+      "difficulty": "easy",
+      "correctIndex": 1
     },
     {
       "id": "q6",
@@ -594,9 +594,9 @@
         "C) Windows ve Linux",
         "D) Hicbiri"
       ],
-      "answer": "C",
       "explanation": "Windows ve Linux, Bire-Bir (One-to-One) modelini kullanir. Her kullanici thread'i icin bir cekirdek thread'i olusturulur. Solaris Green Threads ve GNU Portable Threads ise Coktan-Bire (Many-to-One) modeli ornekleridir.",
-      "difficulty": "easy"
+      "difficulty": "easy",
+      "correctIndex": 2
     },
     {
       "id": "q7",
@@ -607,9 +607,9 @@
         "C) pthread_join()",
         "D) pthread_attr_init()"
       ],
-      "answer": "C",
       "explanation": "pthread_join(tid, NULL) fonksiyonu, belirtilen thread (tid) bitene kadar cagiran thread'i bekletir. pthread_create() thread olusturur, pthread_exit() thread'i sonlandirir, pthread_attr_init() thread ozelliklerini baslatir.",
-      "difficulty": "easy"
+      "difficulty": "easy",
+      "correctIndex": 2
     },
     {
       "id": "q8",
@@ -620,9 +620,9 @@
         "C) Process sinifini kullanmak",
         "D) Executor sinifini dogrudan instantiate etmek"
       ],
-      "answer": "B",
       "explanation": "Java'da thread olusturmanin iki yolu vardir: Thread sinifini genisletmek veya Runnable arayuzunu uygulamak. Standart pratik Runnable arayuzunu uygulamaktir, cunku Java coklu kaslitimi (multiple inheritance) desteklemedigi icin Runnable daha esnektir.",
-      "difficulty": "medium"
+      "difficulty": "medium",
+      "correctIndex": 1
     },
     {
       "id": "q9",
@@ -633,9 +633,9 @@
         "C) Her gorev icin yeni bir proses olusturur",
         "D) Gorev olusturma stratejisini calistirma stratejisinden ayirir"
       ],
-      "answer": "C",
       "explanation": "Thread Havuzu, her gorev icin yeni proses OLUSTURMAZ - tam tersine, onceden olusturulmus thread'leri yeniden kullanir. Avantajlari: hiz (mevcut thread kullanimi), sinirli thread sayisi ve gorev yonetimi esnekligi.",
-      "difficulty": "medium"
+      "difficulty": "medium",
+      "correctIndex": 2
     },
     {
       "id": "q10",
@@ -646,9 +646,9 @@
         "C) Cekirdek sayisi kadar thread olusturarak paralel bolge olusturur",
         "D) Thread'leri senkronize eder"
       ],
-      "answer": "C",
       "explanation": "#pragma omp parallel direktifi, sistemdeki cekirdek sayisi kadar thread olusturur ve bloktaki kodu paralel olarak calistirir. Bu bir paralel bolge (parallel region) olusturur. #pragma omp parallel for ise bir for dongusunu otomatik olarak thread'lere dagitir.",
-      "difficulty": "medium"
+      "difficulty": "medium",
+      "correctIndex": 2
     },
     {
       "id": "q11",
@@ -659,9 +659,9 @@
         "C) Tum thread'leri kopyalar",
         "D) Hicbir sey yapmaz"
       ],
-      "answer": "B",
       "explanation": "exec() her zamanki gibi calisir - calistirilan sureci TUM THREAD'LER DAHIL yeni programla degistirir. Dolayisiyla exec() cagrisidan sonra sadece yeni programin kodu calisir. fork() ise sadece cagiran thread'i mi yoksa tum thread'leri mi kopyalayacagi konusunda farkli davranabilir.",
-      "difficulty": "medium"
+      "difficulty": "medium",
+      "correctIndex": 1
     },
     {
       "id": "q12",
@@ -672,9 +672,9 @@
         "C) Iptal noktasi (cancellation point) gerektirmez",
         "D) Yalnizca Java'da kullanilir"
       ],
-      "answer": "B",
       "explanation": "Ertelenmiis iptal (Deferred Cancellation), Pthreads'te VARSAYILAN iptal turudur. Hedef thread, iptal edilip edilmeyecegini PERIYODIK olarak kontrol eder ve iptal ancak iptal noktasinda (cancellation point - pthread_testcancel()) gerceklesir. Bu, asenkron iptalden daha guvenlidir.",
-      "difficulty": "medium"
+      "difficulty": "medium",
+      "correctIndex": 1
     },
     {
       "id": "q13",
@@ -685,9 +685,9 @@
         "C) Tum thread'ler tarafindan paylasilan bir depolama alanidir",
         "D) static veriye benzer ancak her thread'e ozgudur"
       ],
-      "answer": "C",
       "explanation": "TLS, tum thread'ler tarafindan paylasilan bir depolama DEGILDIR - tam tersine, her thread'in kendi OZEL kopyasini saglar. TLS static veriye benzer (fonksiyon cagrilari boyunca kalici) ancak her thread'e ozgu (unique) olmasiyla ayrilir.",
-      "difficulty": "medium"
+      "difficulty": "medium",
+      "correctIndex": 2
     },
     {
       "id": "q14",
@@ -698,9 +698,9 @@
         "C) clone()",
         "D) CreateThread()"
       ],
-      "answer": "C",
       "explanation": "Linux'ta thread olusturma clone() sistem cagrisi ile yapilir. clone(), cocuk gorev'in (child task) ebeveyn gorev'in (parent task) adres alanini paylasimasina olanak tanir. Bayraklar (CLONE_FS, CLONE_VM, CLONE_SIGHAND, CLONE_FILES) paylasimin derecesini belirler. Linux, thread'lere 'task' der.",
-      "difficulty": "medium"
+      "difficulty": "medium",
+      "correctIndex": 2
     },
     {
       "id": "q15",
@@ -711,9 +711,9 @@
         "C) 2.0 kat",
         "D) 4.0 kat"
       ],
-      "answer": "B",
       "explanation": "speedup <= 1 / (S + (1-S)/N) = 1 / (0.25 + (1-0.25)/2) = 1 / (0.25 + 0.375) = 1 / 0.625 = 1.6 kat. %25 seri kisim, 2 cekirdekle bile hizlanmayi 1.6 kat ile sinirlar.",
-      "difficulty": "hard"
+      "difficulty": "hard",
+      "correctIndex": 1
     },
     {
       "id": "q16",
@@ -724,9 +724,9 @@
         "C) TEB",
         "D) ETHREAD ve KTHREAD"
       ],
-      "answer": "C",
       "explanation": "TEB (Thread Environment Block) kullanici alaninda bulunur ve thread ID, kullanici modu yigini ve thread-yerel depolamayi icerir. ETHREAD (Executive Thread Block) ve KTHREAD (Kernel Thread Block) ise cekirdek alaninda (kernel space) bulunur.",
-      "difficulty": "hard"
+      "difficulty": "hard",
+      "correctIndex": 2
     },
     {
       "id": "q17",
@@ -737,9 +737,9 @@
         "C) Isletim sistemi bazi thread'leri sonlandirir",
         "D) Bellek yetersizdir"
       ],
-      "answer": "B",
       "explanation": "Artirma islemi (++counter) atomik degildir - oku, artir, yaz adimlari arasinda baska bir thread araya girebilir. Bu bir yaris durumu (race condition) olusturur. Sonuc her seferinde farkli olabilir (ornegin 68820, 61506, 42251). Cozum: senkronizasyon mekanizmalari (mutex, semaphore vb.) kullanmaktir.",
-      "difficulty": "hard"
+      "difficulty": "hard",
+      "correctIndex": 1
     },
     {
       "id": "q18",
@@ -750,9 +750,9 @@
         "C) RecursiveAction daha hizlidir",
         "D) Aralarinda fark yoktur"
       ],
-      "answer": "B",
       "explanation": "Her ikisi de ForkJoinTask soyut sinifini genisletir. RecursiveTask<V>, compute() metodu uzerinden bir sonuc DONDURUR (V tipinde). RecursiveAction ise void compute() metoduna sahiptir ve sonuc DONDURMEZ. Hesaplama sonucu gerekiyorsa RecursiveTask, gerekmiyorsa RecursiveAction kullanilir.",
-      "difficulty": "hard"
+      "difficulty": "hard",
+      "correctIndex": 1
     },
     {
       "id": "q19",
@@ -763,9 +763,9 @@
         "C) CLONE_SIGHAND",
         "D) CLONE_FILES"
       ],
-      "answer": "B",
       "explanation": "CLONE_VM bayragi kullanildiginda, cocuk gorev ebeveynin bellek alanini (address space) paylasir. CLONE_FS dosya sistemi bilgisini, CLONE_SIGHAND sinyal isleyicilerini, CLONE_FILES acik dosyalari paylasir. Tum bayraklar birlikte kullanildiginda gercek bir thread olusur.",
-      "difficulty": "hard"
+      "difficulty": "hard",
+      "correctIndex": 1
     },
     {
       "id": "q20",
@@ -776,8 +776,8 @@
         "C) Pthreads",
         "D) Grand Central Dispatch (GCD)"
       ],
-      "answer": "C",
-      "explanation": "Pthreads bir ACIK (explicit) threading kutuphanesidir - programci thread olusturma ve yonetimi dogrudan kontrol eder. Ortuk threading'de (implicit threading) thread yonetimi derleyiciler ve calisma zamani kutuphaneleri tarafindan yapilir. Thread Pools, Fork-Join, OpenMP, GCD ve Intel TBB ortuk threading yontemleridir."
+      "explanation": "Pthreads bir ACIK (explicit) threading kutuphanesidir - programci thread olusturma ve yonetimi dogrudan kontrol eder. Ortuk threading'de (implicit threading) thread yonetimi derleyiciler ve calisma zamani kutuphaneleri tarafindan yapilir. Thread Pools, Fork-Join, OpenMP, GCD ve Intel TBB ortuk threading yontemleridir.",
+      "correctIndex": 2
     }
   ],
   "fillBlanks": [

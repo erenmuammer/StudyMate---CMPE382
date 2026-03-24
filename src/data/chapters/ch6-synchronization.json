@@ -507,9 +507,9 @@
         "C) Sadece tek islemcili sistemlerde",
         "D) Surecler farkli verilere eristiginde"
       ],
-      "answer": "B",
       "explanation": "Yaris durumu, birden fazla surecin ayni anda paylasilan veriye erisip degistirmesi ve sonucun erisimlerin sirasina bagli olmasidir.",
-      "difficulty": "easy"
+      "difficulty": "easy",
+      "correctIndex": 1
     },
     {
       "id": "q2",
@@ -520,9 +520,9 @@
         "C) Gizlilik, Butunluk, Erisilebilirlik",
         "D) Engelleme, Uyandirma, Zamanlama"
       ],
-      "answer": "B",
       "explanation": "Kritik bolum cozumu uc gereksinimi karsilamalidir: Mutual Exclusion (ayni anda tek surec), Progress (secim ertelenemez), Bounded Waiting (beklemeye ust sinir).",
-      "difficulty": "easy"
+      "difficulty": "easy",
+      "correctIndex": 1
     },
     {
       "id": "q3",
@@ -533,9 +533,9 @@
         "C) flag[j] = false VEYA turn = i oldugunda",
         "D) flag[j] = true VE turn = j oldugunda"
       ],
-      "answer": "C",
       "explanation": "Pi, while(flag[j] && turn==j) dongusu bittikten sonra girer. Bu dongu flag[j]=false VEYA turn=i oldugunda sona erer.",
-      "difficulty": "medium"
+      "difficulty": "medium",
+      "correctIndex": 2
     },
     {
       "id": "q4",
@@ -546,9 +546,9 @@
         "C) 0",
         "D) 1"
       ],
-      "answer": "B",
       "explanation": "test_and_set mevcut degeri (false) dondurur ve degiskeni true yapar. false donmesi surecin kilidi basariyla aldigini gosterir.",
-      "difficulty": "medium"
+      "difficulty": "medium",
+      "correctIndex": 1
     },
     {
       "id": "q5",
@@ -559,9 +559,9 @@
         "C) Cok islemcili sistemlerde kisa kritik bolumler icin context switch maliyetinden kacinir",
         "D) Deadlock'u onler"
       ],
-      "answer": "C",
       "explanation": "Spinlock cok islemcili sistemlerde, kritik bolum kisa oldugunda context switch maliyetinden daha verimli olabilir cunku surec baska islemcide donmeye devam eder.",
-      "difficulty": "medium"
+      "difficulty": "medium",
+      "correctIndex": 2
     },
     {
       "id": "q6",
@@ -572,9 +572,9 @@
         "C) 3",
         "D) 5"
       ],
-      "answer": "B",
       "explanation": "Her wait(S) islemi S'yi 1 azaltir. 5 - 3 = 2. Hala 2 surec daha kaynaklara erisebilir.",
-      "difficulty": "easy"
+      "difficulty": "easy",
+      "correctIndex": 1
     },
     {
       "id": "q7",
@@ -585,9 +585,9 @@
         "C) Mutex kilidi daha gucludur",
         "D) Ikili semafor yalnizca donanim duzeninde calisir"
       ],
-      "answer": "B",
       "explanation": "Ikili semaforun degeri sadece 0 ve 1 olabilir, bu da mutex kilidi ile ayni islevi gorur - karsilikli dislamayi saglar.",
-      "difficulty": "easy"
+      "difficulty": "easy",
+      "correctIndex": 1
     },
     {
       "id": "q8",
@@ -598,9 +598,9 @@
         "C) wait(mutex); CS; wait(mutex);",
         "D) signal(mutex); CS; signal(mutex);"
       ],
-      "answer": "C",
       "explanation": "wait(mutex) iki kez cagrilirsa, ikinci wait sureci sonsuza kadar bloke eder cunku ilk wait mutex'i zaten 0'a dusurmustur. Bu deadlock olusturur.",
-      "difficulty": "medium"
+      "difficulty": "medium",
+      "correctIndex": 2
     },
     {
       "id": "q9",
@@ -611,9 +611,9 @@
         "C) Sinirli bekleme ihlali",
         "D) Bellek sizintisi"
       ],
-      "answer": "B",
       "explanation": "Once signal cagirilirsa semafor degeri artar ve baska surecler de kritik bolume girebilir. Bu karsilikli dislammayi (mutual exclusion) ihlal eder.",
-      "difficulty": "medium"
+      "difficulty": "medium",
+      "correctIndex": 1
     },
     {
       "id": "q10",
@@ -624,9 +624,9 @@
         "C) Yalnizca bir",
         "D) Prosedur sayisi kadar"
       ],
-      "answer": "C",
       "explanation": "Monitor yapisi geregi ayni anda yalnizca bir surec monitor icinde aktif olabilir. Bu otomatik karsilikli dislamami saglar.",
-      "difficulty": "easy"
+      "difficulty": "easy",
+      "correctIndex": 2
     },
     {
       "id": "q11",
@@ -637,9 +637,9 @@
         "C) Tum surecler uyandililir",
         "D) Surec bloke olur"
       ],
-      "answer": "B",
       "explanation": "Monitordeki kosul degiskenlerinde, x.wait() ile bekleyen surec yoksa x.signal() isleminin hicbir etkisi yoktur - sinyal kaybolur. Bu semafordan farklidir.",
-      "difficulty": "medium"
+      "difficulty": "medium",
+      "correctIndex": 1
     },
     {
       "id": "q12",
@@ -650,9 +650,9 @@
         "C) 1 dondurur, lock=0 olur",
         "D) 0 dondurur, lock=0 olur"
       ],
-      "answer": "B",
       "explanation": "CAS, *value (1) != expected (0) oldugu icin swap yapmaz, lock=1 kalir. Eski deger 1 dondurulur. Surec kilidi alamaz ve beklemeye devam eder.",
-      "difficulty": "hard"
+      "difficulty": "hard",
+      "correctIndex": 1
     },
     {
       "id": "q13",
@@ -663,9 +663,9 @@
         "C) 3 surec semafor uzerinde bekliyor",
         "D) Semafor 3 kez kullanilmis"
       ],
-      "answer": "C",
       "explanation": "Mesgul beklemesiz uygulamada, value once azaltilir sonra kontrol edilir. Negatif degerin mutlak degeri (|-3| = 3) bekleyen surec sayisini gosterir.",
-      "difficulty": "hard"
+      "difficulty": "hard",
+      "correctIndex": 2
     },
     {
       "id": "q14",
@@ -676,9 +676,9 @@
         "C) Oncelik miras protokolu (Priority Inheritance)",
         "D) Mutex kilidi"
       ],
-      "answer": "C",
       "explanation": "Oncelik miras protokolunde, dusuk oncelikli surec gecici olarak yuksek oncelikli surecin onceligi ile calistirilir. Boylece dusuk oncelikli surec hizla isini bitirip kilidi birakir.",
-      "difficulty": "medium"
+      "difficulty": "medium",
+      "correctIndex": 2
     },
     {
       "id": "q15",
@@ -689,9 +689,9 @@
         "C) Karsilikli dislamama ihlali olusur",
         "D) Starvation olusur ama deadlock olusaamz"
       ],
-      "answer": "B",
       "explanation": "P0 wait(S) ve P1 wait(Q) calistirirsa, P0 Q'yu, P1 S'yi bekler. Her iki surec de diger surecin tuttugu kaynagi bekledigi icin deadlock (dairesel bekleme) olusur.",
-      "difficulty": "hard"
+      "difficulty": "hard",
+      "correctIndex": 1
     },
     {
       "id": "q16",
@@ -702,9 +702,9 @@
         "C) Bellegi temizlemek icin",
         "D) Islemciyi uyandirmak icin"
       ],
-      "answer": "B",
       "explanation": "turn = j ile surec kibar davranarak sirayi diger surece verir. Bu sayede iki surec ayni anda flag[]=true yapsa bile, turn degiskeni hangisinin once girecegini belirler ve deadlock'u onler.",
-      "difficulty": "hard"
+      "difficulty": "hard",
+      "correctIndex": 1
     },
     {
       "id": "q17",
@@ -715,9 +715,9 @@
         "C) Karsilikli dislamayi otomatik saglar, programci hatasini azaltir",
         "D) Daha fazla sureci destekler"
       ],
-      "answer": "C",
       "explanation": "Monitorde karsilikli dislamama otomatik saglanir - programcinin wait/signal ciftlerini dogru yerlestirme zorunlulugu yoktur. Bu, senkronizasyon hatalarini onemli olcude azaltir.",
-      "difficulty": "medium"
+      "difficulty": "medium",
+      "correctIndex": 2
     },
     {
       "id": "q18",
@@ -728,9 +728,9 @@
         "C) Starvation (aclik) - bir surec sonsuza kadar bekleyebilir",
         "D) Buffer overflow"
       ],
-      "answer": "C",
       "explanation": "Sinirli bekleme saglanmazsa, bir surec kritik bolume girmek icin istekte bulunmasina ragmen diger surecler surekli once girebilir ve bu surec sonsuza kadar bekleyebilir (starvation/aclik).",
-      "difficulty": "medium"
+      "difficulty": "medium",
+      "correctIndex": 2
     },
     {
       "id": "q19",
@@ -741,9 +741,9 @@
         "C) 100 veya 0 (belirsiz)",
         "D) Hata verir"
       ],
-      "answer": "C",
       "explanation": "Derleyici veya islemci, bagimsiz olan x=100 ve flag=true komutlarinin sirasini degistirebilir. flag=true once calisirsa, Thread 1 henuz x atanmadan x'i okuyabilir ve 0 yazdirilabilir.",
-      "difficulty": "hard"
+      "difficulty": "hard",
+      "correctIndex": 2
     },
     {
       "id": "q20",
@@ -754,9 +754,9 @@
         "C) S->value == 0 oldugunda",
         "D) Her zaman bloke eder"
       ],
-      "answer": "B",
       "explanation": "wait() islemi once S->value'yu azaltir. Azaltma sonrasi S->value < 0 ise surec bekleme kuyruguna eklenir ve block() ile askiya alinir.",
-      "difficulty": "hard"
+      "difficulty": "hard",
+      "correctIndex": 1
     }
   ],
   "fillBlanks": [

@@ -647,8 +647,8 @@
         "C) Dosya sistemi yonetimi (File-System Manipulation)",
         "D) Hata tespiti (Error Detection)"
       ],
-      "answer": "B",
-      "explanation": "Kaynak tahsisi (Resource Allocation), sisteme yonelik (system-oriented) bir servistir. Kullaniciya yonelik servisler: UI, program yurutme, I/O islemleri, dosya sistemi yonetimi, iletisim ve hata tespitidir. Kaynak tahsisi, kayit tutma ve koruma/guvenlik ise sisteme yonelik servislerdir."
+      "explanation": "Kaynak tahsisi (Resource Allocation), sisteme yonelik (system-oriented) bir servistir. Kullaniciya yonelik servisler: UI, program yurutme, I/O islemleri, dosya sistemi yonetimi, iletisim ve hata tespitidir. Kaynak tahsisi, kayit tutma ve koruma/guvenlik ise sisteme yonelik servislerdir.",
+      "correctIndex": 1
     },
     {
       "id": "q2",
@@ -659,8 +659,8 @@
         "C) Yalnizca stack (yigin) yontemi",
         "D) Dogrudan bellek erisimi (DMA)"
       ],
-      "answer": "B",
-      "explanation": "Linux ve Solaris, blok/tablo yontemini kullanir. Bu yontemde parametreler bellekte bir tabloya veya bloga yerlestirilir ve tablonun adresi bir yazmac araciligiyla isletim sistemine gonderilir. Bu yontem, parametre sayisinda sinir koymaz."
+      "explanation": "Linux ve Solaris, blok/tablo yontemini kullanir. Bu yontemde parametreler bellekte bir tabloya veya bloga yerlestirilir ve tablonun adresi bir yazmac araciligiyla isletim sistemine gonderilir. Bu yontem, parametre sayisinda sinir koymaz.",
+      "correctIndex": 1
     },
     {
       "id": "q3",
@@ -671,8 +671,8 @@
         "C) chmod() - Windows koruma sistemi",
         "D) pipe() - Unix iletisim"
       ],
-      "answer": "C",
-      "explanation": "chmod() bir Unix/POSIX sistem cagrisidir ve dosya izinlerini degistirmek icin kullanilir. Windows'ta koruma icin SetFileSecurity(), InitializeSecurityDescriptor(), SetSecurityDescriptorGroup() gibi cagrilar kullanilir. Unix'te koruma icin chmod(), umask() ve chown() kullanilir."
+      "explanation": "chmod() bir Unix/POSIX sistem cagrisidir ve dosya izinlerini degistirmek icin kullanilir. Windows'ta koruma icin SetFileSecurity(), InitializeSecurityDescriptor(), SetSecurityDescriptorGroup() gibi cagrilar kullanilir. Unix'te koruma icin chmod(), umask() ve chown() kullanilir.",
+      "correctIndex": 2
     },
     {
       "id": "q4",
@@ -683,8 +683,8 @@
         "C) printf() kendisi bir sistem cagrisidir ve dogrudan cekirdekte calisir",
         "D) Islem tamamen kullanici modunda tamamlanir, cekirdege gerek yoktur"
       ],
-      "answer": "B",
-      "explanation": "printf() bir kutuphane fonksiyonudur (API), sistem cagrisi degildir. C programi printf() cagirir -> Standart C kutuphanesi bunu yakalar -> write() sistem cagrisini baslatir (user mode'dan kernel mode'a gecis olur) -> Cekirdek yazma islemini gerceklestirir -> Sonuc C kutuphanesi araciligiyla kullanici programina doner."
+      "explanation": "printf() bir kutuphane fonksiyonudur (API), sistem cagrisi degildir. C programi printf() cagirir -> Standart C kutuphanesi bunu yakalar -> write() sistem cagrisini baslatir (user mode'dan kernel mode'a gecis olur) -> Cekirdek yazma islemini gerceklestirir -> Sonuc C kutuphanesi araciligiyla kullanici programina doner.",
+      "correctIndex": 1
     },
     {
       "id": "q5",
@@ -695,8 +695,8 @@
         "C) Arka plan servisleri (Background services)",
         "D) Programlama dili destegi (Programming-language support)"
       ],
-      "answer": "B",
-      "explanation": "CPU zamanlama (CPU scheduling), cekirdek (kernel) icinde gerceklesen bir islevdir, sistem programi kategorisi degildir. Sistem programlarinin kategorileri: dosya yonetimi, dosya degistirme, durum bilgisi, programlama dili destegi, program yukleme/yurutme, iletisim, arka plan servisleri ve uygulama programlari."
+      "explanation": "CPU zamanlama (CPU scheduling), cekirdek (kernel) icinde gerceklesen bir islevdir, sistem programi kategorisi degildir. Sistem programlarinin kategorileri: dosya yonetimi, dosya degistirme, durum bilgisi, programlama dili destegi, program yukleme/yurutme, iletisim, arka plan servisleri ve uygulama programlari.",
+      "correctIndex": 1
     },
     {
       "id": "q6",
@@ -707,8 +707,8 @@
         "C) Linker bellekte calisir, Loader diskte calisir",
         "D) Ikisi de ayni isi yapar, farkli isimlerdir"
       ],
-      "answer": "B",
-      "explanation": "Linker, derleyici tarafindan uretilen nesne dosyalarini (.o) ve kutuphaneleri birlestirerek tek bir calistirilabilir (executable) dosya olusturur. Loader ise bu calistirilabilir dosyayi ikincil depolamadan (disk) bellige yukler ve relocation (yer degistirme) islemini yaparak programin calistirilmasini saglar."
+      "explanation": "Linker, derleyici tarafindan uretilen nesne dosyalarini (.o) ve kutuphaneleri birlestirerek tek bir calistirilabilir (executable) dosya olusturur. Loader ise bu calistirilabilir dosyayi ikincil depolamadan (disk) bellige yukler ve relocation (yer degistirme) islemini yaparak programin calistirilmasini saglar.",
+      "correctIndex": 1
     },
     {
       "id": "q7",
@@ -719,8 +719,8 @@
         "C) Kutuphane bir kez yuklenir ve birden fazla program tarafindan paylasilir, bellek tasarrufu saglar",
         "D) Statik baglamadan daha guvenlidir"
       ],
-      "answer": "C",
-      "explanation": "DLL'ler ihtiyac duyuldugunda yuklenir ve ayni kutuphaneden yararlanan tum programlar tarafindan paylasilir (bellekte bir kez yuklu kalir). Bu, bellek tasarrufu ve disk alani tasarrufu saglar. Ayrica kutuphane guncellenmek istendiginde programlarin yeniden derlenmesine gerek kalmaz."
+      "explanation": "DLL'ler ihtiyac duyuldugunda yuklenir ve ayni kutuphaneden yararlanan tum programlar tarafindan paylasilir (bellekte bir kez yuklu kalir). Bu, bellek tasarrufu ve disk alani tasarrufu saglar. Ayrica kutuphane guncellenmek istendiginde programlarin yeniden derlenmesine gerek kalmaz.",
+      "correctIndex": 2
     },
     {
       "id": "q8",
@@ -731,8 +731,8 @@
         "C) ABI sadece Windows'ta, API sadece Linux'ta kullanilir",
         "D) ABI ve API ayni seydir"
       ],
-      "answer": "B",
-      "explanation": "API, kaynak kod seviyesinde programlama arayuzu sunar; ayni API'yi kullanan kod farkli platformlarda derlenebilir. ABI ise ikili (binary) seviyede uyumluluk tanimlar; adres genisligi, fonksiyon cagrisi yontemi, sistem cagrisi yontemi gibi mimari detaylari belirler. ABI uyumsuzlugu nedeniyle bir OS icin derlenmis ikili dosya baska bir OS'ta calismaz."
+      "explanation": "API, kaynak kod seviyesinde programlama arayuzu sunar; ayni API'yi kullanan kod farkli platformlarda derlenebilir. ABI ise ikili (binary) seviyede uyumluluk tanimlar; adres genisligi, fonksiyon cagrisi yontemi, sistem cagrisi yontemi gibi mimari detaylari belirler. ABI uyumsuzlugu nedeniyle bir OS icin derlenmis ikili dosya baska bir OS'ta calismaz.",
+      "correctIndex": 1
     },
     {
       "id": "q9",
@@ -743,8 +743,8 @@
         "C) Her ikisi de ayni anlama gelir",
         "D) Politika donanim, mekanizma yazilim ile ilgilidir"
       ],
-      "answer": "B",
-      "explanation": "Politika 'ne yapilmali' sorusuna cevap verir (ornek: her 100 saniyede bir kesme olustur). Mekanizma 'nasil yapilmali' sorusuna cevap verir (ornek: zamanlayici - timer). Bu ayrimi korumak esneklik saglar; politika degistiginde (100 yerine 200 ms) mekanizmayi (timer) degistirmek gerekmez."
+      "explanation": "Politika 'ne yapilmali' sorusuna cevap verir (ornek: her 100 saniyede bir kesme olustur). Mekanizma 'nasil yapilmali' sorusuna cevap verir (ornek: zamanlayici - timer). Bu ayrimi korumak esneklik saglar; politika degistiginde (100 yerine 200 ms) mekanizmayi (timer) degistirmek gerekmez.",
+      "correctIndex": 1
     },
     {
       "id": "q10",
@@ -755,8 +755,8 @@
         "C) Bir bilesendeki hata tum sistemi etkileyebilir, bakim ve debug zordur",
         "D) Sadece eski donamimlarda calisir"
       ],
-      "answer": "C",
-      "explanation": "Monolitik cekirdekte tum islevler (dosya sistemi, bellek yonetimi, cihaz surculeri vb.) tek bir buyuk cekirdek icinde calisir. Bir bilesendeki hata tum cekirdegi ve dolayisiyla tum sistemi cokertebilir. Ayrica buyuk kod tabani nedeniyle bakim ve hata ayiklama zordur. Buna karsin monolitik yapi, fonksiyon cagrilari dogrudan yapildigindan performans acisindan avantajlidir."
+      "explanation": "Monolitik cekirdekte tum islevler (dosya sistemi, bellek yonetimi, cihaz surculeri vb.) tek bir buyuk cekirdek icinde calisir. Bir bilesendeki hata tum cekirdegi ve dolayisiyla tum sistemi cokertebilir. Ayrica buyuk kod tabani nedeniyle bakim ve hata ayiklama zordur. Buna karsin monolitik yapi, fonksiyon cagrilari dogrudan yapildigindan performans acisindan avantajlidir.",
+      "correctIndex": 2
     },
     {
       "id": "q11",
@@ -767,8 +767,8 @@
         "C) Kullanici arayuzu, kabuk, sistem kutuphaneleri",
         "D) Tum isletim sistemi bilesenleri"
       ],
-      "answer": "B",
-      "explanation": "Mikrocekirdekte cekirdekte yalnizca en temel islevler kalir: IPC (Interprocess Communication), bellek yonetimi ve CPU zamanlama. Dosya sistemi, cihaz surculeri gibi diger bilesenler kullanici alanina (user space) tasinir ve mesaj gecirme (message passing) ile cekirdekle iletisir. Bu sayede cekirdek kucuk, guvenilir ve guvenli kalir."
+      "explanation": "Mikrocekirdekte cekirdekte yalnizca en temel islevler kalir: IPC (Interprocess Communication), bellek yonetimi ve CPU zamanlama. Dosya sistemi, cihaz surculeri gibi diger bilesenler kullanici alanina (user space) tasinir ve mesaj gecirme (message passing) ile cekirdekle iletisir. Bu sayede cekirdek kucuk, guvenilir ve guvenli kalir.",
+      "correctIndex": 1
     },
     {
       "id": "q12",
@@ -779,8 +779,8 @@
         "C) Dosya sistemi olmadigi icin",
         "D) Sadece tek islemci destekledigi icin"
       ],
-      "answer": "B",
-      "explanation": "Mikrocekirdekte dosya sistemi ve cihaz surculeri gibi bilesenler kullanici alaninda calisir. Bu bilesenler cekirdekle iletisirken surekli kullanici modu-cekirdek modu gecisleri (context switch) ve mesaj gecirme islemleri yapilir. Bu ek iletisim yuku (overhead), monolitik cekirdege kiyasla performans kaybina neden olur."
+      "explanation": "Mikrocekirdekte dosya sistemi ve cihaz surculeri gibi bilesenler kullanici alaninda calisir. Bu bilesenler cekirdekle iletisirken surekli kullanici modu-cekirdek modu gecisleri (context switch) ve mesaj gecirme islemleri yapilir. Bu ek iletisim yuku (overhead), monolitik cekirdege kiyasla performans kaybina neden olur.",
+      "correctIndex": 1
     },
     {
       "id": "q13",
@@ -791,8 +791,8 @@
         "C) Katmanli yapiya benzer ama daha esnektir",
         "D) Sadece mikrocekirdek yapisinda kullanilabilir"
       ],
-      "answer": "D",
-      "explanation": "LKM sadece mikrocekirdek yapisina ozgu degildir; aslinda Linux ve Solaris gibi monolitik cekirdek kullanan sistemlerde de yaygin olarak kullanilir. LKM, her cekirdek bilesenini ayri tutar, bilinen arayuzler uzerinden iletisim saglar ve cekirdege calisma zamaninda yuklenebilir/cikarilabilir. Bu moduler yaklasim monolitik cekirdeklerle birlikte kullanilarak esneklik saglar."
+      "explanation": "LKM sadece mikrocekirdek yapisina ozgu degildir; aslinda Linux ve Solaris gibi monolitik cekirdek kullanan sistemlerde de yaygin olarak kullanilir. LKM, her cekirdek bilesenini ayri tutar, bilinen arayuzler uzerinden iletisim saglar ve cekirdege calisma zamaninda yuklenebilir/cikarilabilir. Bu moduler yaklasim monolitik cekirdeklerle birlikte kullanilarak esneklik saglar.",
+      "correctIndex": 3
     },
     {
       "id": "q14",
@@ -803,8 +803,8 @@
         "C) Yalnizca Linux cekirdegi",
         "D) Monolitik Windows NT cekirdegi"
       ],
-      "answer": "B",
-      "explanation": "Darwin, Apple macOS ve iOS'un cekirdek ortamidir. Mach mikrocekirdegi (zamanlama, IPC, bellek yonetimi), BSD (POSIX) sistem cagrilari, I/O kit ve kernel extensions (kexts - dinamik yuklenebilir moduller) icerir. Bu hibrit yaklasim hem mikrocekirdek hem monolitik hem de moduler ozellikleri birlestirir."
+      "explanation": "Darwin, Apple macOS ve iOS'un cekirdek ortamidir. Mach mikrocekirdegi (zamanlama, IPC, bellek yonetimi), BSD (POSIX) sistem cagrilari, I/O kit ve kernel extensions (kexts - dinamik yuklenebilir moduller) icerir. Bu hibrit yaklasim hem mikrocekirdek hem monolitik hem de moduler ozellikleri birlestirir.",
+      "correctIndex": 1
     },
     {
       "id": "q15",
@@ -815,8 +815,8 @@
         "C) Linux cekirdegini derlemek icin",
         "D) Ag iletisimini yonetmek icin"
       ],
-      "answer": "B",
-      "explanation": "Android'de uygulamalar Java (ve Kotlin) ile gelistirilir. Java sinif dosyalari Java bytecode'a derlenir, ardidan calistirilabilir formata donusturulerek Dalvik (eski) veya ART (yeni - Android Runtime) sanal makinesinde calistirilir. Bu VM, uygulamalarin donanim bagimsiz calismasini saglar."
+      "explanation": "Android'de uygulamalar Java (ve Kotlin) ile gelistirilir. Java sinif dosyalari Java bytecode'a derlenir, ardidan calistirilabilir formata donusturulerek Dalvik (eski) veya ART (yeni - Android Runtime) sanal makinesinde calistirilir. Bu VM, uygulamalarin donanim bagimsiz calismasini saglar.",
+      "correctIndex": 1
     },
     {
       "id": "q16",
@@ -827,8 +827,8 @@
         "C) Yalnizca ag baglantisi saglar",
         "D) Dosya sistemini formatlar"
       ],
-      "answer": "B",
-      "explanation": "UEFI (Unified Extensible Firmware Interface), geleneksel BIOS'un yerini alan modern firmware arayuzudur. Bilgisayar acildiginda sabit bellek konumundan calisir, cekirdegi (kernel) bulur, bellige yukler ve baslatir. BIOS'a kiyasla daha buyuk disk destegi, daha hizli baslatma ve guvenlik ozellikleri (Secure Boot) sunar."
+      "explanation": "UEFI (Unified Extensible Firmware Interface), geleneksel BIOS'un yerini alan modern firmware arayuzudur. Bilgisayar acildiginda sabit bellek konumundan calisir, cekirdegi (kernel) bulur, bellige yukler ve baslatir. BIOS'a kiyasla daha buyuk disk destegi, daha hizli baslatma ve guvenlik ozellikleri (Secure Boot) sunar.",
+      "correctIndex": 1
     },
     {
       "id": "q17",
@@ -839,8 +839,8 @@
         "C) getpid()",
         "D) chmod()"
       ],
-      "answer": "C",
-      "explanation": "getpid() sureccin kimlik numarasini (process ID) donduren bir bilgi bakimi sistem cagrisidir. open() dosya yonetimi, fork() surec kontrolu, chmod() ise koruma kategorisindedir. Bilgi bakimi cagrilari: getpid(), alarm(), sleep() (Unix); GetCurrentProcessID(), SetTimer(), Sleep() (Windows)."
+      "explanation": "getpid() sureccin kimlik numarasini (process ID) donduren bir bilgi bakimi sistem cagrisidir. open() dosya yonetimi, fork() surec kontrolu, chmod() ise koruma kategorisindedir. Bilgi bakimi cagrilari: getpid(), alarm(), sleep() (Unix); GetCurrentProcessID(), SetTimer(), Sleep() (Windows).",
+      "correctIndex": 2
     },
     {
       "id": "q18",
@@ -851,8 +851,8 @@
         "C) MS-DOS",
         "D) Android"
       ],
-      "answer": "C",
-      "explanation": "MS-DOS basit bir yapi (simple structure) kullanan eski bir isletim sistemidir ve hibrit sistem degildir. macOS (Mach + BSD + I/O kit), Windows (monolitik + mikrocekirdek personalities) ve Android (Linux kernel + ART VM + HAL) hibrit yaklasim kullanan modern isletim sistemleridir."
+      "explanation": "MS-DOS basit bir yapi (simple structure) kullanan eski bir isletim sistemidir ve hibrit sistem degildir. macOS (Mach + BSD + I/O kit), Windows (monolitik + mikrocekirdek personalities) ve Android (Linux kernel + ART VM + HAL) hibrit yaklasim kullanan modern isletim sistemleridir.",
+      "correctIndex": 2
     },
     {
       "id": "q19",
@@ -863,8 +863,8 @@
         "C) Hata ayiklama sadece assembler dilinde mumkundur",
         "D) Otomatik araclar tum hatalari bulabilir"
       ],
-      "answer": "B",
-      "explanation": "Kernighan Yasasi: 'Debugging is twice as hard as writing the code in the first place. Therefore, if you write the code as cleverly as possible, you are, by definition, not smart enough to debug it.' Bu yasa, kodun basit ve anlasilir yazilmasinin onemini vurgular."
+      "explanation": "Kernighan Yasasi: 'Debugging is twice as hard as writing the code in the first place. Therefore, if you write the code as cleverly as possible, you are, by definition, not smart enough to debug it.' Bu yasa, kodun basit ve anlasilir yazilmasinin onemini vurgular.",
+      "correctIndex": 1
     },
     {
       "id": "q20",
@@ -875,8 +875,8 @@
         "C) Iletisim (Communications)",
         "D) Bilgi bakimi (Information maintenance)"
       ],
-      "answer": "B",
-      "explanation": "Bir sureccin baska bir sureccin bitmesini beklemesi, surec kontrolu (process control) kategorisindedir. Unix'te wait() ve Windows'ta WaitForSingleObject() sistem cagrilari bu amacla kullanilir. Bu cagrilar, ebeveyn surecin cocuk sureccin tamamlanmasini beklemesini saglar."
+      "explanation": "Bir sureccin baska bir sureccin bitmesini beklemesi, surec kontrolu (process control) kategorisindedir. Unix'te wait() ve Windows'ta WaitForSingleObject() sistem cagrilari bu amacla kullanilir. Bu cagrilar, ebeveyn surecin cocuk sureccin tamamlanmasini beklemesini saglar.",
+      "correctIndex": 1
     },
     {
       "id": "q21",
@@ -887,8 +887,8 @@
         "C) Yeni mimarilere tasimasi kolay (portability)",
         "D) Dusuk bellek kullanimi"
       ],
-      "answer": "C",
-      "explanation": "Mikrocekirdek avantajlari: genisletmesi kolay, yeni mimarilere tasinmasi (port) kolay, daha guvenilir (daha az kod kernel modunda calisir) ve daha guvenli. Performans dezavantaji vardir cunku kullanici-cekirdek gecisleri ek yuk olusturur. Implementasyonu basit degildir, mesaj gecirme mekanizmalari karmasik olabilir."
+      "explanation": "Mikrocekirdek avantajlari: genisletmesi kolay, yeni mimarilere tasinmasi (port) kolay, daha guvenilir (daha az kod kernel modunda calisir) ve daha guvenli. Performans dezavantaji vardir cunku kullanici-cekirdek gecisleri ek yuk olusturur. Implementasyonu basit degildir, mesaj gecirme mekanizmalari karmasik olabilir.",
+      "correctIndex": 2
     },
     {
       "id": "q22",
@@ -899,8 +899,8 @@
         "C) make install -> make -> make menuconfig",
         "D) gcc kernel.c -> make install"
       ],
-      "answer": "B",
-      "explanation": "Dogru sira: 1) make menuconfig (cekirdegi yapilandir) 2) make (cekirdegi derle, vmlinuz uretir) 3) make modules (cekirdek modullerini derle) 4) make modules_install (modulleri kur) 5) make install (yeni cekirdegi sisteme kur). Bu adimlar sirali yapilmalidir."
+      "explanation": "Dogru sira: 1) make menuconfig (cekirdegi yapilandir) 2) make (cekirdegi derle, vmlinuz uretir) 3) make modules (cekirdek modullerini derle) 4) make modules_install (modulleri kur) 5) make install (yeni cekirdegi sisteme kur). Bu adimlar sirali yapilmalidir.",
+      "correctIndex": 1
     },
     {
       "id": "q23",
@@ -911,8 +911,8 @@
         "C) Katman 0 kullanici arayuzu, katman N donanim katmanidir",
         "D) Katmanlar arasi iletisim mesaj gecirme ile saglanir"
       ],
-      "answer": "B",
-      "explanation": "Katmanli yaklasimda her katman yalnizca altindaki katmanlarin islevlerini (functions/operations) ve servislerini kullanir. Katman 0 donanimdir (en alt), katman N kullanici arayuzudur (en ust). Mesaj gecirme mikrocekirdek yapisina ozgudur, katmanli yaklasimda fonksiyon cagrilari kullanilir."
+      "explanation": "Katmanli yaklasimda her katman yalnizca altindaki katmanlarin islevlerini (functions/operations) ve servislerini kullanir. Katman 0 donanimdir (en alt), katman N kullanici arayuzudur (en ust). Mesaj gecirme mikrocekirdek yapisina ozgudur, katmanli yaklasimda fonksiyon cagrilari kullanilir.",
+      "correctIndex": 1
     }
   ],
   "fillBlanks": [

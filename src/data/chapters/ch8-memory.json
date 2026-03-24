@@ -529,8 +529,8 @@
         "Baz adresi (Base address)",
         "Cerceve adresi (Frame address)"
       ],
-      "correct": 1,
-      "explanation": "CPU her zaman mantiksal (sanal/virtual) adres uretir. Bu adres MMU tarafindan fiziksel adrese donusturulur."
+      "explanation": "CPU her zaman mantiksal (sanal/virtual) adres uretir. Bu adres MMU tarafindan fiziksel adrese donusturulur.",
+      "correctIndex": 1
     },
     {
       "id": "q2",
@@ -541,8 +541,8 @@
         "TRAP - bellek ihlali",
         "500"
       ],
-      "correct": 1,
-      "explanation": "300 < 500 (limit) -> Gecerli. Fiziksel adres = base + mantiksal adres = 1000 + 300 = 1300."
+      "explanation": "300 < 500 (limit) -> Gecerli. Fiziksel adres = base + mantiksal adres = 1000 + 300 = 1300.",
+      "correctIndex": 1
     },
     {
       "id": "q3",
@@ -553,8 +553,8 @@
         "TRAP - bellek koruma ihlali (600 >= 500)",
         "Fiziksel adres = 400"
       ],
-      "correct": 2,
-      "explanation": "600 >= 500 (limit) -> Limit asildi! TRAP olusur. Bu bir bellek koruma ihlalidir (segmentation fault)."
+      "explanation": "600 >= 500 (limit) -> Limit asildi! TRAP olusur. Bu bir bellek koruma ihlalidir (segmentation fault).",
+      "correctIndex": 2
     },
     {
       "id": "q4",
@@ -565,8 +565,8 @@
         "Hem ic hem dis parcalanma",
         "Hicbir parcalanma olusma"
       ],
-      "correct": 1,
-      "explanation": "Sabit boyutlu bolumlemede IC parcalanma olusur cunku surec bolumun tamamini doldurmayabilir. Kalan alan israf olur. Dis parcalanma olmaz cunku bolumler sabittir."
+      "explanation": "Sabit boyutlu bolumlemede IC parcalanma olusur cunku surec bolumun tamamini doldurmayabilir. Kalan alan israf olur. Dis parcalanma olmaz cunku bolumler sabittir.",
+      "correctIndex": 1
     },
     {
       "id": "q5",
@@ -577,8 +577,8 @@
         "Hem ic hem dis parcalanma",
         "Hicbir parcalanma olmaz"
       ],
-      "correct": 1,
-      "explanation": "Degisken boyutlu bolumlemede DIS parcalanma olusur cunku surecler arasi kucuk bos delikler (holes) olusur. Ic parcalanma olmaz cunku surece tam ihtiyaci kadar alan verilir."
+      "explanation": "Degisken boyutlu bolumlemede DIS parcalanma olusur cunku surecler arasi kucuk bos delikler (holes) olusur. Ic parcalanma olmaz cunku surece tam ihtiyaci kadar alan verilir.",
+      "correctIndex": 1
     },
     {
       "id": "q6",
@@ -589,8 +589,8 @@
         "Hem ic hem dis parcalanma",
         "Hicbir parcalanma olmaz"
       ],
-      "correct": 1,
-      "explanation": "Sayfalamada IC parcalanma olusur cunku son sayfa tam dolmayabilir. Dis parcalanma OLMAZ cunku sayfalar herhangi bir bos cerceveye yerlesebilir, bitisik alan gerekli degildir."
+      "explanation": "Sayfalamada IC parcalanma olusur cunku son sayfa tam dolmayabilir. Dis parcalanma OLMAZ cunku sayfalar herhangi bir bos cerceveye yerlesebilir, bitisik alan gerekli degildir.",
+      "correctIndex": 1
     },
     {
       "id": "q7",
@@ -601,8 +601,8 @@
         "80 ns",
         "110 ns"
       ],
-      "correct": 1,
-      "explanation": "EAT = 0.80 * 10 + 0.20 * 100 = 8 + 20 = 28 ns"
+      "explanation": "EAT = 0.80 * 10 + 0.20 * 100 = 8 + 20 = 28 ns",
+      "correctIndex": 1
     },
     {
       "id": "q8",
@@ -613,8 +613,8 @@
         "2,000,088 ns",
         "10,000,028 ns"
       ],
-      "correct": 1,
-      "explanation": "EAT = 0.80*10 + 0.20*(0.80*100 + 0.20*10,000,000) = 8 + 0.20*(80 + 2,000,000) = 8 + 400,016 = 400,024 ns. Sadece %4 disk erisimi bile ortalama sureyi muazzam artiriyor!"
+      "explanation": "EAT = 0.80*10 + 0.20*(0.80*100 + 0.20*10,000,000) = 8 + 0.20*(80 + 2,000,000) = 8 + 400,016 = 400,024 ns. Sadece %4 disk erisimi bile ortalama sureyi muazzam artiriyor!",
+      "correctIndex": 1
     },
     {
       "id": "q9",
@@ -625,8 +625,8 @@
         "Yeterli olan ilk bos alani secer",
         "Rastgele bir bos alan secer"
       ],
-      "correct": 2,
-      "explanation": "First-Fit, bos alanlar listesinde ilk yeterli boyuttaki alani secer. En hizli stratejidir cunku tum listeyi taramak gerekmez."
+      "explanation": "First-Fit, bos alanlar listesinde ilk yeterli boyuttaki alani secer. En hizli stratejidir cunku tum listeyi taramak gerekmez.",
+      "correctIndex": 2
     },
     {
       "id": "q10",
@@ -637,8 +637,8 @@
         "Yeterli olan en kucuk bos alani secer",
         "Son kullanilan bos alani secer"
       ],
-      "correct": 2,
-      "explanation": "Best-Fit, surec icin yeterli olan en KUCUK bos alani secer. En az artik alan birakir ama tum listeyi taramak gerekebilir."
+      "explanation": "Best-Fit, surec icin yeterli olan en KUCUK bos alani secer. En az artik alan birakir ama tum listeyi taramak gerekebilir.",
+      "correctIndex": 2
     },
     {
       "id": "q11",
@@ -649,8 +649,8 @@
         "Sayfa=2, Ofset=0",
         "Sayfa=3, Ofset=1028"
       ],
-      "correct": 1,
-      "explanation": "Sayfa boyutu=4KB=4096. Sayfa numarasi=8196/4096=2 (tam kisim). Ofset=8196%4096=8196-8192=4."
+      "explanation": "Sayfa boyutu=4KB=4096. Sayfa numarasi=8196/4096=2 (tam kisim). Ofset=8196%4096=8196-8192=4.",
+      "correctIndex": 1
     },
     {
       "id": "q12",
@@ -661,8 +661,8 @@
         "Sayfa tablosu girislerini onbelleleyerek adres cevirimini hizlandirir",
         "Surecleri bellege yukler"
       ],
-      "correct": 2,
-      "explanation": "TLB, sayfa tablosu girislerini onbellekleyen ozel donanim cache'idir. TLB hit olursa sayfa tablosuna gitmeden dogrudan cerceve numarasini verir, boylece bir bellek erisimi tasarruf edilir."
+      "explanation": "TLB, sayfa tablosu girislerini onbellekleyen ozel donanim cache'idir. TLB hit olursa sayfa tablosuna gitmeden dogrudan cerceve numarasini verir, boylece bir bellek erisimi tasarruf edilir.",
+      "correctIndex": 2
     },
     {
       "id": "q13",
@@ -673,8 +673,8 @@
         "120 ns",
         "200 ns"
       ],
-      "correct": 2,
-      "explanation": "TLB hit: 10+100=110ns. TLB miss: 10+100+100=210ns.\nEAT = 0.90*110 + 0.10*210 = 99+21 = 120 ns."
+      "explanation": "TLB hit: 10+100=110ns. TLB miss: 10+100+100=210ns.\nEAT = 0.90*110 + 0.10*210 = 99+21 = 120 ns.",
+      "correctIndex": 2
     },
     {
       "id": "q14",
@@ -685,8 +685,8 @@
         "800 ns",
         "8,000,200 ns"
       ],
-      "correct": 1,
-      "explanation": "EAT = (1-0.001)*200 + 0.001*8,000,000 = 199.8 + 8000 = 8199.8 ns. %0.1 sayfa hatasi bile erisim suresini 41 kat artirdi!"
+      "explanation": "EAT = (1-0.001)*200 + 0.001*8,000,000 = 199.8 + 8000 = 8199.8 ns. %0.1 sayfa hatasi bile erisim suresini 41 kat artirdi!",
+      "correctIndex": 1
     },
     {
       "id": "q15",
@@ -697,8 +697,8 @@
         "Best-Fit yerlestirme",
         "Sabit boyutlu bolumleme"
       ],
-      "correct": 1,
-      "explanation": "Compaction surecleri kaydirarak bos alanlari birlestirir (pahali). Paging ise dis parcalanmayi tamamen ortadan kaldirir cunku sayfalar bitisik olmak zorunda degildir."
+      "explanation": "Compaction surecleri kaydirarak bos alanlari birlestirir (pahali). Paging ise dis parcalanmayi tamamen ortadan kaldirir cunku sayfalar bitisik olmak zorunda degildir.",
+      "correctIndex": 1
     },
     {
       "id": "q16",
@@ -709,8 +709,8 @@
         "Sayfa baska bir cercevelye kopyalanmali",
         "Hicbir sey yapilmaz"
       ],
-      "correct": 1,
-      "explanation": "Dirty (kirli) sayfa degistirilmistir, bu nedenle icerigi diske yazilmalidir (aksi halde degisiklikler kaybolur). Temiz (clean) sayfa ise dogrudan atilabilir cunku diskteki kopyasi gunceldir."
+      "explanation": "Dirty (kirli) sayfa degistirilmistir, bu nedenle icerigi diske yazilmalidir (aksi halde degisiklikler kaybolur). Temiz (clean) sayfa ise dogrudan atilabilir cunku diskteki kopyasi gunceldir.",
+      "correctIndex": 1
     },
     {
       "id": "q17",
@@ -721,8 +721,8 @@
         "Calisma zamani (Execution time)",
         "Baglanti zamani (Link time)"
       ],
-      "correct": 2,
-      "explanation": "Modern isletim sistemleri calisma zamani adres baglamayi kullanir. Bu, sureclerin bellekte tasinmasina (swapping) ve sanal bellek kullanimina olanak tanir. MMU donanim destegi gerektirir."
+      "explanation": "Modern isletim sistemleri calisma zamani adres baglamayi kullanir. Bu, sureclerin bellekte tasinmasina (swapping) ve sanal bellek kullanimina olanak tanir. MMU donanim destegi gerektirir.",
+      "correctIndex": 2
     },
     {
       "id": "q18",
@@ -733,8 +733,8 @@
         "RAM -> Cache -> Disk -> Register",
         "Register -> Cache -> Disk -> RAM"
       ],
-      "correct": 1,
-      "explanation": "En yavas -> En hizli: Disk (~10ms) -> RAM (~100ns) -> Cache (~10ns) -> Register (~1ns). Hiyerarside yukariya cikildikca hiz artar, kapasite azalir."
+      "explanation": "En yavas -> En hizli: Disk (~10ms) -> RAM (~100ns) -> Cache (~10ns) -> Register (~1ns). Hiyerarside yukariya cikildikca hiz artar, kapasite azalir.",
+      "correctIndex": 1
     },
     {
       "id": "q19",
@@ -745,8 +745,8 @@
         "100 ns",
         "5.25 ns"
       ],
-      "correct": 0,
-      "explanation": "EAT = 0.95*5 + 0.05*100 = 4.75 + 5 = 9.75 ns"
+      "explanation": "EAT = 0.95*5 + 0.05*100 = 4.75 + 5 = 9.75 ns",
+      "correctIndex": 0
     },
     {
       "id": "q20",
@@ -757,8 +757,8 @@
         "600K'lik alana (kalan 390K)",
         "200K'lik alana (kalan -10K, yani sigmaz)"
       ],
-      "correct": 1,
-      "explanation": "Best-Fit, 210K icin yeterli olan EN KUCUK alani secer. 200K < 210K (sigmaz). 300K >= 210K (yeterli, en kucuk). 300K'ya yerlesir, kalan 90K."
+      "explanation": "Best-Fit, 210K icin yeterli olan EN KUCUK alani secer. 200K < 210K (sigmaz). 300K >= 210K (yeterli, en kucuk). 300K'ya yerlesir, kalan 90K.",
+      "correctIndex": 1
     }
   ],
   "fillBlanks": [
