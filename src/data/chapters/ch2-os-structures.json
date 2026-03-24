@@ -923,7 +923,8 @@
       "sentence": "Sistem cagrilari genellikle dogrudan kullanilmaz; bunun yerine programcilar _______ araciligiyla isletim sistemi servislerine erisir.",
       "acceptableAnswers": [
         "API (Application Programming Interface)"
-      ]
+      ],
+      "hint": "Programlarin OS servislerine erismek icin kullandigi arayuz..."
     },
     {
       "id": "fb2",
@@ -932,7 +933,8 @@
       "sentence": "Linux ve Solaris'te sistem cagrilarina parametre gecirmek icin _______ yontemi kullanilir; parametreler bellekteki bir tabloya yazilir ve tablonun adresi yazmac ile gonderilir.",
       "acceptableAnswers": [
         "blok/tablo (block/table)"
-      ]
+      ],
+      "hint": "Sistem cagrilarini numaralara gore organize eden tablo..."
     },
     {
       "id": "fb3",
@@ -941,7 +943,8 @@
       "sentence": "Unix'te yeni bir surec olusturmak icin _______ sistem cagrisi, olusturulan surece yeni program yuklemek icin _______ sistem cagrisi kullanilir.",
       "acceptableAnswers": [
         "fork() / exec()"
-      ]
+      ],
+      "hint": "Kullanici komut girdigi metin tabanli arayuz..."
     },
     {
       "id": "fb4",
@@ -950,7 +953,8 @@
       "sentence": "Iletisim sistem cagrilarinda iki temel model vardir: _______ ve _______.",
       "acceptableAnswers": [
         "mesaj gecirme modeli (message passing model) / paylasimli bellek modeli (shared-memory model)"
-      ]
+      ],
+      "hint": "OS ile birlikte gelen ama kernel'in parcasi olmayan programlar..."
     },
     {
       "id": "fb5",
@@ -959,7 +963,8 @@
       "sentence": "Nesne dosyalarini birlestirip tek bir calistirilabilir dosya olusturan araca _______, bu dosyayi bellige yukleyip calistirilmasini saglayan araca _______ denir.",
       "acceptableAnswers": [
         "linker (baglayici) / loader (yukleyici)"
-      ]
+      ],
+      "hint": "Kaynak kodunu makine koduna ceviren program..."
     },
     {
       "id": "fb6",
@@ -968,7 +973,8 @@
       "sentence": "Modern sistemlerde kutuphaneler calistirilabilir dosyaya gomulmez; bunun yerine _______ kullanilir ve bu kutuphaneler ihtiyac duyuldugunda yuklenir.",
       "acceptableAnswers": [
         "dinamik olarak baglanan kutuphaneler (Dynamically Linked Libraries / DLLs)"
-      ]
+      ],
+      "hint": "Calisma zamaninda yuklenen paylasimli kutuphane..."
     },
     {
       "id": "fb7",
@@ -977,7 +983,8 @@
       "sentence": "API'nin mimari seviyedeki karsiligi olan _______, farkli ikili kod bilesenlerinin belirli bir OS ve CPU mimarisinde nasil etkilesecegini tanimlar.",
       "acceptableAnswers": [
         "ABI (Application Binary Interface)"
-      ]
+      ],
+      "hint": "Donanimdan bagimsiz calisabilirlik saglayan ikili arayuz..."
     },
     {
       "id": "fb8",
@@ -986,7 +993,8 @@
       "sentence": "'Ne yapilacagi' sorusuna cevap veren _______, 'nasil yapilacagi' sorusuna cevap veren _______ kavramindan ayrilmalidir; bu ayrim esneklik saglar.",
       "acceptableAnswers": [
         "politika (policy) / mekanizma (mechanism)"
-      ]
+      ],
+      "hint": "Politika \"ne\" yapilacagini, bu ise \"nasil\" yapilacagini belirler..."
     },
     {
       "id": "fb9",
@@ -995,7 +1003,8 @@
       "sentence": "_______ cekirdek yapisinda tum OS islevleri tek bir buyuk cekirdekte calisir; _______ yapisinda ise mumkun oldugunca cok islev kullanici alanina tasinir.",
       "acceptableAnswers": [
         "monolitik (monolithic) / mikrocekirdek (microkernel)"
-      ]
+      ],
+      "hint": "Tum OS bilesenleri tek bir buyuk cekirdekte..."
     },
     {
       "id": "fb10",
@@ -1004,7 +1013,8 @@
       "sentence": "Bilgisayar acildiginda ROM veya EEPROM'da saklanan _______ cekirdegi bulur, bellige yukler ve baslatir. Modern sistemlerde bunun yerini _______ almistir.",
       "acceptableAnswers": [
         "bootstrap loader (BIOS) / UEFI (Unified Extensible Firmware Interface)"
-      ]
+      ],
+      "hint": "Sadece temel servisleri cekirdekte tutan minimalist yaklasim..."
     },
     {
       "id": "fb11",
@@ -1013,7 +1023,8 @@
       "sentence": "Bir uygulama basarisiz oldugunda sureccin bellegini yakalayan dosyaya _______, isletim sistemi cokerse cekirdek bellegini kaydeden dosyaya _______ denir.",
       "acceptableAnswers": [
         "core dump / crash dump"
-      ]
+      ],
+      "hint": "Calisma zamaninda cekirdege modul ekleyebilen yaklasim..."
     },
     {
       "id": "fb12",
@@ -1022,7 +1033,8 @@
       "sentence": "Bircogu modern OS, _______ adli yuklenebilir cekirdek modulleri kullanir; bu moduller nesne yonelimli yaklasimla gerektiginde cekirdege yuklenir ve cikarilir.",
       "acceptableAnswers": [
         "LKM (Loadable Kernel Modules)"
-      ]
+      ],
+      "hint": "Bilgisayar acildiginda ilk calisan program..."
     },
     {
       "id": "fb13",
@@ -1031,7 +1043,8 @@
       "sentence": "Linux cekirdegi derlendiginde uretilen cekirdek imaj dosyasinin adi _______'dur.",
       "acceptableAnswers": [
         "vmlinuz"
-      ]
+      ],
+      "hint": "Sistem performansini izlemek icin kullanilan araclar..."
     },
     {
       "id": "fb14",
@@ -1040,7 +1053,8 @@
       "sentence": "Apple macOS'un cekirdek ortami olan _______, Mach mikrocekirdegi ve BSD Unix parcalarini bir arada icerir.",
       "acceptableAnswers": [
         "Darwin"
-      ]
+      ],
+      "hint": "Programin bellege yuklenmesini saglayan bilesen..."
     },
     {
       "id": "fb15",
@@ -1049,7 +1063,8 @@
       "sentence": "Arka plan servisleri (background services) acilis zamaninda baslatilir ve _______, _______ veya _______ olarak da bilinir.",
       "acceptableAnswers": [
         "services / subsystems / daemons"
-      ]
+      ],
+      "hint": "Birden fazla OS yaklasimini birlestiren modern tasarim..."
     }
   ]
 }

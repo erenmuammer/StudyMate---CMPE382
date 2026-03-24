@@ -789,7 +789,8 @@
       "acceptableAnswers": [
         "CPU",
         "program sayaci (PC)"
-      ]
+      ],
+      "hint": "Bir prosesin icinde calisan en kucuk calisma birimi..."
     },
     {
       "id": "fb2",
@@ -799,7 +800,8 @@
       "acceptableAnswers": [
         "Paralellik (Parallelism)",
         "Eszamanlilik (Concurrency)"
-      ]
+      ],
+      "hint": "Thread'lerin ayni process icinde paylastigi alanlar..."
     },
     {
       "id": "fb3",
@@ -809,7 +811,8 @@
       "acceptableAnswers": [
         "seri (serial)",
         "islemci cekirdek (processing cores)"
-      ]
+      ],
+      "hint": "Tum user thread'leri tek kernel thread'e eslestiren model..."
     },
     {
       "id": "fb4",
@@ -819,7 +822,8 @@
       "acceptableAnswers": [
         "tek bir (single)",
         "tum thread'lerin (all threads)"
-      ]
+      ],
+      "hint": "Her user thread icin ayri kernel thread olusturan model..."
     },
     {
       "id": "fb5",
@@ -829,7 +833,8 @@
       "acceptableAnswers": [
         "pthread_create()",
         "pthread_join()"
-      ]
+      ],
+      "hint": "Parallelizmin teorik limitini gosteren yasa..."
     },
     {
       "id": "fb6",
@@ -839,7 +844,8 @@
       "acceptableAnswers": [
         "Runnable",
         "start()"
-      ]
+      ],
+      "hint": "POSIX standartli thread kutuphanesi..."
     },
     {
       "id": "fb7",
@@ -849,7 +855,8 @@
       "acceptableAnswers": [
         "#pragma omp parallel",
         "cekirdek (core)"
-      ]
+      ],
+      "hint": "Thread havuzu olusturup isleri dagitan yaklasim..."
     },
     {
       "id": "fb8",
@@ -859,7 +866,8 @@
       "acceptableAnswers": [
         "Asenkron (Asynchronous)",
         "Ertelenmiis (Deferred)"
-      ]
+      ],
+      "hint": "Ayni anda birden fazla isin yapilmasi..."
     },
     {
       "id": "fb9",
@@ -869,7 +877,8 @@
       "acceptableAnswers": [
         "clone()",
         "task (gorev)"
-      ]
+      ],
+      "hint": "Thread'in iptal edilebilmesini saglayan mekanizma..."
     },
     {
       "id": "fb10",
@@ -879,7 +888,8 @@
       "acceptableAnswers": [
         "kopyasina (copy)",
         "static"
-      ]
+      ],
+      "hint": "Her thread'e ozel veri alani..."
     },
     {
       "id": "fb11",
@@ -889,7 +899,8 @@
       "acceptableAnswers": [
         "register seti",
         "yiginlar (stacks)"
-      ]
+      ],
+      "hint": "Fork cagrildiginda thread'lere ne olur..."
     },
     {
       "id": "fb12",
@@ -899,7 +910,8 @@
       "acceptableAnswers": [
         "yukariya cagrilar (upcalls)",
         "Hafif Surec (LWP - Lightweight Process)"
-      ]
+      ],
+      "hint": "Kernel ve user thread'leri arasindaki iletisim mekanizmasi..."
     }
   ],
   "examQuestions": [
